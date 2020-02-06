@@ -1,2 +1,2 @@
-# laravel-crud
-Laravel Crud Tools
+# Laravel CRUD
+Laravel CRUD Tools

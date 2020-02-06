@@ -1,0 +1,22 @@
+{
+    "name": "impactaweb/laravel-crud",
+    "description": "Laravel Crud Tools",
+    "type": "library",
+    "license": "",
+    "authors": [
+        {
+            "name": "Impacta Soluções Web",
+            "email": "suporte@impactaweb.com.br"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Impactaweb\\Crud\\": ""
+        }
+    },
+    "require": {
+        "php": "^7.2",
+        "laravel/framework": "^6.2"
+    }
+}
