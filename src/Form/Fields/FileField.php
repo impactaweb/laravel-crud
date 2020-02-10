@@ -2,6 +2,8 @@
 
 namespace Impactaweb\Crud\Form\Fields;
 
+require_once __DIR__ . '/../Helpers/Helpers.php';
+
 class FileField extends BaseField
 {
     protected $dir = '';
@@ -27,5 +29,4 @@ class FileField extends BaseField
             $this->dir = $this->dir . '/';
         }
     }
-
 }

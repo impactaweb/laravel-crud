@@ -5,6 +5,8 @@ namespace Impactaweb\Crud\Commands;
 use Exception;
 use Illuminate\Console\Command;
 
+require_once __DIR__ . '/../Helpers/Helpers.php';
+
 class CrudCreate extends Command
 {
     /**

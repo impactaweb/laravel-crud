@@ -13,10 +13,7 @@
     "autoload": {
         "psr-4": {
             "Impactaweb\\Crud\\": "./src"
-        },
-        "files": [
-            "./src/Helpers/Helpers.php"
-        ],
+        }
     },
     "require": {
         "php": "^7.2",
@@ -29,5 +26,5 @@
             ]
         }
     },
-    "version": "0.1.0"
+    "version": "0.1.1"
 }

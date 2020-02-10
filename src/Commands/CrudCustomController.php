@@ -6,6 +6,8 @@ use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
+require_once __DIR__ . '/../Helpers/Helpers.php';
+
 class CrudCustomController extends GeneratorCommand
 {
 
