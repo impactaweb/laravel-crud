@@ -69,7 +69,21 @@ class ServiceProvider extends LaravelServiceProvider
         // It can be replaced by the user in laravel /config/form.php file
         $this->mergeConfigFrom(__DIR__.'/Listing/Config/listing.php', 'listing');
 
+        // Translations
+        $this->loadTranslationsFrom(__DIR__.'/Listing/Resources/lang', 'listing');
+
         // listing Views
         $this->loadViewsFrom(__DIR__.'/Listing/Resources/views', 'listing');
+
+        // Publish Config
+        $this->publishes([
+            __DIR__.'Listing/Config/listing.php' => config_path('listing.php'),
+        ], 'config');
+
+        // Publish Views
+        $this->publishes([
+            __DIR__.'/Listing/Resources/views' => resource_path('views/vendor/impactaweb/crud/listing'),
+        ], 'views');
     }
+
 }
