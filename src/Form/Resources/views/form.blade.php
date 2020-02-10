@@ -1,6 +1,3 @@
-<script src="/vendor/impactaweb/crud/form/form.js" ></script>
-<link rel="stylesheet" href="/vendor/impactaweb/crud/form/form.css" />
-
 <div data-container="loading">
 </div>
 <div data-expect-alert></div>
@@ -38,6 +35,6 @@
     </div>
 
     @include($actionsTemplate)
-
-
 </form>
+<script src="/vendor/impactaweb/crud/form/form.js" ></script>
+<link rel="stylesheet" href="/vendor/impactaweb/crud/form/form.css" />
