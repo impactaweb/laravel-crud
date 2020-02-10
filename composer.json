@@ -12,11 +12,21 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
-            "Impactaweb\\Crud\\": ""
-        }
+            "Impactaweb\\Crud\\": "./src"
+        },
+        "files": [
+            "./src/Helpers/Helpers.php"
+        ],
     },
     "require": {
         "php": "^7.2",
         "laravel/framework": "^6.2"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Impactaweb\\Crud\\Providers\\ImpactaCrudServiceProvider"
+            ]
+        }
     }
 }

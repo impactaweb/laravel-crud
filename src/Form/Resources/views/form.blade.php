@@ -33,7 +33,7 @@
 
 
     <div class="panel-group" id="Abas" role="tablist" aria-multiselectable="true">
-        {{-- Template contendo renderização das abas --}}
+        {{-- Render template for panels --}}
         @include($panelTemplate)
     </div>
 

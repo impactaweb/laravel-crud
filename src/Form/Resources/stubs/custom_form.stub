@@ -1,0 +1,20 @@
+<?php
+
+namespace DummyNamespace;
+
+use App\Lib\FormMaker\Form;
+
+class DummyClass extends Form
+{
+
+    /** Retorna fomulario em HTML */
+    public function renderForm(): string
+    {
+        # Personalize os campos de acordo com o nescessário
+        $this->panel()
+                {{ myFields }};
+
+
+        return $this->render();
+    }
+}
