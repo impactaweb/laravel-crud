@@ -10,7 +10,7 @@
     @endif
 
     id="{{ $formId }}"
-    class="container p-3 {{$formClass}}"
+    class="{{$formClass}}"
 
     {{-- Target Blank--}}
     @if($targetBlank)
@@ -36,5 +36,3 @@
 
     @include($actionsTemplate)
 </form>
-<script src="/vendor/impactaweb/crud/form/form.js" ></script>
-<link rel="stylesheet" href="/vendor/impactaweb/crud/form/form.css" />

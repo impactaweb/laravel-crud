@@ -3,7 +3,7 @@
     {{ $label }}:
     @if($help)
     <img
-        src="/img/tooltip.png"
+        src="{{ asset('/vendor/impactaweb/crud/form/tooltip.png') }}"
         alt="tooltip"
         data-toggle="tooltip"
         data-placement="top"

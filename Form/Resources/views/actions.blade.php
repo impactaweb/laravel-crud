@@ -1,4 +1,4 @@
-<div class="form-group">
+<div class="form-group row">
     <div class="col-sm-offset-2 col-sm-10">
         <div class="btn-group">
 
