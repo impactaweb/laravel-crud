@@ -10,7 +10,7 @@
     @endif
 
     id="{{ $formId }}"
-    class="container p-3 {{$formClass}}"
+    class="{{$formClass}}"
 
     {{-- Target Blank--}}
     @if($targetBlank)
