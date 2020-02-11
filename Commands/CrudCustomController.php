@@ -67,7 +67,7 @@ class CrudCustomController extends GeneratorCommand
      */
     protected function getStub()
     {
-        return  app_path() . '/../Form/Resources/stubs/custom_controller.stub';
+        return  __DIR__ . '/../Form/Resources/stubs/custom_controller.stub';
     }
 
 

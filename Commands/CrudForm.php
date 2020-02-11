@@ -2,12 +2,13 @@
 
 namespace Impactaweb\Crud\Commands;
 
+use Impactaweb\Crud\Form\Generators\FormGenerator;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class CrudCustomRequest extends GeneratorCommand
+class CrudForm extends GeneratorCommand
 {
 
     /**
@@ -15,23 +16,21 @@ class CrudCustomRequest extends GeneratorCommand
      *
      * @var string
      */
-    protected $name = 'crud:customrequest';
-
+    protected $name = 'crud:form';
 
     /**
      * A descrição do comando do console.
      *
      * @var string
      */
-    protected $description = 'Cria uma nova classe de request';
+    protected $description = 'Cria uma nova classe de Formulário';
 
     /**
      * O tipo de classe sendo gerada.
      *
      * @var string
      */
-    protected $type = 'Custom Request';
-
+    protected $type = 'Form';
 
     /**
      * Substitui o nome da classe para o stub fornecido.
@@ -43,29 +42,28 @@ class CrudCustomRequest extends GeneratorCommand
     protected function replaceClass($stub, $name)
     {
         $namespace = $this->option('modelna');
-
         $namespace = str_replace('/', '\\', $namespace);
 
-        $model = new $namespace;
-
-        $fields = DB::select("describe {$model->getTable()}");
-
-        $editedFields = [];
-
-        foreach ($fields as $field) {
-            $rules = $this->buildRequestRules($field);
-            $editedFields[] = "// '{$field->Field}' => [{$rules}],";
+        if (class_exists($namespace)) {
+            $model = new $namespace;
+        } else {
+            $this->error('O namespace da model informada não existe');
+            exit(1);
         }
 
-        $newFields = implode("\n" . str_repeat(' ', 12), $editedFields);
+        $describe = DB::select("describe {$model->getTable()}");
+        $formBuider = new FormGenerator($describe);
 
+        $this->line('Gerando os campos do formulario...');
 
-        $stub = str_replace('{{ myRules }}', $newFields, $stub);
-
+        $fields = $formBuider->gerarCampos();
+        $stub = str_replace('{{ myFields }}', $fields, $stub);
         $class = str_replace($this->getNamespace($name).'\\', '', $name);
 
         return str_replace('DummyClass', $class, $stub);
     }
+
+
     /**
      * Obtpem o arquivo stub para o gerador.
      *
@@ -73,7 +71,7 @@ class CrudCustomRequest extends GeneratorCommand
      */
     protected function getStub()
     {
-        return  app_path() . '/../Form/Resources/stubs/custom_request.stub';
+        return  __DIR__ . '/../Form/Resources/stubs/custom_form.stub';
     }
 
 
@@ -85,7 +83,7 @@ class CrudCustomRequest extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Http\Requests';
+        return $rootNamespace . '\Forms';
     }
 
     /**
@@ -96,31 +94,9 @@ class CrudCustomRequest extends GeneratorCommand
     protected function getArguments()
     {
         return [
-            ['name', InputArgument::REQUIRED, 'Nome do request.'],
+            ['name', InputArgument::REQUIRED, 'Nome do formulário.'],
         ];
     }
-
-
-    /**
-     * Fazer regras de acordo com o tipo de dado que o campo recebe
-     * @param object $field
-     * @return string Deve ser inserida nas rules
-     */
-    private function buildRequestRules(object $field): string
-    {
-        preg_match('/^varchar\((\d+)\)$/', $field->Type, $output);
-
-        if(!empty($output)) {
-            $max = "max:{$output[1]}";
-            return "'required', '{$max}'";
-        }
-
-        if($field->Type === 'date' || $field->Type === 'timestamp') {
-            return "'required', 'date_format:FORMATO'";
-        }
-        return "'required'";
-    }
-
 
     /**
      * Obter opções do console
@@ -130,7 +106,7 @@ class CrudCustomRequest extends GeneratorCommand
     protected function getOptions()
     {
         return [
-            ['modelna', 'l', InputOption::VALUE_OPTIONAL, 'O namespace da model que o request irá refereciar exe: App/Models/Foo'],
+            ['modelna', 'm', InputOption::VALUE_OPTIONAL, 'O namespace da model que o request irá refereciar exe: App/Models/Foo'],
         ];
     }
 }
