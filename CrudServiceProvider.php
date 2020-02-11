@@ -4,7 +4,7 @@ namespace Impactaweb\Crud;
 
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 
-class ServiceProvider extends LaravelServiceProvider
+class CrudServiceProvider extends LaravelServiceProvider
 {
     /**
      * Register services.
