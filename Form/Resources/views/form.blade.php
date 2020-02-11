@@ -36,5 +36,3 @@
 
     @include($actionsTemplate)
 </form>
-<script src="/vendor/impactaweb/crud/form/form.js" ></script>
-<link rel="stylesheet" href="/vendor/impactaweb/crud/form/form.css" />
