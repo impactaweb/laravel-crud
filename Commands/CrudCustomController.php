@@ -90,7 +90,7 @@ class CrudCustomController extends GeneratorCommand
     protected function getArguments()
     {
         return [
-            ['name', InputArgument::REQUIRED, 'Nome do request.'],
+            ['name', InputArgument::REQUIRED, 'Nome do controller.'],
         ];
     }
 
