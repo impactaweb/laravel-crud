@@ -1,0 +1,46 @@
+<?php
+
+namespace DummyNamespace;
+
+use App\Http\Controllers\Admin\AdminBaseController;
+use App\Forms\DummyDir\DummyNameForm;
+use App\Http\Requests\DummyDir\DummyNameRequest;
+use DummyModel;
+
+class DummyClass extends AdminBaseController
+{
+    public function index()
+    {
+        # listagem
+    }
+
+    public function create()
+    {
+        $form = new DummyNameForm();
+        $form->setRules(new DummyNameRequest());
+        $htmlForm = $form->renderForm();
+        return view('formulario.padrao', ['formulario' => $htmlForm]);
+    }
+
+    public function edit()
+    {
+        $dadosIniciais = [];
+        $form = new DummyNameForm($dadosIniciais);
+        $form->setRules(new DummyNameRequest());
+        $htmlForm = $form->renderForm();
+        return view('formulario.padrao', ['formulario' => $htmlForm]);
+    }
+
+    public function store(DummyNameRequest $request)
+    {
+        # Redirectionar
+        return $this->redirecionar(0);
+    }
+
+    public function update(DummyNameRequest $request)
+    {
+        # Redirecionar
+        return $this->redirecionar(0);
+    }
+
+}

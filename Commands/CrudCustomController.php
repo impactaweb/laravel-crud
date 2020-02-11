@@ -6,6 +6,8 @@ use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
+require_once __DIR__ . '/../Helpers/Helpers.php';
+
 class CrudCustomController extends GeneratorCommand
 {
 
@@ -65,7 +67,7 @@ class CrudCustomController extends GeneratorCommand
      */
     protected function getStub()
     {
-        return  app_path() . '/Console/Stubs/custom_controller.stub';
+        return  __DIR__ . '/../Form/Resources/stubs/custom_controller.stub';
     }
 
 

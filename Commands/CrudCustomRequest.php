@@ -73,7 +73,7 @@ class CrudCustomRequest extends GeneratorCommand
      */
     protected function getStub()
     {
-        return  app_path() . '/Console/Stubs/custom_request.stub';
+        return  __DIR__ . '/../Form/Resources/stubs/custom_request.stub';
     }
 
 

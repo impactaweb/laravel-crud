@@ -71,7 +71,7 @@ class CrudForm extends GeneratorCommand
      */
     protected function getStub()
     {
-        return  app_path() . '/Console/Stubs/custom_form.stub';
+        return  __DIR__ . '/../Form/Resources/stubs/custom_form.stub';
     }
 
 
