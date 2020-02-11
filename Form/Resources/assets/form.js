@@ -1,4 +1,4 @@
-$(function($) {
+(function($) {
     /**
  * Bootstrap Multiselect (http://davidstutz.de/bootstrap-multiselect/)
  *
