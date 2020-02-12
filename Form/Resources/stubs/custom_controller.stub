@@ -9,6 +9,9 @@ use DummyModel;
 
 class DummyClass extends AdminBaseController
 {
+
+    public $model = DummyModel::class;
+
     public function index()
     {
         # listagem
@@ -34,13 +37,13 @@ class DummyClass extends AdminBaseController
     public function store(DummyNameRequest $request)
     {
         # Redirectionar
-        return $this->redirecionar(0);
+        return $this->salvarRedirecionar($request->all());
     }
 
     public function update(DummyNameRequest $request)
     {
         # Redirecionar
-        return $this->redirecionar(0);
+        return $this->salvarRedirecionar($request->all());
     }
 
 }
