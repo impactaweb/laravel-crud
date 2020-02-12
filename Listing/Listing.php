@@ -62,7 +62,9 @@ class Listing {
 
     public function __construct(string $index = null) {
 
-        $this->setIndex($index);
+        if (!is_null($index)) {
+            $this->setIndex($index);
+        }
 
         # verifica se há qtd de itens por página alterados pelo usuário da sessão:
         $this->checkQuantityPerPage();
