@@ -9,10 +9,6 @@ use Impactaweb\Crud\Form\FormUrls;
 trait CrudControllerTrait
 {
 
-    protected $model;
-    public $validation;
-    public $relations;
-
     /**
      * Faz a seleção para qual URL o formulário direcionará
      * o usuário, com base no botão clicado para submeter
