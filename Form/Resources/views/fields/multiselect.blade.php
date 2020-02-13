@@ -7,7 +7,7 @@
             multiple
             class="form-control {{ $class }}"
             id="c-{{$id}}"
-            name="{{$id}}"
+            name="{{$id}}[]"
 
             {{-- Attributes --}}
             @foreach ($attrs as $attr => $attrValue)
