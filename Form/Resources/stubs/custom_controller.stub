@@ -11,7 +11,7 @@ use DummyModel;
 class DummyClass extends Controller
 {
     use CrudControllerTrait;
-    public $model = DummyModel::class;
+    public $model = DummyModelName::class;
     public $validation = DummyNameRequest::class;
 
     /**

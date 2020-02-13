@@ -52,10 +52,12 @@ class CrudCustomController extends GeneratorCommand
             'DummyName',
             'DummyDir',
             'DummyClass',
+            'DummyModelName',
             'DummyModel'], [
                 $basename,
                 $basedir,
                 $class,
+	            $this->option('modelna'),
                 $modelnamespace
             ], $stub);
         return $stub;

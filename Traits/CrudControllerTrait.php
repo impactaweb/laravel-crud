@@ -10,8 +10,8 @@ trait CrudControllerTrait
 {
 
     /**
-     * Faz a seleção para qual URL o formulário direcionará
-     * o usuário, com base no botão clicado para submeter
+     * Faz a seleção para qual URL o formulário fará o redirecionamento
+     * do usuário, com base no botão clicado para submeter
      * @paramm $idNovo ID do nova Model
      * @return \Illuminate\Http\JsonResponse
      */
@@ -35,7 +35,7 @@ trait CrudControllerTrait
     }
 
     /**
-     * Salva e redireciona sem sequencia
+     * Salva e redireciona em sequencia
      * @param array $dadosRequest
      * @param array $relations
      * @return \Illuminate\Http\JsonResponse
