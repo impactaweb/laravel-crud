@@ -65,7 +65,7 @@ class Form
 	 * Starts a new form with initial data
 	 * @param array $initial Initial form data
 	 */
-	public function __construct(array $initial = [])
+	public function __construct(array $initial = [], string $primaryKey = '')
 	{
 		$this->initial = $initial;
 		$this->request = request();
@@ -92,8 +92,8 @@ class Form
 		}
 
 		# Build a hidden input from form ID
-		if (isset($initial[$this->primaryKey])) {
-			$this->primaryKeyValue = $initial[$this->primaryKey];
+		if (isset($initial[$primaryKey])) {
+			$this->primaryKeyValue = $initial[$primaryKey];
 		}
 
 		return $this;
