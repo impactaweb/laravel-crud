@@ -44,7 +44,8 @@ class Form
 
 	protected $targetBlank = false;
 
-	protected $primaryKey = '';
+	private $primaryKey = '';
+
 	private $primaryKeyValue = '';
 
 	private $cancelVisible = true;
@@ -360,5 +361,21 @@ class Form
 		$this->cancelLinkUrl = $cancelLinkUrl;
 	}
 
+
+	/**
+	 * @return string
+	 */
+	public function getPrimaryKey(): string
+	{
+		return $this->primaryKey;
+	}
+
+	/**
+	 * @param string $primaryKey
+	 */
+	public function setPrimaryKey(string $primaryKey): void
+	{
+		$this->primaryKey = $primaryKey;
+	}
 
 }
