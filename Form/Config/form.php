@@ -1,8 +1,6 @@
 <?php
 
 return [
-    'test' => 'sdasdas',
-
     'templates' => [
 
         'form' => 'form::form',
