@@ -5,9 +5,10 @@ namespace DummyNamespace;
 use App\Http\Controllers\Admin\AdminBaseController;
 use App\Forms\DummyDir\DummyNameForm;
 use App\Http\Requests\DummyDir\DummyNameRequest;
+
 use DummyModel;
 
-class DummyClass extends AdminBaseController
+class DummyClass extends ModelBaseController
 {
 
     public $model = DummyModel::class;
@@ -29,7 +30,7 @@ class DummyClass extends AdminBaseController
         $form = new DummyNameForm();
         $form->setRules(new DummyNameRequest());
         $htmlForm = $form->renderForm();
-        return view('formulario.padrao', ['formulario' => $htmlForm]);
+        # return view('formulario.padrao', ['formulario' => $htmlForm]);
     }
 
     public function edit()
@@ -38,6 +39,6 @@ class DummyClass extends AdminBaseController
         $form = new DummyNameForm($dadosIniciais, 'id_model_primarykey'); # Coloque a PK da model
         $form->setRules(new DummyNameRequest());
         $htmlForm = $form->renderForm();
-        return view('formulario.padrao', ['formulario' => $htmlForm]);
+        # return view('formulario.padrao', ['formulario' => $htmlForm]);
     }
 }
