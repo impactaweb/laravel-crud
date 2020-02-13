@@ -30,7 +30,7 @@ class DummyClass extends ModelBaseController
         $form = new DummyNameForm();
         $form->setRules(new DummyNameRequest());
         $htmlForm = $form->renderForm();
-        return view('formulario.padrao', ['formulario' => $htmlForm]);
+        # return view('formulario.padrao', ['formulario' => $htmlForm]);
     }
 
     public function edit()
@@ -39,6 +39,6 @@ class DummyClass extends ModelBaseController
         $form = new DummyNameForm($dadosIniciais, 'id_model_primarykey'); # Coloque a PK da model
         $form->setRules(new DummyNameRequest());
         $htmlForm = $form->renderForm();
-        return view('formulario.padrao', ['formulario' => $htmlForm]);
+        # return view('formulario.padrao', ['formulario' => $htmlForm]);
     }
 }
