@@ -7,8 +7,6 @@ use Impactaweb\Crud\Form\Form;
 class DummyClass extends Form
 {
 
-    protected $primaryKey = 'my_model_primary_key';
-
     /** Retorna fomulario em HTML */
     public function renderForm(): string
     {

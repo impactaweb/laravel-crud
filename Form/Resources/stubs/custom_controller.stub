@@ -11,6 +11,13 @@ class DummyClass extends AdminBaseController
 {
 
     public $model = DummyModel::class;
+    public $validation = DummyNameRequest::class;
+
+    /**
+    * Função do relacionamento da model => id do campo na model
+    * @var array
+    */
+    public $relations = [];
 
     public function index()
     {
@@ -28,22 +35,9 @@ class DummyClass extends AdminBaseController
     public function edit()
     {
         $dadosIniciais = [];
-        $form = new DummyNameForm($dadosIniciais);
+        $form = new DummyNameForm($dadosIniciais, 'id_model_primarykey'); # Coloque a PK da model
         $form->setRules(new DummyNameRequest());
         $htmlForm = $form->renderForm();
         return view('formulario.padrao', ['formulario' => $htmlForm]);
     }
-
-    public function store(DummyNameRequest $request)
-    {
-        # Redirectionar
-        return $this->salvarRedirecionar($request->all());
-    }
-
-    public function update(DummyNameRequest $request)
-    {
-        # Redirecionar
-        return $this->salvarRedirecionar($request->all());
-    }
-
 }
