@@ -2,15 +2,15 @@
 
 namespace DummyNamespace;
 
-use App\Http\Controllers\Admin\AdminBaseController;
 use App\Forms\DummyDir\DummyNameForm;
 use App\Http\Requests\DummyDir\DummyNameRequest;
-
+use App\Http\Controllers\Controller;
+use Impactaweb\Crud\Traits\CrudControllerTrait;
 use DummyModel;
 
-class DummyClass extends ModelBaseController
+class DummyClass extends Controller
 {
-
+    use CrudControllerTrait;
     public $model = DummyModel::class;
     public $validation = DummyNameRequest::class;
 

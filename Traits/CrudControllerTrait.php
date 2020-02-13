@@ -1,12 +1,12 @@
 <?php
 
-namespace Impactaweb\Crud\Controllers;
+namespace Impactaweb\Crud\Traits;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Impactaweb\Crud\Form\FormUrls;
 
-class ModelBaseController extends Controller
+trait CrudControllerTrait
 {
 
     protected $model;
