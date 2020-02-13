@@ -14,7 +14,7 @@ class DummyClass extends AdminBaseController
     public $validation = DummyNameRequest::class;
 
     /**
-    * Função do relacionamento da model => id do campo na model
+    * FunÃ§Ã£o do relacionamento da model => id do campo na model
     * @var array
     */
     public $relations = [];
