@@ -41,27 +41,28 @@ class CrudCustomController extends GeneratorCommand
      * @param  string  $name
      * @return string
      */
-    protected function replaceClass($stub, $name)
-    {
-        $basedir = unbackSlash($this->option('basedir'));
-        $basedir = str_replace('/', '\\', $basedir);
-        $basename = $this->option('basename');
-        $modelnamespace = str_replace('/', '\\', $this->option('modelna'));
-        $class = str_replace($this->getNamespace($name).'\\', '', $name);
-        $stub = str_replace([
-            'DummyName',
-            'DummyDir',
-            'DummyClass',
-            'DummyModelName',
-            'DummyModel'], [
-                $basename,
-                $basedir,
-                $class,
-	            $this->option('modelna'),
-                $modelnamespace
-            ], $stub);
-        return $stub;
-    }
+	protected function replaceClass($stub, $name)
+	{
+		$basedir = unbackSlash($this->option('basedir'));
+		$basedir = str_replace('/', '\\', $basedir);
+		$basename = $this->option('basename');
+		$modelnamespace = str_replace('/', '\\', $this->option('modelna'));
+		$modelname = str_replace("\\", '', strrchr($modelnamespace, '\\'));
+		$class = str_replace($this->getNamespace($name).'\\', '', $name);
+		$stub = str_replace([
+			'DummyName',
+			'DummyDir',
+			'DummyClass',
+			'DummyModelName',
+			'DummyModel'], [
+			$basename,
+			$basedir,
+			$class,
+			$modelname,
+			$modelnamespace
+		], $stub);
+		return $stub;
+	}
     /**
      * Obtpem o arquivo stub para o gerador.
      *
