@@ -69,6 +69,7 @@ class Form
 	{
 		$this->initial = $initial;
 		$this->request = request();
+		$this->setPrimaryKey($primaryKey);
 
 		# Build form method based on current URL
 		try {
