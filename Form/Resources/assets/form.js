@@ -1,5 +1,4 @@
-(function($) {
-    /**
+/**
  * Bootstrap Multiselect (http://davidstutz.de/bootstrap-multiselect/)
  *
  * Apache License, Version 2.0:
@@ -51,7 +50,7 @@
         define(['jquery', 'knockout'], factory);
     } else {
         // Browser globals
-        factory($, root.ko);
+        factory(root.jQuery, root.ko);
     }
 })(window, function ($, ko) {
     "use strict";// jshint ;_;
@@ -972,7 +971,7 @@
             }
 
             if (this.options.enableCollapsibleOptGroups && this.options.multiple) {
-                $('a', $li).append('<span class="caret-container"><b class="caret"></b></span>');
+                $('a', $li).append('<span class="caret-container ml-3"><i class="fas fa-angle-down"></i></span>');
             }
 
             if (this.options.enableClickableOptGroups && this.options.multiple) {
@@ -1788,4 +1787,3 @@
     });
 
 });
-})(jQuery)
