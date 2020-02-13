@@ -3,6 +3,7 @@
 namespace Impactaweb\Crud\Traits;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Impactaweb\Crud\Form\FormUrls;
 
@@ -34,23 +35,21 @@ trait CrudControllerTrait
 
     }
 
-    /**
-     * Salva e redireciona em sequencia
-     * @param array $dadosRequest
-     * @param array $relations
-     * @return \Illuminate\Http\JsonResponse
-     */
-
-    protected function salvarRedirecionar(array $dadosRequest, array $relations = [])
-    {
-        try {
-            $modelId = $this->salvar($dadosRequest, $relations)->getKey();
-            return $this->redirecionar($modelId);
-        } catch (\Exception $e){
-            return response()->json(['errors' => $e->getMessage()]);
-        }
-
-    }
+	/**
+	 * Salva e redireciona em sequencia
+	 * @param array $dadosRequest
+	 * @param array $relations
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	protected function salvarRedirecionar(array $dadosRequest, array $relations = [])
+	{
+		try {
+			$modelId = $this->salvar($dadosRequest, $relations)->getKey();
+			return $this->redirecionar($modelId);
+		} catch (\Exception $e){
+			return new JsonResponse(["errors" => "Ops! Ocorreu um erro ao executar essa função."], 500);
+		}
+	}
 
     public function store(Request $request)
     {
