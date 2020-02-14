@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Impactaweb\Crud\Form\FormUrls;
-
+use App;
 trait CrudControllerTrait
 {
 
@@ -47,6 +47,9 @@ trait CrudControllerTrait
 			$modelId = $this->salvar($dadosRequest, $relations)->getKey();
 			return $this->redirecionar($modelId);
 		} catch (\Exception $e){
+			if (App::environment('local')) {
+				throw new \Exception($e->getMessage());
+			}
 			return new JsonResponse(["errors" => "Ops! Ocorreu um erro ao executar essa função."], 500);
 		}
 	}
