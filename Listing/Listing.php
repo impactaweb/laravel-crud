@@ -16,6 +16,16 @@ class Listing {
     private $source;
 
     /**
+     * FormAction: url que a listagem fará um post:
+     */
+    private $formAction;
+
+    /**
+     * Tipo de ação do form: POST ou GET
+     */
+    private $formMethod;
+
+    /**
      * Dados(registros) que serão listados:
      * @var Object (collection)
      */
@@ -43,10 +53,10 @@ class Listing {
     private $perPageMax;
 
     /**
-     * Ações da listagem (editar, excluir, [customizados]...)
-     * @var Array
+     * checkEmpty habilita uma verificação da própria listagem
+     * antes de tentar aplicar um callback em um campo(pois se for null pode dar erros)
      */
-    // private $acoes;
+    private $checkEmpty = true;
 
     /**
      * View que será usada na listagem.
@@ -57,13 +67,22 @@ class Listing {
 
     /**
      * Nome do arquivo de configuracoes
+     * @var String
      */
     public $configFile = 'listing';
 
-    public function __construct(string $index = null) {
+    public function __construct(string $index = null, string $formAction = null, string $formMethod = null) {
 
         if (!is_null($index)) {
             $this->setIndex($index);
+        }
+
+        if (!is_null($formAction)) {
+            $this->setFormAction($formAction);
+        }
+
+        if (!is_null($formMethod)) {
+            $this->setFormMethod($formMethod);
         }
 
         # verifica se há qtd de itens por página alterados pelo usuário da sessão:
@@ -83,9 +102,9 @@ class Listing {
      */
     public function setDefaultValues()
     {
-        $this->view = config($this->configFile . '.view');
+        $this->view       = config($this->configFile . '.view');
         $this->pagination = config($this->configFile . '.pagination');
-        $this->perPage = config($this->configFile . '.defaultPerPage');
+        $this->perPage    = config($this->configFile . '.defaultPerPage');
         $this->perPageMax = config($this->configFile . '.defaultPerPageMaximum');
     }
 
@@ -98,11 +117,36 @@ class Listing {
     }
 
     /**
+     * Seta o formAction da tabela:
+     */
+    public function setFormAction(string $formAction)
+    {
+        $this->formAction = $formAction;
+    }
+
+    /**
+     * Seta o método do form
+     */
+    public function setFormMethod(string $formMethod)
+    {
+        $this->formMethod = $formMethod;
+    }
+
+    /**
      * Obter o field index
      */
     public function getIndex()
     {
         return in_array('ID', $this->columns) ? $this->columns[0] : null;
+    }
+
+    /**
+     * Seta o formAction da tabela:
+     * @param Boolean
+     */
+    public function setCheckEmpty(bool $check)
+    {
+        $this->checkEmpty = $check;
     }
 
     /**
@@ -132,19 +176,41 @@ class Listing {
      *   'data_nasc' => 'Data de Nascimento',
      *   'ativo'     => ['label' => 'Ativo', 'callback' => (alguma function personalizada))]
      * ]
+     * @param $columns Array
+     * @param $checkbox Bool - se é para inserir o input checkbox de envio de formulário
      */
     public function setColumns(array $columns = []) 
     {
-        # se existe o field índice, será adicionado em $columns[]:
-        if (!is_null($this->index)) {
-            $columns = [$this->index => 'ID'] + $columns;
-        }
-        
         if (empty($columns)) {
             return null;
         }
 
+        # se existe o field índice, será adicionado em $columns[]:
+        if (!is_null($this->index)) {
+            $columns = [$this->index => 'ID'] + $columns;
+        }
+
+        # se existe a coluna "__checkbox" voltamos com erro, pois ela é reservada da lib:
+        if (in_array('__checkbox', $columns)) {
+            throw new \Exception('Listagem: a coluna __checkbox é reservada e não pode ser inserida em setColumns');
+        }
+
+        # se houver ação de formulário inserimos checkboxes:
+        if ($this->formAction) {
+            $checkbox['__checkbox'] = [
+                'label' => ''
+            ];
+            $columns = $checkbox + $columns;
+        }
+
         foreach ($columns as $field => $params) {
+
+            # se é checkbox, inserimos o checkbox de controle:
+            if ($field == '__checkbox') {
+                $this->columns[$field]['column_link'] = '<input type="checkbox" name="checkbox-listing" onclick="$(\'.listing-checkboxes\').prop(\'checked\', $(this).is(\':checked\'))" />';
+                continue;
+            }
+
             if (is_array($params)) {
                 # preenchemos a variável principal com os parâmetros enviados
                 $this->columns[$field] = $params;
@@ -238,13 +304,27 @@ class Listing {
         # prepara os data com callbacks e etc...
         if (!empty($this->data)) {
             # passamos por todos os registros:
-            foreach ($this->data as $index => $registro) {
+            foreach ($this->data as $key => $registro) {
                 # passamos pelas columns de cada registro para verificar customizações:
                 foreach ($this->columns as $field => $params) {
+
+                    # se é checkbox, embutimos no item correspondente:
+                    if ($field == '__checkbox') {
+                        # por padrão:
+                        $this->data[$key]->$field = '#';
+                        // usaremos o índice informado como "id_"
+                        if ( !empty($this->index) && $this->data[$key]->{$this->index} > 0) {
+                            $this->data[$key]->$field = '<input type="checkbox" name="item[]" class="listing-checkboxes" value="'.$this->data[$key]->{$this->index}.'" />';
+                        }
+                        continue;
+                    }
+
                     foreach ($params as $item => $valor) {
                         switch ($item) {
                             case 'callback':
-                                $this->data[$index]->$field = $params['callback']($registro->$field);
+                                if ($this->checkEmpty &&  !empty($registro->$field)) {
+                                    $this->data[$key]->$field = $params['callback']($registro->$field);
+                                }
                             break;
                         }
                     }
@@ -274,10 +354,12 @@ class Listing {
         $this->prepararDados();
 
         $resposta = [
-            'columns'   => $this->columns,
-            'data'     => $this->data,
+            'formAction' => $this->formAction,
+            'formMethod' => $this->formMethod,
+            'columns'    => $this->columns,
+            'data'       => $this->data,
             'pagination' => $this->pagination,
-            'perPage' => $this->perPage,
+            'perPage'    => $this->perPage,
         ];
 
         # é uma requisição ajax? Retornaremos só o json
@@ -326,18 +408,6 @@ class Listing {
     }
 
     /**
-     * Ações da listagem (editar, excluir, etc...)
-     * @param Array
-     */
-    // public function setAcoes($acoes)
-    // {
-    //     if (is_array($acoes)) {
-    //         return $this->acoes = $acoes;
-    //     }        
-    //     throw new \Exception('Listagem: parâmetro inválido para o setAcoes()');
-    // }
-
-    /**
      * Manter na sessão a configuração "perPage" caso seja alterada pelo usuário:
      */
     public function saveQuantityPerPage($qtd)
@@ -353,6 +423,24 @@ class Listing {
         if (request()->session()->has('perPage')) {
             $this->perPage = request()->session()->get('perPage');
         }
+    }
+
+    /**
+     * Set Checkboxes:
+     * Mescla uma coluna com checkboxes na listagem:
+     * @param $checkboxes Boolean
+     */
+    public function setCheckbox(Bool $checkbox) {
+        $this->checkbox = $checkbox;
+    }
+
+    /**
+     * Ações da listagem (editar, excluir, etc...)
+     * @param Array
+     */
+    public function setActions(Array $actions)
+    {
+        return $this->actions = $actions;
     }
 
 }

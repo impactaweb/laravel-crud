@@ -3,7 +3,7 @@
     {{ $data->appends(request()->input())->links() }}
     {{-- dica: o método appends informa ao links() que deve manter a query string ao paginar --}}
 
-    <form action="{{ request()->url() }}" method="get" style="text-align:left;" />      
+    <form action="{{ request()->url() }}" method="get" style="text-align:left;" class="frmRodape" />      
 
         Por página:
         <input type="number" name="pp" value="{{ request()->query('pp') ?? $perPage }}" />
