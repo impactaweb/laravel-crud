@@ -44,7 +44,8 @@ class Form
 
 	protected $targetBlank = false;
 
-	protected $primaryKey = '';
+	private $primaryKey = '';
+
 	private $primaryKeyValue = '';
 
 	private $cancelVisible = true;
@@ -64,10 +65,11 @@ class Form
 	 * Starts a new form with initial data
 	 * @param array $initial Initial form data
 	 */
-	public function __construct(array $initial = [])
+	public function __construct(array $initial = [], string $primaryKey = '')
 	{
 		$this->initial = $initial;
 		$this->request = request();
+		$this->setPrimaryKey($primaryKey);
 
 		# Build form method based on current URL
 		try {
@@ -91,8 +93,8 @@ class Form
 		}
 
 		# Build a hidden input from form ID
-		if (isset($initial[$this->primaryKey])) {
-			$this->primaryKeyValue = $initial[$this->primaryKey];
+		if (isset($initial[$primaryKey])) {
+			$this->primaryKeyValue = $initial[$primaryKey];
 		}
 
 		return $this;
@@ -360,5 +362,21 @@ class Form
 		$this->cancelLinkUrl = $cancelLinkUrl;
 	}
 
+
+	/**
+	 * @return string
+	 */
+	public function getPrimaryKey(): string
+	{
+		return $this->primaryKey;
+	}
+
+	/**
+	 * @param string $primaryKey
+	 */
+	public function setPrimaryKey(string $primaryKey): void
+	{
+		$this->primaryKey = $primaryKey;
+	}
 
 }

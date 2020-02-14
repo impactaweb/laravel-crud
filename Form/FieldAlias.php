@@ -12,6 +12,7 @@ class FieldAlias
      * Alias to build form fields
      */
     const fields = [
+
         "text" => Fields\TextField::class,
         "password" => Fields\PasswordField::class,
         "number" => Fields\NumberField::class,

@@ -2,13 +2,24 @@
 
 namespace DummyNamespace;
 
-use App\Http\Controllers\Admin\AdminBaseController;
 use App\Forms\DummyDir\DummyNameForm;
 use App\Http\Requests\DummyDir\DummyNameRequest;
+use App\Http\Controllers\Controller;
+use Impactaweb\Crud\Traits\CrudControllerTrait;
 use DummyModel;
 
-class DummyClass extends AdminBaseController
+class DummyClass extends Controller
 {
+    use CrudControllerTrait;
+    public $model = DummyModelName::class;
+    public $validation = DummyNameRequest::class;
+
+    /**
+    * Função do relacionamento da model => id do campo na model
+    * @var array
+    */
+    public $relations = [];
+
     public function index()
     {
         # listagem
@@ -19,28 +30,15 @@ class DummyClass extends AdminBaseController
         $form = new DummyNameForm();
         $form->setRules(new DummyNameRequest());
         $htmlForm = $form->renderForm();
-        return view('formulario.padrao', ['formulario' => $htmlForm]);
+        # return view('formulario.padrao', ['formulario' => $htmlForm]);
     }
 
     public function edit()
     {
         $dadosIniciais = [];
-        $form = new DummyNameForm($dadosIniciais);
+        $form = new DummyNameForm($dadosIniciais, 'id_model_primarykey'); # Coloque a PK da model
         $form->setRules(new DummyNameRequest());
         $htmlForm = $form->renderForm();
-        return view('formulario.padrao', ['formulario' => $htmlForm]);
+        # return view('formulario.padrao', ['formulario' => $htmlForm]);
     }
-
-    public function store(DummyNameRequest $request)
-    {
-        # Redirectionar
-        return $this->redirecionar(0);
-    }
-
-    public function update(DummyNameRequest $request)
-    {
-        # Redirecionar
-        return $this->redirecionar(0);
-    }
-
 }

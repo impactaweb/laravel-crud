@@ -2,7 +2,6 @@
 
 namespace Impactaweb\Crud\Form\Fields;
 
-require_once __DIR__ . '/../Helpers/Helpers.php';
 
 class FileField extends BaseField
 {
@@ -21,12 +20,25 @@ class FileField extends BaseField
     private function formatDir()
     {
 
-        if (startsWith($this->dir, '/') === false) {
+        if ($this->startsWith($this->dir, '/') === false) {
             $this->dir = '/' . $this->dir;
         }
 
-        if (endsWith($this->dir, '/') == false) {
+        if ($this->endsWith($this->dir, '/') == false) {
             $this->dir = $this->dir . '/';
         }
     }
+
+	function startsWith($string, $startString)
+	{
+		$len = strlen($startString);
+		return (substr($string, 0, $len) === $startString);
+	}
+
+	function endsWith($string, $endString)
+	{
+		$len = strlen($endString);
+		return (substr($string, -$len) === $endString);
+	}
+
 }

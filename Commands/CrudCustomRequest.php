@@ -2,6 +2,7 @@
 
 namespace Impactaweb\Crud\Commands;
 
+use Exception;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Input\InputArgument;
@@ -45,6 +46,10 @@ class CrudCustomRequest extends GeneratorCommand
         $namespace = $this->option('modelna');
 
         $namespace = str_replace('/', '\\', $namespace);
+
+        if (!class_exists($namespace)) {
+            throw new Exception("A classe $namespace não foi encontrada", 1);
+        }
 
         $model = new $namespace;
 
