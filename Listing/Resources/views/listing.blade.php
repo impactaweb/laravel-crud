@@ -3,7 +3,7 @@
 .corpo * { float:none; }
 table { width:800px; margin:10px auto; }
 th, td { border:solid 1px #ccc; padding:5px; }
-form { text-align:right; background:#dedede; }
+.frmbusca, .frmRodape  { text-align:right; background:#dedede; }
 input[type="number"], select { width:60px; }
 </style>
 
@@ -12,23 +12,29 @@ input[type="number"], select { width:60px; }
         @include('listing::search')
     </div>
 
-    <table>
-            {{-- Cabeçalho com as columns --}}
-            <tr>
-            @foreach($columns as $column => $params)
-                <th>{!! $params['column_link'] !!}</th>
-            @endforeach
-            </tr>
-
-            {{-- Registros --}}
-            @foreach ($data as $item)
+    @if($formAction)
+        <form action="{{ $formAction }}" method="{{ $formMethod ?? 'POST' }}" >
+    @endif
+        <table>
+                {{-- Cabeçalho com as columns --}}
                 <tr>
-                @foreach ($columns as $column => $params)
-                    <td>{!! $item->$column !!}</td>
+                @foreach($columns as $column => $params)
+                    <th>{!! $params['column_link'] !!}</th>
                 @endforeach
                 </tr>
-            @endforeach
-    </table>
+
+                {{-- Registros --}}
+                @foreach ($data as $item)
+                    <tr>
+                    @foreach ($columns as $column => $params)
+                        <td>{!! $item->$column !!}</td>
+                    @endforeach
+                    </tr>
+                @endforeach
+        </table>
+    @if($formAction)
+        </form>
+    @endif
 
     @include('listing::pagination')
 
