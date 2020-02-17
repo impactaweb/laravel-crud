@@ -66,7 +66,7 @@ class Listing {
      */
     public $actions;
 
-    public function __construct(string $index = null, string $formAction = null, string $formMethod = null) {
+    public function __construct(string $index = null, string $actions = null) {
 
         if (!is_null($index)) {
             $this->setIndex($index);
@@ -77,6 +77,10 @@ class Listing {
 
         # set configs
         $this->setDefaultValues();
+
+        if ($actions === false) {
+            $this->setActions([]);
+        }
 
         if (empty($this->view)) {
             throw new \Exception('Config file not found.');
@@ -93,7 +97,6 @@ class Listing {
         $this->pagination = config($this->configFile . '.pagination');
         $this->perPage    = config($this->configFile . '.defaultPerPage');
         $this->perPageMax = config($this->configFile . '.defaultPerPageMaximum');
-
         # Ações padrão:
         $this->setActions([
             'editar' => config($this->configFile . '.defaultActionEdit'),
@@ -431,7 +434,7 @@ class Listing {
      * Ações da listagem (editar, excluir, etc...)
      * @param Array
      */
-    public function setActions(Array $actions)
+    public function setActions($actions = null)
     {
         return $this->actions = $actions;
     }

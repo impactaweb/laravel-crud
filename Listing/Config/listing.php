@@ -33,8 +33,8 @@ return [
      * Ações padrão da listagem:
      */
     'defaultActionInsert' => [ 'url' => '/create/', 'method' => 'get'],
-    'defaultActionEdit'   => [ 'url' => '/edit/{$id}', 'method' => 'get'],
-    'defaultActionDelete' => [ 'url' => '/destroy/{$id}', 'method' => 'post'],
+    'defaultActionEdit'   => [ 'url' => '/edit/', 'method' => 'post'],
+    'defaultActionDelete' => [ 'url' => '/destroy/', 'method' => 'post'],
 
 ];
 

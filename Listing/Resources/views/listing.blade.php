@@ -14,6 +14,7 @@ input[type="number"], select { width:60px; }
 
     @if($actions)
         <form id="meuForm" action="" method="POST" >
+        {{ csrf_field() }}
     @endif
         <table>
                 {{-- Cabeçalho com as columns --}}
@@ -44,6 +45,7 @@ input[type="number"], select { width:60px; }
             <button type="button" onclick="$('#meuForm').prop('action', '{{ $url }}' ).prop('method', '{{ $method }}').submit();" title="{{ $action }}" >{{ $action }}</button>
         @endforeach
         </form>
+        <br><br>
     @endif
 
     @include('listing::pagination')
