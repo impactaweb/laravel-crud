@@ -29,5 +29,12 @@ return [
      */
     'defaultPerPageMaximum' => 500,
 
+    /**
+     * Ações padrão da listagem:
+     */
+    'defaultActionInsert' => [ 'url' => '/create/', 'method' => 'get'],
+    'defaultActionEdit'   => [ 'url' => '/edit/{$id}', 'method' => 'get'],
+    'defaultActionDelete' => [ 'url' => '/destroy/{$id}', 'method' => 'post'],
+
 ];
 

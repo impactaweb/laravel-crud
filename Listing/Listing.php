@@ -16,16 +16,6 @@ class Listing {
     private $source;
 
     /**
-     * FormAction: url que a listagem fará um post:
-     */
-    private $formAction;
-
-    /**
-     * Tipo de ação do form: POST ou GET
-     */
-    private $formMethod;
-
-    /**
      * Dados(registros) que serão listados:
      * @var Object (collection)
      */
@@ -71,18 +61,15 @@ class Listing {
      */
     public $configFile = 'listing';
 
+    /**
+     * Ações 
+     */
+    public $actions;
+
     public function __construct(string $index = null, string $formAction = null, string $formMethod = null) {
 
         if (!is_null($index)) {
             $this->setIndex($index);
-        }
-
-        if (!is_null($formAction)) {
-            $this->setFormAction($formAction);
-        }
-
-        if (!is_null($formMethod)) {
-            $this->setFormMethod($formMethod);
         }
 
         # verifica se há qtd de itens por página alterados pelo usuário da sessão:
@@ -106,6 +93,13 @@ class Listing {
         $this->pagination = config($this->configFile . '.pagination');
         $this->perPage    = config($this->configFile . '.defaultPerPage');
         $this->perPageMax = config($this->configFile . '.defaultPerPageMaximum');
+
+        # Ações padrão:
+        $this->setActions([
+            'editar' => config($this->configFile . '.defaultActionEdit'),
+            'inserir' => config($this->configFile . '.defaultActionInsert'),
+            'excluir' => config($this->configFile . '.defaultActionDelete'),
+        ]);
     }
 
     /**
@@ -196,7 +190,7 @@ class Listing {
         }
 
         # se houver ação de formulário inserimos checkboxes:
-        if ($this->formAction) {
+        if ( !empty($this->getActions())) {
             $checkbox['__checkbox'] = [
                 'label' => ''
             ];
@@ -354,8 +348,7 @@ class Listing {
         $this->prepararDados();
 
         $resposta = [
-            'formAction' => $this->formAction,
-            'formMethod' => $this->formMethod,
+            'actions'    => $this->actions,
             'columns'    => $this->columns,
             'data'       => $this->data,
             'pagination' => $this->pagination,
@@ -441,6 +434,14 @@ class Listing {
     public function setActions(Array $actions)
     {
         return $this->actions = $actions;
+    }
+
+    /**
+     * get Actions
+     */
+    public function getActions()
+    {
+        return $this->actions;
     }
 
 }
