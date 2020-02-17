@@ -28,22 +28,22 @@ trait CrudModelTrait
 		if ($this->cacheExists()) {
 			$columns = Cache::get($this->primaryKey . '.columns');
 		} else {
-			$columns = Schema::getColumnListing($this->table);
+			$columns = $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
 			Cache::put($this->primaryKey . '.columns', $columns, 200);
 		}
 		return $columns;
 	}
 
 	/**
-	 * Salva a model baseado na informaÁ„o da request
+	 * Salva a model baseado na informa√ß√£o da request
 	 * @param array $requestData
 	 * @return CrudAbstractModel
 	 */
 	public function saveFromRequest(array $requestData, array $relations = [])
 	{
 		# Pega a Instancia da model a ser submitada
-		# Se no array $data estiver populado a chave prim·ria
-		# ele far· a consulta da model a ser submitada, caso contr·rio ele ir· pegar
+		# Se no array $data estiver populado a chave prim√°ria
+		# ele far√° a consulta da model a ser submitada, caso contr√°rio ele ir√° pegar
 		# esta mesma model
 		if (isset($requestData[$this->getKeyName()])) {
 			# Entrada no BD - Update
@@ -64,10 +64,10 @@ trait CrudModelTrait
 			# Salva a model
 			$modelInstance->save();
 
-			# Salva os relacionamentos obtidos atravÈs da funÁ„o de cada model
+			# Salva os relacionamentos obtidos atrav√©s da fun√ß√£o de cada model
 			foreach ($relations as $function => $relation) {
 
-				# Se o valor n„o estiver setado coloca a lista vazia
+				# Se o valor n√£o estiver setado coloca a lista vazia
 				if (!isset($requestData[$relation])) {
 					$requestData[$relation] = [];
 				}
@@ -76,7 +76,7 @@ trait CrudModelTrait
 				$modelInstance->$function()->sync($relationIds);
 			}
 
-			# Devole a chave prim·ria
+			# Devole a chave prim√°ria
 			return $modelInstance;
 
 		} catch (\Exception $e){
