@@ -19,6 +19,7 @@ class FieldAlias
         "select" => Fields\SelectField::class,
         "textarea" => Fields\TextAreaField::class,
         "file" => Fields\FileField::class,
+        "file_async" => Fields\FileAsyncField::class,
         "multiselect" => Fields\MultiSelectField::class,
         "flag" => Fields\FlagField::class,
         "html" => Fields\HtmlField::class,

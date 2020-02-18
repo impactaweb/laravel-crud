@@ -1893,7 +1893,7 @@
                 }
 
                 Object.keys(success).forEach(function(key) {
-                    const $info = $(`[mock-name="${key}"]`).parent('.form-group').find('[actions-container]');
+                    const $info = $(`[mock-name="${key}"]`).parent('div').find('[actions-container]');
                     $info.find('[link-container]').attr('href', success[key].url).css('display', 'none');
                     $info.css('display', 'block');
                     $info.find('[destroy-file]').attr('destroy-file', success[key].hashName);
@@ -1960,9 +1960,9 @@
                             if (!hash) return
                             axios.delete(`${action}?field=${field}&hash=${hash}`)
                                 .then(function(res) {
-                                    $inputFile.parent('.form-group').find('[actions-container]').css('display', 'none')
-                                    $inputFile.parent('.form-group').find('input[type="hidden"]').val(null);
-                                    $inputFile.parent('.form-group').find('.progress').css('display', 'none');
+                                    $inputFile.parent('div').find('[actions-container]').css('display', 'none')
+                                    $inputFile.parent('div').find('input[type="hidden"]').val(null);
+                                    $inputFile.parent('div').find('.progress').css('display', 'none');
                                     $inputFile.val(null)
                                 })
                                 .catch(function() {
