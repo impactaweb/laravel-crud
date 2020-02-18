@@ -12,8 +12,9 @@ input[type="number"], select { width:60px; }
         @include('listing::search')
     </div>
 
-    @if($formAction)
-        <form action="{{ $formAction }}" method="{{ $formMethod ?? 'POST' }}" >
+    @if($actions)
+        <form id="meuForm" action="" method="POST" >
+        {{ csrf_field() }}
     @endif
         <table>
                 {{-- Cabeçalho com as columns --}}
@@ -32,8 +33,19 @@ input[type="number"], select { width:60px; }
                     </tr>
                 @endforeach
         </table>
-    @if($formAction)
+
+    {{-- Exemplo de como utilizar as ações: --}}
+    @if($actions)
+        @foreach ($actions as $action => $params)
+            <?php 
+                $fullUrl = request()->url();
+                $url = $fullUrl.$params['url'];
+                $method = $params['method'];
+            ?>
+            <button type="button" onclick="$('#meuForm').prop('action', '{{ $url }}' ).prop('method', '{{ $method }}').submit();" title="{{ $action }}" >{{ $action }}</button>
+        @endforeach
         </form>
+        <br><br>
     @endif
 
     @include('listing::pagination')
