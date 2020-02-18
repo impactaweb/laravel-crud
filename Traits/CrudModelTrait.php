@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Mockery\Exception;
 
+/**
+ * Trait CrudModelTrait
+ * @package Impactaweb\Crud\Traits
+ */
 trait CrudModelTrait
 {
 
@@ -28,22 +32,23 @@ trait CrudModelTrait
 		if ($this->cacheExists()) {
 			$columns = Cache::get($this->primaryKey . '.columns');
 		} else {
-			$columns = Schema::getColumnListing($this->table);
+			$columns = $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
 			Cache::put($this->primaryKey . '.columns', $columns, 200);
 		}
 		return $columns;
 	}
 
-	/**
-	 * Salva a model baseado na informação da request
-	 * @param array $requestData
-	 * @return CrudAbstractModel
-	 */
-	public function saveFromRequest(array $requestData, array $relations = [])
+
+    /**
+     * @param array $requestData Data form request->all()
+     * @param array $relations Relations ManyToMany
+     * @return CrudModelTrait
+     */
+    public function saveFromRequest(array $requestData, array $relations = [])
 	{
 		# Pega a Instancia da model a ser submitada
-		# Se no array $data estiver populado a chave primária
-		# ele fará a consulta da model a ser submitada, caso contrário ele irá pegar
+		# Se no array $data estiver populado a chave primÃ¡ria
+		# ele farÃ¡ a consulta da model a ser submitada, caso contrÃ¡rio ele irÃ¡ pegar
 		# esta mesma model
 		if (isset($requestData[$this->getKeyName()])) {
 			# Entrada no BD - Update
@@ -64,10 +69,10 @@ trait CrudModelTrait
 			# Salva a model
 			$modelInstance->save();
 
-			# Salva os relacionamentos obtidos através da função de cada model
+			# Salva os relacionamentos obtidos atravÃ©s da funÃ§Ã£o de cada model
 			foreach ($relations as $function => $relation) {
 
-				# Se o valor não estiver setado coloca a lista vazia
+				# Se o valor nÃ£o estiver setado coloca a lista vazia
 				if (!isset($requestData[$relation])) {
 					$requestData[$relation] = [];
 				}
@@ -76,11 +81,11 @@ trait CrudModelTrait
 				$modelInstance->$function()->sync($relationIds);
 			}
 
-			# Devole a chave primária
+			# Devole a chave primÃ¡ria
 			return $modelInstance;
 
 		} catch (\Exception $e){
-			throw new Exception("Ocorreu um erro ao salvar, tente novamente.");
+			throw new Exception($e->getMessage());
 		}
 
 	}

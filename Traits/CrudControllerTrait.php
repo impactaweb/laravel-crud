@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Impactaweb\Crud\Form\FormUrls;
-
+use App;
 trait CrudControllerTrait
 {
 
@@ -23,31 +23,51 @@ trait CrudControllerTrait
 
     /**
      * Salva a model de acordo com dados da Request
-     * @param array $dadosRequest
+     * @param array $requestData
      * @param array $relations
      * @return mixed
      */
-    protected function salvar(array $dadosRequest, array $relations = [])
+    protected function salvar(array $requestData, array $relations = [])
     {
         $model = new $this->model();
-        $modelInstance = $model->saveFromRequest($dadosRequest, $relations);
+        $modelInstance = $model->saveFromRequest($requestData, $relations);
         return $modelInstance;
-
     }
 
 	/**
 	 * Salva e redireciona em sequencia
-	 * @param array $dadosRequest
+	 * @param array $requestData
 	 * @param array $relations
 	 * @return \Illuminate\Http\JsonResponse
 	 */
-	protected function salvarRedirecionar(array $dadosRequest, array $relations = [])
+	protected function salvarRedirecionar(array $requestData, array $relations = [])
 	{
 		try {
-			$modelId = $this->salvar($dadosRequest, $relations)->getKey();
-			return $this->redirecionar($modelId);
+            # Callback antes de salvar
+            $requestData = $this->beforeSave($requestData);
+
+            # Salva a model
+            $modelObj = $this->salvar($requestData, $relations);
+
+            # Callback apos o save
+            $this->afterSave($modelObj);
+
+            # Envia o id da model para função de redirecionar
+            $redirect = $this->redirecionar($modelObj->getKey());
+
+            # Adiciona mensagem flash com sucesso
+            # TODO Session::flash('success', 'Sua mensagem');
+
+            return $redirect;
+
 		} catch (\Exception $e){
-			return new JsonResponse(["errors" => "Ops! Ocorreu um erro ao executar essa função."], 500);
+
+		    # Enviado mensagem do erro caso ambiente for local
+			if (App::environment('local')) {
+                return new JsonResponse(["errors" => "Ops!" . $e->getMessage()], 500);
+			}
+			# Retorna json com erro
+			return new JsonResponse(["errors" => "Ops! Ocorreu um erro ao salvar."], 500);
 		}
 	}
 
@@ -69,6 +89,16 @@ trait CrudControllerTrait
         }
 
         return $this->salvarRedirecionar($request->all(), $this->relations);
+    }
+
+    protected function beforeSave($requestData)
+    {
+	    return $requestData;
+    }
+
+    protected function afterSave($modelObj)
+    {
+        # Do stuff here
     }
 
     /**
