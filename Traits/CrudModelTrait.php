@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Mockery\Exception;
 
+/**
+ * Trait CrudModelTrait
+ * @package Impactaweb\Crud\Traits
+ */
 trait CrudModelTrait
 {
 
@@ -34,12 +38,13 @@ trait CrudModelTrait
 		return $columns;
 	}
 
-	/**
-	 * Salva a model baseado na informação da request
-	 * @param array $requestData
-	 * @return CrudAbstractModel
-	 */
-	public function saveFromRequest(array $requestData, array $relations = [])
+
+    /**
+     * @param array $requestData Data form request->all()
+     * @param array $relations Relations ManyToMany
+     * @return CrudModelTrait
+     */
+    public function saveFromRequest(array $requestData, array $relations = [])
 	{
 		# Pega a Instancia da model a ser submitada
 		# Se no array $data estiver populado a chave primária
@@ -80,7 +85,7 @@ trait CrudModelTrait
 			return $modelInstance;
 
 		} catch (\Exception $e){
-			throw new Exception("Ocorreu um erro ao salvar, tente novamente.");
+			throw new Exception($e->getMessage());
 		}
 
 	}

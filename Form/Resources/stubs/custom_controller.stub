@@ -41,4 +41,16 @@ class DummyClass extends Controller
         $htmlForm = $form->renderForm();
         # return view('formulario.padrao', ['formulario' => $htmlForm]);
     }
+
+//    # Callbacks to work with data after or before save
+//    protected function beforeSave($requestData)
+//    {
+//        $requestData['my_field'] = onlyNumbers('my_field');
+//        return $requestData;
+//    }
+//
+//    protected function afterSave($modelObj)
+//    {
+//        # Do stuff here
+//    }
 }
