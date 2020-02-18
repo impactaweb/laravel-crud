@@ -261,6 +261,10 @@ class Listing {
         # Search?
         if (request()->get('q') !== null) {
             foreach ($this->columns as $field => $params) {
+                # ignoramos as colunas reservadas:
+                if ($field == '__checkbox') {
+                    continue;
+                }
                 $source = $source->orWhere($field, 'LIKE', '%'.request()->get('q').'%');
             }
         }
