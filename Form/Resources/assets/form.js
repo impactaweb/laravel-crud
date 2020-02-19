@@ -1781,7 +1781,7 @@
                     url: ACTION,
                     type: METHOD,
                     contentType: 'application/json',
-                    data: JSON.stringify(data),
+                    data: new FormData($(form)),
                 }).done(handleSuccess)
                     .fail(handleFailure)
 
@@ -1810,7 +1810,7 @@
 
 
         function handleSuccess(res) {
-
+            console.log(res)
             if (!res.url) {
                 alert('Ops, pedimos desculpas pelo erro, entre em contato com o suporte para que possamos fazer os ajustes.')
                 return
@@ -1818,7 +1818,7 @@
 
             const url = res.url
 
-            window.location.href = url
+            // window.location.href = url
         }
 
         function handleFailure(error) {

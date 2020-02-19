@@ -2,11 +2,12 @@
 
 namespace Impactaweb\Crud\Traits;
 
-use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Impactaweb\Crud\Form\FormUrls;
-use App;
+
 trait CrudControllerTrait
 {
 
@@ -14,7 +15,9 @@ trait CrudControllerTrait
      * Faz a seleção para qual URL o formulário fará o redirecionamento
      * do usuário, com base no botão clicado para submeter
      * @paramm $idNovo ID do nova Model
-     * @return \Illuminate\Http\JsonResponse
+     * @param null $idNovo
+     * @return JsonResponse
+     * @throws Exception
      */
     public function redirecionar($idNovo = null)
     {
@@ -30,19 +33,18 @@ trait CrudControllerTrait
     protected function salvar(array $requestData, array $relations = [])
     {
         $model = new $this->model();
-        $modelInstance = $model->saveFromRequest($requestData, $relations);
-        return $modelInstance;
+        return $model->saveFromRequest($requestData, $relations);
     }
 
-	/**
-	 * Salva e redireciona em sequencia
-	 * @param array $requestData
-	 * @param array $relations
-	 * @return \Illuminate\Http\JsonResponse
-	 */
-	protected function salvarRedirecionar(array $requestData, array $relations = [])
-	{
-		try {
+    /**
+     * Salva e redireciona em sequencia
+     * @param array $requestData
+     * @param array $relations
+     * @return JsonResponse
+     */
+    protected function salvarRedirecionar(array $requestData, array $relations = [])
+    {
+        try {
             # Callback antes de salvar
             $requestData = $this->beforeSave($requestData);
 
@@ -53,23 +55,18 @@ trait CrudControllerTrait
             $this->afterSave($modelObj);
 
             # Envia o id da model para função de redirecionar
-            $redirect = $this->redirecionar($modelObj->getKey());
+            return $this->redirecionar($modelObj->getKey());
 
-            # Adiciona mensagem flash com sucesso
-            # TODO Session::flash('success', 'Sua mensagem');
+        } catch (Exception $e) {
 
-            return $redirect;
-
-		} catch (\Exception $e){
-
-		    # Enviado mensagem do erro caso ambiente for local
-			if (App::environment('local')) {
+            # Enviado mensagem do erro caso ambiente for local
+            if (App::environment('local')) {
                 return new JsonResponse(["errors" => "Ops!" . $e->getMessage()], 500);
-			}
-			# Retorna json com erro
-			return new JsonResponse(["errors" => "Ops! Ocorreu um erro ao salvar."], 500);
-		}
-	}
+            }
+            # Retorna json com erro
+            return new JsonResponse(["errors" => "Ops! Ocorreu um erro ao salvar."], 500);
+        }
+    }
 
     public function store(Request $request)
     {
@@ -93,7 +90,7 @@ trait CrudControllerTrait
 
     protected function beforeSave($requestData)
     {
-	    return $requestData;
+        return $requestData;
     }
 
     protected function afterSave($modelObj)
