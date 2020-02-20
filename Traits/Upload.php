@@ -1,6 +1,6 @@
 <?php
 
-namespace Impactaweb\Crud\Helpers;
+namespace Impactaweb\Crud\Traits;
 
 use Illuminate\Support\Facades\Storage;
 use stdClass;
