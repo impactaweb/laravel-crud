@@ -1789,12 +1789,13 @@
         function handleSuccess(res) {
             if (!res.url) {
                 alert('Ops, pedimos desculpas pelo erro, entre em contato com o suporte para que possamos fazer os ajustes.')
+                $('[data-container="loading"]').html('')
                 return
             }
 
             const url = res.url
 
-            // window.location.href = url
+            window.location.href = url
         }
 
         function handleFailure(error) {
