@@ -1757,57 +1757,34 @@
             submitHandler: function (form) {
                 $(form).submit(function (e) {
                     e.preventDefault()
+                    e.stopPropagation()
+                    return false
                 })
 
                 $('[data-container="loading"]').html(`
-                <div class="loading-container fixed">
-                    <div class="lds-roller">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
+                    <div class="loading-container fixed">
+                        <div class="lds-roller">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
                     </div>
-                </div>
-            `)
+                `)
 
-                const formSerialized = $(form).serializeArray()
-                const data = adapterInputs(formSerialized)
-
-                const METHOD = data._method || 'POST'
                 const ACTION = form.getAttribute('action')
-                METHOD ? (delete data._method) : null
 
                 $.ajax({
                     url: ACTION,
-                    type: METHOD,
-                    contentType: 'application/json',
-                    data: JSON.stringify(data),
+                    type: 'POST',
+                    processData: false,
+                    contentType: false,
+                    data: new FormData(form),
                 }).done(handleSuccess)
                     .fail(handleFailure)
 
             }
         })
-
-        function adapterInputs(formSerialized) {
-            let data = {}
-
-            formSerialized.forEach(function (input) {
-                const key = input.name
-                const value = input.value
-
-                if (key in data) {
-                    data[key] = Array.isArray(data[key])
-                        ? [...data[key], value]
-                        : [data[key], value]
-                    return
-                }
-
-                data[key] = value
-            })
-
-            return data
-        }
-
 
         function handleSuccess(res) {
 

@@ -8,7 +8,7 @@
 
             {{-- Açoes secundárias--}}
             @if(!empty($secondaryActions))
-                <button type="submit" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
                     <span class="sr-only">Mais opções</span>
                 </button>
