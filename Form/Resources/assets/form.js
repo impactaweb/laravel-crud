@@ -1757,60 +1757,36 @@
             submitHandler: function (form) {
                 $(form).submit(function (e) {
                     e.preventDefault()
+                    e.stopPropagation()
+                    return false
                 })
 
                 $('[data-container="loading"]').html(`
-                <div class="loading-container fixed">
-                    <div class="lds-roller">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
+                    <div class="loading-container fixed">
+                        <div class="lds-roller">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
                     </div>
-                </div>
-            `)
+                `)
 
-                const formSerialized = $(form).serializeArray()
-                const data = adapterInputs(formSerialized)
-
-                const METHOD = data._method || 'POST'
                 const ACTION = form.getAttribute('action')
-                METHOD ? (delete data._method) : null
 
                 $.ajax({
                     url: ACTION,
-                    type: METHOD,
-                    contentType: 'application/json',
-                    data: new FormData($(form)),
+                    type: 'POST',
+                    processData: false,
+                    contentType: false,
+                    data: new FormData(form),
                 }).done(handleSuccess)
                     .fail(handleFailure)
 
             }
         })
 
-        function adapterInputs(formSerialized) {
-            let data = {}
-
-            formSerialized.forEach(function (input) {
-                const key = input.name
-                const value = input.value
-
-                if (key in data) {
-                    data[key] = Array.isArray(data[key])
-                        ? [...data[key], value]
-                        : [data[key], value]
-                    return
-                }
-
-                data[key] = value
-            })
-
-            return data
-        }
-
-
         function handleSuccess(res) {
-            console.log(res)
             if (!res.url) {
                 alert('Ops, pedimos desculpas pelo erro, entre em contato com o suporte para que possamos fazer os ajustes.')
                 return
@@ -1822,6 +1798,22 @@
         }
 
         function handleFailure(error) {
+
+            if (error.status >= 500) {
+                const alertError = `
+                <div class="container alert mb-1 alert-danger alert-dismissible fade show" role="alert" data-expect >
+                <span data-content>${error.responseJSON.errors}</span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times</span>
+                </button>
+                </div>
+                `
+
+                $alert.innerHTML = alertError
+                $alert.scrollIntoView()
+                $('[data-container="loading"]').html('')
+                return
+            }
 
             if (error.status !== 422 || !error.responseJSON.errors) return
 
