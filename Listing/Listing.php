@@ -62,7 +62,7 @@ class Listing {
     public $configFile = 'listing';
 
     /**
-     * Ações 
+     * Ações
      */
     public $actions;
 
@@ -168,7 +168,7 @@ class Listing {
      * Colunas a serem listadas na tabela.
      * Aceita field => label
      * ou field => array('parâmetros')
-     * ex: 
+     * ex:
      * $columns => [
      *   'data_nasc' => 'Data de Nascimento',
      *   'ativo'     => ['label' => 'Ativo', 'callback' => (alguma function personalizada))]
@@ -176,7 +176,7 @@ class Listing {
      * @param $columns Array
      * @param $checkbox Bool - se é para inserir o input checkbox de envio de formulário
      */
-    public function setColumns(array $columns = []) 
+    public function setColumns(array $columns = [])
     {
         if (empty($columns)) {
             return null;
@@ -204,7 +204,7 @@ class Listing {
 
             # se é checkbox, inserimos o checkbox de controle:
             if ($field == '__checkbox') {
-                $this->columns[$field]['column_link'] = '<input type="checkbox" name="checkbox-listing" onclick="$(\'.listing-checkboxes\').prop(\'checked\', $(this).is(\':checked\'))" />';
+                $this->columns[$field]['column_link'] = '<input type="checkbox" name="checkbox-listing" onchange="handleAllChecked()" />';
                 continue;
             }
 
@@ -213,8 +213,8 @@ class Listing {
                 $this->columns[$field] = $params;
             } else {
                 /**
-                 * caso não tenha sido enviado nemhum parâmetro(nem label), aqui fazemos a 
-                 * transformação. Basta verificar se está no formato 
+                 * caso não tenha sido enviado nemhum parâmetro(nem label), aqui fazemos a
+                 * transformação. Basta verificar se está no formato
                  * [0 => 'field_tabela'] ao invés de ['field_tabela' => 'Campo Tabela']
                  * */
                 if (is_int($field)) {
@@ -229,11 +229,11 @@ class Listing {
             $this->columns[$field]['column_link'] = $this->makeOrderLink($field);
         }
     }
-    
+
     /**
      * Source: recebe a variável que contém a Model a ser utilizada na busca dos registros.
-     * No caso a query deve vir sem o get(), pois ele indica a finalização do processo de 
-     * busca (não pode haver ordenação ou where's após o get(), por exemplo...), 
+     * No caso a query deve vir sem o get(), pois ele indica a finalização do processo de
+     * busca (não pode haver ordenação ou where's após o get(), por exemplo...),
      * então o get() é feito neste método ao final de tudo + paginação.
      */
     public function setSource($source)
@@ -297,7 +297,7 @@ class Listing {
 
     /**
      * Montagem dos data antes de serem exibidos.
-     * Percorremos todos os $this->data e fazemos as ações necessárias, 
+     * Percorremos todos os $this->data e fazemos as ações necessárias,
      * como customizar o field, callbacks...
      */
     public function prepararDados()
@@ -394,7 +394,7 @@ class Listing {
         $query_string = http_build_query($requestQuery);
         $separador = (empty($query_string)) ? '' : '&';
         $url = request()->url().'?'.$query_string . $separador . 'ord=' . $field . '&dir=' . $dir;
-        return '<a href="'.$url.'" >'.$this->columns[$field]['label'].'</a>';
+        return '<a href="'.$url.'" class="text-body" >'.$this->columns[$field]['label'].'</a>';
     }
 
     /**
