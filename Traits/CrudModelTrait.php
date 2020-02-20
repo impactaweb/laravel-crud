@@ -13,24 +13,6 @@ use Mockery\Exception;
  */
 trait CrudModelTrait
 {
-//    public function upload($file, string $basePath, $fileName = null)
-//    {
-//        # Define o nome caso o nome seja nulo
-//        if (!is_null($fileName)) {
-//            # Define um aleatório para o arquivo baseado no timestamps atual
-//            $name = uniqid(date('HisYmd'));
-//
-//            # Recupera a extensão do arquivo
-//            $extension = $file->extension();
-//
-//            # Nome do arquivo
-//            $fileName = "{$name}.{$extension}";
-//        }
-//
-//        // Faz o upload:
-//        return $file->storeAs($basePath, $fileName);
-//    }
-
 	/**
 	 * Verifica se aas colunas existem no cache
 	 * @return bool
