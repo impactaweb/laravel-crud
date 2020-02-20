@@ -13,7 +13,6 @@ use Mockery\Exception;
  */
 trait CrudModelTrait
 {
-
 	/**
 	 * Verifica se aas colunas existem no cache
 	 * @return bool

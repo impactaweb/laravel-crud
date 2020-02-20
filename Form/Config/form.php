@@ -14,6 +14,7 @@ return [
             'select' => 'form::fields.select',
             'textarea' => 'form::fields.textarea',
             'file' => 'form::fields.file',
+            'file_async' => 'form::fields.file_async',
             'multiselect' => 'form::fields.multiselect',
             'flag' => 'form::fields.flag',
             'html' => 'form::fields.html',
