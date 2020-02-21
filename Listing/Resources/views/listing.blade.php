@@ -60,8 +60,10 @@
                 </tr>
             @endforeach
         </table>
-        @include('listing::pagination')
+    @if($actions)
     </form>
+    @endif
+    @include('listing::pagination')
 </div>
 <script rel="text/javascript">
     function handleActionClick(action, method) {
