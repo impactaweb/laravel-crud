@@ -89,4 +89,10 @@ trait CrudModelTrait
 
 	}
 
+	static public function deleteFile(int $key, string $field) {
+        $entity = self::find($key);
+        $entity->$field = null;
+        $entity->save();
+    }
+
 }
