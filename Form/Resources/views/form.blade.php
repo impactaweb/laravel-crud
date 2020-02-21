@@ -29,7 +29,7 @@
     {{ method_field($method) }}
 
     @if(!empty($primaryKeyValue))
-        <input type="hidden" name="{{$primaryKey}}" value="{{$primaryKeyValue}}">
+        <input type="hidden" name="{{$primaryKey}}" value="{{$primaryKeyValue}}" data-id>
     @endif
 
     <div class="panel-group" id="Abas" role="tablist" aria-multiselectable="true">
