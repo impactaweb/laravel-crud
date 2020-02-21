@@ -1,53 +1,26 @@
-<style type="text/css" >
-.corpo { margin:15px 0; }
-.corpo * { float:none; }
-table { width:800px; margin:10px auto; }
-th, td { border:solid 1px #ccc; padding:5px; }
-.frmbusca, .frmRodape  { text-align:right; background:#dedede; }
-input[type="number"], select { width:60px; }
-</style>
+<form action="{{ request()->url() }}" method="get" class="frmBusca">
 
-<div class="corpo" >
-    <div class="header">
-        @include('listing::search')
+    <div class="form-group">
+        <div class="input-group mb-2 mr-sm-2">
+
+            <div class="input-group mb-3">
+                <input
+                    type="text"
+                    class="form-control form-control-lg"
+                    name="q"
+                    value="{{ request()->get('q') }}"
+                    placeholder="{{ __('listing::listing.search') }}"
+                    aria-label="{{ __('listing::listing.search') }}"
+                >
+                <button class="input-group-append btn btn-default p-0 border" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                  <span class="input-group-text bg-transparent border-0" id="basic-addon2"><i class="fas fa-search"></i></span>
+                </button>
+                @if(request()->get('q') !== null)
+                    <a href="{{ request()->url() }}" title="limpar busca" >X</a>
+                @endif
+            </div>
+
+        </div>
     </div>
+</form>
 
-    @if($actions)
-        <form id="meuForm" action="" method="POST" >
-        {{ csrf_field() }}
-    @endif
-        <table>
-                {{-- Cabeçalho com as columns --}}
-                <tr>
-                @foreach($columns as $column => $params)
-                    <th>{!! $params['column_link'] !!}</th>
-                @endforeach
-                </tr>
-
-                {{-- Registros --}}
-                @foreach ($data as $item)
-                    <tr>
-                    @foreach ($columns as $column => $params)
-                        <td>{!! $item->$column !!}</td>
-                    @endforeach
-                    </tr>
-                @endforeach
-        </table>
-
-    {{-- Exemplo de como utilizar as ações: --}}
-    @if($actions)
-        @foreach ($actions as $action => $params)
-            <?php 
-                $fullUrl = request()->url();
-                $url = $fullUrl.$params['url'];
-                $method = $params['method'];
-            ?>
-            <button type="button" onclick="$('#meuForm').prop('action', '{{ $url }}' ).prop('method', '{{ $method }}').submit();" title="{{ $action }}" >{{ $action }}</button>
-        @endforeach
-        </form>
-        <br><br>
-    @endif
-
-    @include('listing::pagination')
-
-</div>
