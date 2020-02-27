@@ -60,9 +60,7 @@
                 </tr>
             @endforeach
         </table>
-    @if($actions)
     </form>
-    @endif
     @include('listing::pagination')
 </div>
 <script rel="text/javascript">
@@ -80,5 +78,17 @@
             $ele.checked = $mainCheckbox.checked
         })
     }
+
+    (function(){
+        const search = new URLSearchParams(window.location.search)
+        const ord = search.get('ord') ? '&ord=' + search.get('ord') : null
+        const dir = search.get('dir') ? '&dir=' + search.get('dir') : null
+        Array.from(document.querySelectorAll('[data-paginate]'))
+            .forEach(function($pag) {
+                if (ord &&  dir && $pag.href) {
+                    $pag.href = $pag.href + ord + dir
+                }
+            })
+    })()
 </script>
 
