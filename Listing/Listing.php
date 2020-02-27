@@ -369,7 +369,7 @@ class Listing {
         ];
 
         # é para tratar diferente uma requisição ajax? Retornaremos só o json
-        if ($this->setCheckAjaxRequest && request()->ajax()) {
+        if ($this->checkAjaxRequest && request()->ajax()) {
             return response()->json($resposta);
         }
 
