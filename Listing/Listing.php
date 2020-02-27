@@ -182,7 +182,7 @@ class Listing {
      * @param $columns Array
      * @param $checkbox Bool - se é para inserir o input checkbox de envio de formulário
      */
-    public function setColumns(array $columns = [])
+    public function setColumns(array $columns = [], $showCheckbox = true)
     {
         if (empty($columns)) {
             return null;
@@ -199,7 +199,7 @@ class Listing {
         }
 
         # se houver ação de formulário inserimos checkboxes:
-        if ( !empty($this->getActions())) {
+        if ( !empty($this->getActions()) && ($showCheckbox) ) {
             $checkbox['__checkbox'] = [
                 'label' => ''
             ];
@@ -429,15 +429,6 @@ class Listing {
         if (request()->session()->has('perPage')) {
             $this->perPage = request()->session()->get('perPage');
         }
-    }
-
-    /**
-     * Set Checkboxes:
-     * Mescla uma coluna com checkboxes na listagem:
-     * @param $checkboxes Boolean
-     */
-    public function setCheckbox(Bool $checkbox) {
-        $this->checkbox = $checkbox;
     }
 
     /**
