@@ -81,13 +81,12 @@
 
     (function(){
         const search = new URLSearchParams(window.location.search)
-        const ord = search.get('ord') ? '&ord=' + search.get('ord') : null
-        const dir = search.get('dir') ? '&dir=' + search.get('dir') : null
         Array.from(document.querySelectorAll('[data-paginate]'))
             .forEach(function($pag) {
-                if (ord &&  dir && $pag.href) {
-                    $pag.href = $pag.href + ord + dir
-                }
+                const query = new URLSearchParams($pag.href)
+                search.set('pp', search.get('pp') || query.get('pp') || '')
+                search.set('page', query.get('page') || '1')
+                $pag.href = '?' + search.toString()
             })
     })()
 </script>
