@@ -1,5 +1,4 @@
 <form action="{{ request()->url() }}" method="get" class="frmBusca">
-    {{ dd(request()->query()) }}
     <div class="form-group">
         <div class="input-group mb-2 mr-sm-2">
 
