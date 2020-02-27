@@ -1,5 +1,4 @@
 <form action="{{ request()->url() }}" method="get" class="frmBusca">
-
     <div class="form-group">
         <div class="input-group mb-2 mr-sm-2">
 
@@ -8,7 +7,7 @@
                     type="text"
                     class="form-control form-control-lg"
                     name="q"
-                    value="{{ request()->get('q') }}"
+                    value="{{ request()->get('q') ?? '' }}"
                     placeholder="{{ __('listing::listing.search') }}"
                     aria-label="{{ __('listing::listing.search') }}"
                 >
