@@ -23,7 +23,7 @@ trait Upload
             $file = $request->file($field);
 
             if (in_array($request->$field->extension(), $options->extensions)) {
-                $path = $file->store('');
+                $path = $file->store('tmp');
 
                 if (!$path) {
                     $err->$field = "Falha no upload do {$file->getClientOriginalName()}{$file->extension()}";
@@ -64,7 +64,7 @@ trait Upload
                 $file = $request->file($field);
 
                 if (in_array($request->$field->extension(), $options->extensions)) {
-                    $path = $file->store('');
+                    $path = $file->store('tmp');
                     if (!$path) {
                         $err[$field] = "Falha no upload do {$file->getClientOriginalName()}{$file->extension()}";
                     } else {
@@ -115,8 +115,8 @@ trait Upload
 
     public function move(string $fileName, string $folderDestiny): bool
     {
-        if (file_exists(storage_path($fileName))) {
-            return Storage::move($fileName, $folderDestiny);
+        if (file_exists(storage_path('tmp/' . $fileName))) {
+            return Storage::move('tmp/' . $fileName, 'app/public/' . $folderDestiny .'/'. $fileName);
         }
         return false;
     }
