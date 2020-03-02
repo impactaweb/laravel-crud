@@ -15,13 +15,13 @@
         @if(!empty($value))
             <span class="link-file">
             Visualizar:
-            <a href="{{ $dir }}{{ $value }}" target="_blank">
+            <a href="/storage{{ $dir }}{{ $value }}" target="_blank">
                 {{ $value }}
             </a>
 
             @if($required != true)
-                    &nbsp; ‹ &nbsp;
-                    <a href="#" class="excluir" data-destroy="{{ $dir}}{{$value}}" data-file-field="{{ $id }}">
+                &nbsp; ‹ &nbsp;
+                <a href="#" class="excluir" data-destroy="{{ $dir}}{{$value}}" data-file-field="{{ $id }}">
                     Excluir
                 </a>
                 @endif

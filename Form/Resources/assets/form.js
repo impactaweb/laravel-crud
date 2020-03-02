@@ -1752,6 +1752,7 @@
         $('[data-toggle="tooltip"]').tooltip()
 
         const $alert = document.querySelector('[data-expect-alert]')
+        const $deleteFiles = $('[data-destroy]')
 
         $('#form').validate({
             submitHandler: function (form) {
@@ -1865,6 +1866,42 @@
                 maxHeight: 400,
             })
         })
+
+        $deleteFiles.each(function(idx, $link) {
+            console.log($link)
+            $link.onclick = function(e) {
+                $('[data-container="loading"]').html(`
+                    <div class="loading-container fixed">
+                        <div class="lds-roller">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                `)
+                e.preventDefault()
+                e.stopPropagation()
+                const path = $link.getAttribute('data-destroy');
+                const fieldFile = $link.getAttribute('data-file-field');
+                const $mainForm = $('#form');
+                const id = $('[data-id]').val();
+                if(!path || !fieldFile || !id) return;
+
+                axios.delete(`${$mainForm.attr('action')}filetodelete=${path}&modelId=${id}&fieldFile=${fieldFile}`)
+                .then(function(res) {
+                    $('[data-container="loading"]').html('')
+                    $($link).parent('span').prev('input').val(null)
+                    $($link).parent('span').remove()
+                })
+                .catch(function(err) {
+                    $('[data-container="loading"]').html('')
+                    alert('Falha ao excluir o arquivo')
+                })
+            }
+        })
+
+
 
         function asyncFileUpload() {
             const $inputs = $('[data-file="async-upload"]');

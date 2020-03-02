@@ -66,6 +66,12 @@ class Listing {
      */
     public $actions;
 
+    /**
+     * Requisições ajax recebem respostas em JSON
+     * Esta opção diz para a classe ignorar esta verificação:
+     */
+    public $checkAjaxRequest = true;
+
     public function __construct(string $index = null, string $actions = null) {
 
         if (!is_null($index)) {
@@ -362,8 +368,8 @@ class Listing {
             'perPage'    => $this->perPage,
         ];
 
-        # é uma requisição ajax? Retornaremos só o json
-        if (request()->ajax()) {
+        # é para tratar diferente uma requisição ajax? Retornaremos só o json
+        if ($this->checkAjaxRequest && request()->ajax()) {
             return response()->json($resposta);
         }
 
@@ -449,6 +455,11 @@ class Listing {
     public function getActions()
     {
         return $this->actions;
+    }
+
+    public function setCheckAjaxRequest(bool $bool)
+    {
+        return $this->checkAjaxRequest = $bool;
     }
 
 }
