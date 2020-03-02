@@ -135,9 +135,9 @@ trait CrudControllerTrait
      */
     public function deleteFileFromRequest(Request $request)
     {
-        $deleted = $this->destroyFile($request->query('filetodelete'));
+//        $deleted = $this->destroyFile($request->query('filetodelete'));
         $this->model::deleteFile($request->query('modelId'), $request->query('fieldFile'));
-        return response()->json(['ok' => $deleted]);
+        return response()->json(['ok' => '']);
     }
 
     /**
