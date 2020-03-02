@@ -13,30 +13,91 @@ use Mockery\Exception;
  */
 trait CrudModelTrait
 {
-	/**
-	 * Verifica se aas colunas existem no cache
-	 * @return bool
-	 */
-	private function cacheExists()
-	{
-		return Cache::has($this->primaryKey . '.columns');
-	}
+    /**
+     * Verifica se aas colunas existem no cache
+     * @return bool
+     */
+    private function cacheExists()
+    {
+        return Cache::has($this->primaryKey . '.columns');
+    }
 
-	/**
-	 * Pega as colunas da model, com cache
-	 * @return mixed
-	 */
-	protected function getColunas()
-	{
-		if ($this->cacheExists()) {
-			$columns = Cache::get($this->primaryKey . '.columns');
-		} else {
-			$columns = $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
-			Cache::put($this->primaryKey . '.columns', $columns, 200);
-		}
-		return $columns;
-	}
+    /**
+     * Pega as colunas da model, com cache
+     * @return mixed
+     */
+    protected function getColunas()
+    {
+        if ($this->cacheExists()) {
+            $columns = Cache::get($this->primaryKey . '.columns');
+        } else {
+            $columns = $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
+            Cache::put($this->primaryKey . '.columns', $columns, 200);
+        }
+        return $columns;
+    }
 
+    /**
+     * Pega a Instancia da model a ser submitada
+     * Se no array $data estiver populado a chave primária
+     * ele fará a consulta da model a ser submitada, caso contrário ele irá pegar
+     * esta mesma model
+     * @param array $requestData
+     * @return CrudModelTrait
+     */
+    protected function getModelInstance(array $requestData)
+    {
+        # Verify if primary key exist in request data
+        if (isset($requestData[$this->getKeyName()])) {
+            # Get model instance
+            $modelInstance = self::find($requestData[$this->getKeyName()]);
+        } else {
+            # Starts new clean model
+            $modelInstance = $this;
+        }
+        return $modelInstance;
+    }
+
+    /**
+     * Save data from inputs
+     * @param array $requestData
+     * @param $modelInstance
+     * @return mixed
+     */
+    protected function saveInputData(array $requestData, $modelInstance)
+    {
+        foreach ($modelInstance->getColunas() as $coluna) {
+            if (array_key_exists($coluna, $requestData)) {
+                $modelInstance->$coluna = $requestData[$coluna];
+            }
+        }
+        # Salva a model
+        $modelInstance->save();
+        return $modelInstance;
+    }
+
+    /**
+     * Sync ManyToMany relations based on $relations array
+     * @param array $requestData
+     * @param array $relations
+     * @param $modelInstance
+     * @return mixed
+     */
+    public function saveRelations(array $requestData, array $relations, $modelInstance)
+    {
+        # Salva os relacionamentos obtidos através da função de cada model
+        foreach ($relations as $function => $relation) {
+
+            # Se o valor não estiver setado coloca a lista vazia
+            if (!isset($requestData[$relation])) {
+                $requestData[$relation] = [];
+            }
+
+            $relationIds = array_values((array)$requestData[$relation]);
+            $modelInstance->$function()->sync($relationIds);
+            return $modelInstance;
+        }
+    }
 
     /**
      * @param array $requestData Data form request->all()
@@ -44,49 +105,22 @@ trait CrudModelTrait
      * @return CrudModelTrait
      */
     public function saveFromRequest(array $requestData, array $relations = [])
-	{
-		# Pega a Instancia da model a ser submitada
-		# Se no array $data estiver populado a chave primária
-		# ele fará a consulta da model a ser submitada, caso contrário ele irá pegar
-		# esta mesma model
-		if (isset($requestData[$this->getKeyName()])) {
-			# Entrada no BD - Update
-			$modelInstance = self::find($requestData[$this->getKeyName()]);
-		} else {
-			# Model limpa - Create
-			$modelInstance = $this;
-		}
+    {
+        $modelInstance = $this->getModelInstance($requestData);
+        $modelInstance = $this->saveInputData($requestData, $modelInstance);
+        $modelInstance = $this->saveRelations($requestData, $relations, $modelInstance);
+        return $modelInstance;
+    }
 
-		# Compara as chaves dos dois array e coloca os atributos dentro da model
-		try {
-			foreach ($modelInstance->getColunas() as $coluna) {
-				if (array_key_exists($coluna, $requestData)) {
-					$modelInstance->$coluna = $requestData[$coluna];
-				}
-			}
-
-			# Salva a model
-			$modelInstance->save();
-
-			# Salva os relacionamentos obtidos através da função de cada model
-			foreach ($relations as $function => $relation) {
-
-				# Se o valor não estiver setado coloca a lista vazia
-				if (!isset($requestData[$relation])) {
-					$requestData[$relation] = [];
-				}
-
-				$relationIds = array_values((array)$requestData[$relation]);
-				$modelInstance->$function()->sync($relationIds);
-			}
-
-			# Devole a chave primária
-			return $modelInstance;
-
-		} catch (\Exception $e){
-			throw new Exception($e->getMessage());
-		}
-
-	}
+    /**
+     * Delete selected field
+     * @param int $key
+     * @param string $field
+     */
+    static public function deleteFile(int $key, string $field) {
+        $entity = self::find($key);
+        $entity->$field = null;
+        $entity->save();
+    }
 
 }

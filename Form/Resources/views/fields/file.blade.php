@@ -2,29 +2,29 @@
     @include('form::fields.label')
     <div class="@if($col >= '10') col @else col-md-{{$col}} @endif">
         <input
-            type="file"
-            class="form-control {{ $class }}"
-            id="c-{{$id}}"
-            name="{{$id}}"
-            value="{{ $value }}"
-            @if($required)
+                type="file"
+                class="form-control {{ $class }}"
+                id="c-{{$id}}"
+                name="{{$id}}"
+                value="{{ $value }}"
+                @if($required)
                 required
-            @endif
+                @endif
         >
 
         @if(!empty($value))
-        <span class="link-file">
+            <span class="link-file">
             Visualizar:
             <a href="{{ $dir }}{{ $value }}" target="_blank">
                 {{ $value }}
             </a>
 
             @if($required != true)
-                &nbsp; ‹ &nbsp;
-                <a href="#" class="excluir">
+                    &nbsp; ‹ &nbsp;
+                    <a href="#" class="excluir" data-destroy="{{ $dir}}{{$value}}" data-file-field="{{ $id }}">
                     Excluir
                 </a>
-            @endif
+                @endif
 
         </span>
         @endif

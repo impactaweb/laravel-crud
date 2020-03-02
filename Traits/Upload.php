@@ -3,91 +3,83 @@
 namespace Impactaweb\Crud\Traits;
 
 use Illuminate\Support\Facades\Storage;
-use stdClass;
+use Illuminate\Validation\ValidationException;
 
 trait Upload
 {
+
+    private $tempFiles = [];
+    private $publicFolder = '';
+    private $storageFolder = '';
+    private $tempFolder = '';
+
+    /**
+     * @inheritDoc
+     */
+    public function __construct()
+    {
+        # Get folders from config
+        $this->setTempFolder(config('form.upload.temp_folder', 'tmp'));
+        $this->setPublicFolder(config('form.upload.public_folder', 'app/public'));
+        $this->setStorageFolder(config('form.upload.storage_folder', 'storage'));
+    }
+
     /**
      * Upload specific field from request
      * @param string $field
-     * @param object $options
-     * @param $request
-     * @return object
+     * @param string $folder
+     * @return string
+     * @throws ValidationException
      */
-    public function saveFile(string $field, object $options, $request): object
+    public function saveFileFromRequest(string $field, string $folder, bool $fullpath = false): string
     {
-        $success = new stdClass();
-        $err = new stdClass();
+        $request = request();
+        $file = $request->file($field);
+        $path = $file->store($this->pathJoins($this->getPublicFolder(), $folder));
 
-        if ($request->hasFile($field)) {
-            $file = $request->file($field);
-
-            if (in_array($request->$field->extension(), $options->extensions)) {
-                $path = $file->store('');
-
-                if (!$path) {
-                    $err->$field = "Falha no upload do {$file->getClientOriginalName()}{$file->extension()}";
-                }
-
-                $success->$field = (object)[
-                    'url' => url('storage/' . $path),
-                    'path' => $path,
-                    'hashName' => strpos($path, '/') ? str_replace('/', '', mb_strrchr($path, '/')) : $path
-                ];
-            } else {
-                $err->$field = "O arquivo {$file->getClientOriginalName()}{$file->extension()} não possui uma extensão válida";
-            }
-
+        if (file_exists($path)) {
+            throw ValidationException::withMessages(
+                [$fieldName => "Falha no upload do {$file->getClientOriginalName()}{$file->extension()}"]);
+        }
+        if ($fullpath) {
+            return $path;
+        } else {
+            return $file->hashName();
         }
 
-        return (object)[
-            'error' => count((array)$err) === 0 ? false : $err,
-            'success' => $success
-        ];
     }
 
     /**
-     * Upload all files from request
-     * @param object $options
-     * @param $request
-     * @return array
+     * @return string
      */
-    public function saveFiles(object $options, $request): array
+    public function getStorageFolder(): string
     {
-        $err = [];
-        $success = [];
-
-        foreach ($options->fields as $field) {
-            $file = null;
-
-            if ($request->hasFile($field) && $request->$field->isValid()) {
-                $file = $request->file($field);
-
-                if (in_array($request->$field->extension(), $options->extensions)) {
-                    $path = $file->store('');
-                    if (!$path) {
-                        $err[$field] = "Falha no upload do {$file->getClientOriginalName()}{$file->extension()}";
-                    } else {
-                        $success[$field] = (object)[
-                            'url' => url('storage/' . $path),
-                            'path' => $path,
-                            'hashName' => strpos($path, '/') ? str_replace('/', '', mb_strrchr($path, '/')) : $path
-                        ];
-                    }
-
-                } else {
-                    $err[$field] = "O arquivo {$file->getClientOriginalName()}{$file->extension()} não possui uma extensão valida";
-                }
-
-            }
-        }
-
-        return [
-            'error' => count((array)$err) === 0 ? false : $err,
-            'success' => $success
-        ];
+        return $this->storageFolder;
     }
 
+    /**
+     * @param string $storageFolder
+     */
+    public function setStorageFolder(string $storageFolder): void
+    {
+        $this->storageFolder = $storageFolder;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTempFolder(): string
+    {
+        return $this->tempFolder;
+    }
+
+    /**
+     * @param string $tempFolder
+     */
+    public function setTempFolder(string $tempFolder): void
+    {
+        $this->tempFolder = $tempFolder;
+    }
 
     /**
      * Delete file from path
@@ -95,7 +87,7 @@ trait Upload
      * @param string $clientFolder
      * @return bool
      */
-    public function destroyFile(string $path, string $clientFolder = 'tmp'): bool
+    public function destroyFile(string $path, string $clientFolder): bool
     {
         if (file_exists(storage_path($clientFolder . '/' . $path))) {
             return Storage::delete($path);
@@ -107,17 +99,25 @@ trait Upload
     }
 
     /**
-     * Move file from tmp folder to specific folder
-     * @param string $fileName File hash name
-     * @param string $folderDestiny
-     * @return bool
+     * @return string
      */
-
-    public function move(string $fileName, string $folderDestiny): bool
+    public function getPublicFolder(): string
     {
-        if (file_exists(storage_path($fileName))) {
-            return Storage::move($fileName, $folderDestiny);
-        }
-        return false;
+        return $this->publicFolder;
+    }
+
+    /**
+     * @param string $publicFolder
+     */
+    public function setPublicFolder(string $publicFolder): void
+    {
+        $this->publicFolder = $publicFolder;
+    }
+
+    private function pathJoins(string $path1, string $path2)
+    {
+        $path1 = explode('/', $path1);
+        $path2 = explode('/', $path2);
+        return join('/', array_merge($path1, $path2));
     }
 }

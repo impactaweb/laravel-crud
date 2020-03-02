@@ -1,6 +1,13 @@
 <?php
 
 return [
+
+    'upload' => [
+        'temp_folder' => 'tmp',
+        'storage_folder' => 'storage',
+        'public_folder' => 'app/public'
+    ],
+
     'templates' => [
 
         'form' => 'form::form',
