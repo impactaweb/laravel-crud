@@ -44,14 +44,16 @@
                 de
                 <strong>{{ $data->appends(request()->input())->lastPage() }}</strong>
                 <a
+                    data-paginate="left"
                     @if($data->appends(request()->input())->currentPage() !== 1)
                         href="?pp={{ $data->appends(request()->input())->perPage() }}&page={{ $data->appends(request()->input())->currentPage() - 1 }}"
                     @endif
-                    class="btn btn-default @if($data->appends(request()->input())->currentPage() === 1)disabled @endif" aria-disabled="true"><</a><a
+                    class="btn btn-default @if($data->appends(request()->input())->currentPage() === 1)disabled @endif" aria-disabled="true"><i class="fas fa-chevron-left"></i></a><a
+                    data-paginate="right"
                     @if($data->appends(request()->input())->currentPage() !== $data->appends(request()->input())->lastPage())
                         href="?pp={{ $data->appends(request()->input())->perPage() }}&page={{ $data->appends(request()->input())->currentPage() + 1 }}"
                     @endif
-                    class="btn btn-default @if($data->appends(request()->input())->currentPage() === $data->appends(request()->input())->lastPage())disabled @endif">></a>
+                    class="btn btn-default @if($data->appends(request()->input())->currentPage() === $data->appends(request()->input())->lastPage())disabled @endif"><i class="fas fa-chevron-right"></i></a>
             </div>
         </form>
     </div>

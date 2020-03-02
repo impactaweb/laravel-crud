@@ -36,7 +36,6 @@ trait Upload
         $request = request();
         $file = $request->file($field);
         $path = $file->store($this->pathJoins($this->getPublicFolder(), $folder));
-
         if (file_exists($path)) {
             throw ValidationException::withMessages(
                 [$fieldName => "Falha no upload do {$file->getClientOriginalName()}{$file->extension()}"]);
@@ -54,6 +53,7 @@ trait Upload
      */
     public function getStorageFolder(): string
     {
+
         return $this->storageFolder;
     }
 
