@@ -11,12 +11,11 @@ use Impactaweb\Crud\Form\FormUrls;
 
 trait CrudControllerTrait
 {
-    protected $belongsToManyRelations = [];
-
     public function store(Request $request)
     {
+        $belongsToManyRelations = isset($this->belongsToManyRelations) ? $this->belongsToManyRelations : [];
         $this->applyValidation($request);
-        return $this->salvarRedirecionar($request->all(), $this->belongsToManyRelations);
+        return $this->salvarRedirecionar($request->all(), $belongsToManyRelations);
     }
 
     public function applyValidation(Request $request)
@@ -113,8 +112,9 @@ trait CrudControllerTrait
 
     public function update(Request $request)
     {
+        $belongsToManyRelations = isset($this->belongsToManyRelations) ? $this->belongsToManyRelations : [];
         $this->applyValidation($request);
-        return $this->salvarRedirecionar($request->all(), $this->belongsToManyRelations);
+        return $this->salvarRedirecionar($request->all(), $belongsToManyRelations);
     }
 
     /**
