@@ -140,15 +140,6 @@ trait CrudControllerTrait
         return response()->json(['ok' => '']);
     }
 
-    public function destroy(Request $request)
-    {
-       if ($request->query('modelId') && $request->query('filetodelete') && $request->query('fieldFile')) {
-           $deleted = $this->destroyFile($request->query('filetodelete'));
-           $this->model::deleteFile($request->query('modelId'), $request->query('fieldFile'));
-           return response()->json(['ok' => $deleted]);
-       }
-    }
-
     /**
      * Método desativado
      */
