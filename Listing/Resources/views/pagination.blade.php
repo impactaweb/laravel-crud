@@ -55,6 +55,7 @@
                     @endif
                     class="btn btn-default @if($data->appends(request()->input())->currentPage() === $data->appends(request()->input())->lastPage())disabled @endif"><i class="fas fa-chevron-right"></i></a>
             </div>
+            <br> Total de {{ $data->total() }} registros
         </form>
     </div>
 

@@ -72,6 +72,11 @@ class Listing {
      */
     public $checkAjaxRequest = true;
 
+    /**
+     * Campo que será utilizado como ID do checkbox:
+     */
+    public $checkboxIdField;
+
     public function __construct(string $index = null, string $actions = null) {
 
         if (!is_null($index)) {
@@ -182,7 +187,7 @@ class Listing {
      * @param $columns Array
      * @param $checkbox Bool - se é para inserir o input checkbox de envio de formulário
      */
-    public function setColumns(array $columns = [])
+    public function setColumns(array $columns = [], $showCheckbox = true)
     {
         if (empty($columns)) {
             return null;
@@ -199,7 +204,7 @@ class Listing {
         }
 
         # se houver ação de formulário inserimos checkboxes:
-        if ( !empty($this->getActions())) {
+        if ( !empty($this->getActions()) && ($showCheckbox) ) {
             $checkbox['__checkbox'] = [
                 'label' => ''
             ];
@@ -317,11 +322,11 @@ class Listing {
 
                     # se é checkbox, embutimos no item correspondente:
                     if ($field == '__checkbox') {
-                        # por padrão:
-                        $this->data[$key]->$field = '#';
+                        $checkboxIdField = $this->checkboxIdField == null ? $this->index : $this->checkboxIdField;
+                        # se existe um id de checkbox personalizado:
                         // usaremos o índice informado como "id_"
-                        if ( !empty($this->index) && $this->data[$key]->{$this->index} > 0) {
-                            $this->data[$key]->$field = '<input type="checkbox" name="item[]" class="listing-checkboxes" value="'.$this->data[$key]->{$this->index}.'" />';
+                        if ( !empty($this->data[$key]->{$checkboxIdField})) {
+                            $this->data[$key]->$field = '<input type="checkbox" name="item[]" class="listing-checkboxes" value="'.$this->data[$key]->{$checkboxIdField}.'" />';
                         }
                         continue;
                     }
@@ -432,15 +437,6 @@ class Listing {
     }
 
     /**
-     * Set Checkboxes:
-     * Mescla uma coluna com checkboxes na listagem:
-     * @param $checkboxes Boolean
-     */
-    public function setCheckbox(Bool $checkbox) {
-        $this->checkbox = $checkbox;
-    }
-
-    /**
      * Ações da listagem (editar, excluir, etc...)
      * @param Array
      */
@@ -460,6 +456,10 @@ class Listing {
     public function setCheckAjaxRequest(bool $bool)
     {
         return $this->checkAjaxRequest = $bool;
+    }
+
+    public function setCheckboxIdField(String $field) {
+        return $this->checkboxIdField = $field;
     }
 
 }
