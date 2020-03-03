@@ -37,6 +37,10 @@
         </div>
     </div>
 
+    <div>
+    @include('listing::advancedsearch')
+    </div>
+
     @if($actions)
     <form id="meuForm" action="" method="POST" >
         {{ csrf_field() }}
@@ -61,7 +65,7 @@
             @endforeach
         </table>
     </form>
-    @include('listing::pagination')
+    {{-- @include('listing::pagination') --}}
 </div>
 <script rel="text/javascript">
     function handleActionClick(action, method) {

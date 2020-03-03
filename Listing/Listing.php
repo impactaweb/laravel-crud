@@ -77,6 +77,27 @@ class Listing {
      */
     public $checkboxIdField;
 
+    /**
+     * Opções de operadores da busca avançada:
+     */
+    private $operators = [
+        'like'     => 'is like',
+        'not like' => 'not like',
+        '='        => 'equal',
+        '!='       => 'different',
+        '<'        => 'less than',
+        '<='       => 'less or equal than',
+        '>'        => 'greater than',
+        '>='       => 'greater or equal than',
+        'in'       => 'in',
+    ];
+
+    /**
+     * Campos que serão utilizados na busca avançada:
+     * @var Array
+     */
+    private $advancedSearchFields; 
+
     public function __construct(string $index = null, string $actions = null) {
 
         if (!is_null($index)) {
@@ -167,7 +188,7 @@ class Listing {
     }
 
     /**
-     * Seta a quantity de registros por página para a paginação
+     * Seta a quantidade de registros por página para a paginação
      * @param Integer
      */
     public function setPerPage(int $quantity)
@@ -280,6 +301,9 @@ class Listing {
             }
         }
 
+        # Advanced Search
+        $source = $this->advancedSearch($source);
+
         # Pagination:
         if ($this->pagination) {
             # verificamos se a paginação foi alterada pelo usuário:
@@ -371,6 +395,8 @@ class Listing {
             'data'       => $this->data,
             'pagination' => $this->pagination,
             'perPage'    => $this->perPage,
+            'advancedSearchFields' => $this->advancedSearchFields,
+            'advancedSearchOperators' => $this->operators,
         ];
 
         # é para tratar diferente uma requisição ajax? Retornaremos só o json
@@ -460,6 +486,49 @@ class Listing {
 
     public function setCheckboxIdField(String $field) {
         return $this->checkboxIdField = $field;
+    }
+
+    public function setAdvancedSearchFields(Array $fields)
+    {
+        return $this->advancedSearchFields = $fields;
+    }
+
+    /**
+     * Busca avançada:
+     * @param Object <a source da Model/Table que terá a busca alterada>
+     * Também utiliza o request para pegar os campos, peradores e termos da busca
+     */
+    public function advancedSearch($source)
+    {
+        $fields     = request()->get('fields');
+        $operators = request()->get('operators');
+        $terms     = request()->get('terms');
+        if (is_array($fields) && !empty($fields)) {
+            foreach ($fields as $index => $field) {
+                if (!empty($terms[$index])) {
+                    switch($operators[$index]) {
+                        case '=' :
+                        case '!=':
+                        case '<' :
+                        case '>' :
+                        case '<=':
+                        case '>=':
+                            $source = $source->where($field, $operators[$index], $terms[$index]);
+                        break;
+                        case 'like':
+                        case 'not like':
+                            $source = $source->where($field, $operators[$index], '%'.$terms[$index].'%');
+                        break;
+                        case 'in':
+                            # termos separados por vírula:
+                            $values = explode(',', $terms['$index']);
+                            $source = $source->whereIn($field, $values);
+                        break;
+                    }
+                }
+            }
+        }
+        return $source;
     }
 
 }

@@ -27,7 +27,7 @@
                         onchange="this.form.submit()"
                         value="{{ request()->query('page') ?? '1' }}"
                         min="1"
-                        max="{{ $data->appends(request()->input())->lastPage() }}"
+                        max="{{ $data->appends(request()->query())->lastPage() }}"
                     >
                 </div>
             </div>
@@ -40,20 +40,20 @@
             @endforeach
 
             <div class="col-3 data-listagem" >
-                <strong>{{ $data->appends(request()->input())->currentPage() }} - {{$data->appends(request()->input())->perPage()}}</strong>
+                <strong>{{ $data->appends(request()->query())->currentPage() }} - {{$data->appends(request()->query())->perPage()}}</strong>
                 de
-                <strong>{{ $data->appends(request()->input())->lastPage() }}</strong>
+                <strong>{{ $data->appends(request()->query())->lastPage() }}</strong>
                 <a
                     data-paginate="left"
-                    @if($data->appends(request()->input())->currentPage() !== 1)
-                        href="?pp={{ $data->appends(request()->input())->perPage() }}&page={{ $data->appends(request()->input())->currentPage() - 1 }}"
+                    @if($data->appends(request()->query())->currentPage() !== 1)
+                        href="?pp={{ $data->appends(request()->query())->perPage() }}&page={{ $data->appends(request()->query())->currentPage() - 1 }}"
                     @endif
-                    class="btn btn-default @if($data->appends(request()->input())->currentPage() === 1)disabled @endif" aria-disabled="true"><i class="fas fa-chevron-left"></i></a><a
+                    class="btn btn-default @if($data->appends(request()->query())->currentPage() === 1)disabled @endif" aria-disabled="true"><i class="fas fa-chevron-left"></i></a><a
                     data-paginate="right"
-                    @if($data->appends(request()->input())->currentPage() !== $data->appends(request()->input())->lastPage())
-                        href="?pp={{ $data->appends(request()->input())->perPage() }}&page={{ $data->appends(request()->input())->currentPage() + 1 }}"
+                    @if($data->appends(request()->query())->currentPage() !== $data->appends(request()->query())->lastPage())
+                        href="?pp={{ $data->appends(request()->query())->perPage() }}&page={{ $data->appends(request()->query())->currentPage() + 1 }}"
                     @endif
-                    class="btn btn-default @if($data->appends(request()->input())->currentPage() === $data->appends(request()->input())->lastPage())disabled @endif"><i class="fas fa-chevron-right"></i></a>
+                    class="btn btn-default @if($data->appends(request()->query())->currentPage() === $data->appends(request()->query())->lastPage())disabled @endif"><i class="fas fa-chevron-right"></i></a>
             </div>
             <br> Total de {{ $data->total() }} registros
         </form>
