@@ -15,7 +15,7 @@
         @if(!empty($value))
             <span class="link-file">
             Visualizar:
-            <a href="/storage{{ $dir }}{{ $value }}" target="_blank">
+            <a href="{{ $dir }}{{ $value }}" target="_blank">
                 {{ $value }}
             </a>
 
