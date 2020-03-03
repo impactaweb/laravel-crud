@@ -11,6 +11,7 @@ use Impactaweb\Crud\Form\FormUrls;
 
 trait CrudControllerTrait
 {
+    protected $belongsToManyRelations = [];
 
     public function store(Request $request)
     {
