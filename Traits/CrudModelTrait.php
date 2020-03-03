@@ -66,7 +66,11 @@ trait CrudModelTrait
      */
     protected function saveInputData(array $requestData, $modelInstance)
     {
-        foreach ($modelInstance->getColunas() as $coluna) {
+        $colunas = $modelInstance->getColunas();
+        if (empty($colunas)) {
+            throw new \Exception("Ocorreu um erro ao obter as colunas da tabela.");
+        }
+        foreach ($colunas as $coluna) {
             if (array_key_exists($coluna, $requestData)) {
                 $modelInstance->$coluna = $requestData[$coluna];
             }
