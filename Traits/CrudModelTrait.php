@@ -19,7 +19,7 @@ trait CrudModelTrait
      */
     private function cacheExists()
     {
-        return Cache::has($this->primaryKey . '.columns');
+        return Cache::has($this->getTable() . '.columns');
     }
 
     /**
@@ -29,10 +29,10 @@ trait CrudModelTrait
     protected function getColunas()
     {
         if ($this->cacheExists()) {
-            $columns = Cache::get($this->primaryKey . '.columns');
+            $columns = Cache::get($this->getTable() . '.columns');
         } else {
             $columns = $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
-            Cache::put($this->primaryKey . '.columns', $columns, 200);
+            Cache::put($this->getTable() . '.columns', $columns, 200);
         }
         return $columns;
     }
@@ -94,7 +94,7 @@ trait CrudModelTrait
             }
 
             $relationIds = array_values((array)$requestData[$relation]);
-            $modelInstance->$function()->sync($relationIds);            
+            $modelInstance->$function()->sync($relationIds);
         }
         return $modelInstance;
     }
@@ -108,7 +108,9 @@ trait CrudModelTrait
     {
         $modelInstance = $this->getModelInstance($requestData);
         $modelInstance = $this->saveInputData($requestData, $modelInstance);
-        $modelInstance = $this->saveRelations($requestData, $relations, $modelInstance);
+        if (!empty($relations) && ($relations != [])) {
+            $modelInstance = $this->saveRelations($requestData, $relations, $modelInstance);
+        }
         return $modelInstance;
     }
 
@@ -118,12 +120,6 @@ trait CrudModelTrait
      * @param string $field
      */
     static public function deleteFile(int $key, string $field) {
-        $entity = self::find($key);
-        $entity->$field = null;
-        $entity->save();
-    }
-
-	static public function deleteFile(int $key, string $field) {
         $entity = self::find($key);
         $entity->$field = null;
         $entity->save();
