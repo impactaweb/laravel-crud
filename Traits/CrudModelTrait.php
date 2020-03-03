@@ -94,9 +94,9 @@ trait CrudModelTrait
             }
 
             $relationIds = array_values((array)$requestData[$relation]);
-            $modelInstance->$function()->sync($relationIds);
-            return $modelInstance;
+            $modelInstance->$function()->sync($relationIds);            
         }
+        return $modelInstance;
     }
 
     /**
