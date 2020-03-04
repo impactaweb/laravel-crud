@@ -2,50 +2,57 @@
 
 namespace Impactaweb\Crud\Traits;
 
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 trait Upload
 {
 
-    private $tempFiles = [];
-    private $publicFolder = '';
-    private $storageFolder = '';
-    private $tempFolder = '';
+    private $savedFiles = [];
 
     /**
-     * @inheritDoc
+     * @param array $savedFiles
      */
-    public function __construct()
+    public function setSavedFiles(array $savedFiles): void
     {
-        # Get folders from config
-        $this->setTempFolder(config('form.upload.temp_folder', 'tmp'));
-        $this->setPublicFolder(config('form.upload.public_folder', 'app/public'));
-        $this->setStorageFolder(config('form.upload.storage_folder', 'storage'));
+        $this->savedFiles = $savedFiles;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSavedFiles(): array
+    {
+        return $this->savedFiles;
     }
 
     /**
      * Upload specific field from request
      * @param string $field
      * @param string $folder
-     * @return string
-     * @throws ValidationException
+     * @param bool $fullpath
      */
-    public function saveFileFromRequest(string $field, string $folder, bool $fullpath = false): string
+    public function saveFile(string $field, string $folder, bool $fullpath = false)
     {
         $request = request();
-        $file = $request->file($field);
-        $path = $file->store($this->pathJoins($this->getPublicFolder(), $folder));
-        if (file_exists($path)) {
-            throw ValidationException::withMessages(
-                [$fieldName => "Falha no upload do {$file->getClientOriginalName()}{$file->extension()}"]);
+        if ($request->hasFile($field)) {
+            $file = $request->file($field);
+            $path = $file->store($this->pathJoins($this->getPublicFolder(), $folder));
+            if (file_exists($path)) {
+                throw ValidationException::withMessages(
+                    [$fieldName => "Falha no upload do {$file->getClientOriginalName()}{$file->extension()}"]);
+            }
+            if ($fullpath) {
+                $files = $this->getSavedFiles();
+                $files[$field] = $path;
+                $this->setSavedFiles($files);
+                return $path;
+            } else {
+                $files = $this->getSavedFiles();
+                $files[$field] = $file->hashName();
+                $this->setSavedFiles($files);
+                return $file->hashName();
+            }
         }
-        if ($fullpath) {
-            return $path;
-        } else {
-            return $file->hashName();
-        }
-
     }
 
     /**
@@ -54,15 +61,7 @@ trait Upload
     public function getStorageFolder(): string
     {
 
-        return $this->storageFolder;
-    }
-
-    /**
-     * @param string $storageFolder
-     */
-    public function setStorageFolder(string $storageFolder): void
-    {
-        $this->storageFolder = $storageFolder;
+        return config('form.upload.storage_folder', 'storage');
     }
 
     /**
@@ -70,32 +69,7 @@ trait Upload
      */
     public function getTempFolder(): string
     {
-        return $this->tempFolder;
-    }
-
-    /**
-     * @param string $tempFolder
-     */
-    public function setTempFolder(string $tempFolder): void
-    {
-        $this->tempFolder = $tempFolder;
-    }
-
-    /**
-     * Delete file from path
-     * @param string $path
-     * @param string $clientFolder
-     * @return bool
-     */
-    public function destroyFile(string $path, string $clientFolder): bool
-    {
-        if (file_exists(storage_path($clientFolder . '/' . $path))) {
-            return Storage::delete($path);
-        } else if (file_exists(storage_path($clientFolder . $path))) {
-            return Storage::delete($clientFolder . $path);
-        } else {
-            return false;
-        }
+        return config('form.upload.temp_folder', 'tmp');
     }
 
     /**
@@ -103,15 +77,7 @@ trait Upload
      */
     public function getPublicFolder(): string
     {
-        return $this->publicFolder;
-    }
-
-    /**
-     * @param string $publicFolder
-     */
-    public function setPublicFolder(string $publicFolder): void
-    {
-        $this->publicFolder = $publicFolder;
+        return config('form.upload.public_folder', 'app/public');
     }
 
     private function pathJoins(string $path1, string $path2)
@@ -120,4 +86,25 @@ trait Upload
         $path2 = explode('/', $path2);
         return join('/', array_merge($path1, $path2));
     }
+
+
+
+// TODO - Rever utilização ao implementar file async
+//    /**
+//     * Delete file from path
+//     * @param string $path
+//     * @param string $clientFolder
+//     * @return bool
+//     */
+//    public function destroyFile(string $path, string $clientFolder): bool
+//    {
+//        if (file_exists(storage_path($clientFolder . '/' . $path))) {
+//            return Storage::delete($path);
+//        } else if (file_exists(storage_path($clientFolder . $path))) {
+//            return Storage::delete($clientFolder . $path);
+//        } else {
+//            return false;
+//        }
+//    }
+
 }

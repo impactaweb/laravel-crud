@@ -7,4 +7,6 @@ return [
     "save_next" => "Salvar e Próximo",
     "cancel" => "Cancelar",
     "panel_default" => 'Opções Gerais',
+    "success_message" => 'Dados criados com sucesso!',
+    "info_message" => 'Dados gravados com sucesso!',
 ];

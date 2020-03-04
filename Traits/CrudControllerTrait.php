@@ -3,14 +3,18 @@
 namespace Impactaweb\Crud\Traits;
 
 use Exception;
+use Impactaweb\Crud\Helpers\Msg;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 use Impactaweb\Crud\Form\FormUrls;
 
 trait CrudControllerTrait
 {
+    use Upload;
+
     public function store(Request $request)
     {
         $belongsToManyRelations = isset($this->belongsToManyRelations) ? $this->belongsToManyRelations : [];
@@ -18,9 +22,13 @@ trait CrudControllerTrait
         return $this->salvarRedirecionar($request->all(), $belongsToManyRelations);
     }
 
+    /**
+     * Aplica o validation rules
+     * @param Request $request
+     */
     public function applyValidation(Request $request)
     {
-        if ($this->validation) {
+        if (isset($this->validation)) {
             $validation = new $this->validation();
             $request->validate($validation->rules());
         }
@@ -38,14 +46,20 @@ trait CrudControllerTrait
             # Callback antes de salvar
             $requestData = $this->beforeSave($requestData);
 
+            # Upload all files
+            $requestData = $this->uploadFiles($requestData);
+
             # Salva a model
             $modelObj = $this->salvar($requestData, $relations);
 
             # Callback apos o save
             $this->afterSave($modelObj);
-            $newId = $modelObj->getKey();
+
+            # Exibe mensagens
+            $this->showMessages($modelObj);
+
             # Envia o id da model para função de redirecionar
-            return $this->redirecionar($newId);
+            return $this->redirecionar($modelObj->getKey());
 
         } catch (\Throwable $e) {
             # Return erros
@@ -63,6 +77,11 @@ trait CrudControllerTrait
         }
     }
 
+    /**
+     * Callback before save CRUD
+     * @param $requestData
+     * @return mixed
+     */
     protected function beforeSave($requestData)
     {
         return $requestData;
@@ -80,6 +99,10 @@ trait CrudControllerTrait
         return $model->saveFromRequest($requestData, $relations);
     }
 
+    /**
+     * Callback after save Crud
+     * @param $modelObj
+     */
     protected function afterSave($modelObj)
     {
         # Do stuff here
@@ -110,6 +133,11 @@ trait CrudControllerTrait
         return new JsonResponse($errors, $status);
     }
 
+    /**
+     * Update
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function update(Request $request)
     {
         $belongsToManyRelations = isset($this->belongsToManyRelations) ? $this->belongsToManyRelations : [];
@@ -117,28 +145,40 @@ trait CrudControllerTrait
         return $this->salvarRedirecionar($request->all(), $belongsToManyRelations);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function destroy(Request $request)
     {
-        if ($request->query('modelId') && $request->query('filetodelete') && $request->query('fieldFile')) {
-            return $this->deleteFileFromRequest($request);
+        # Delete files from request
+        if ($request->query('model_id') && $request->query('file_delete')) {
+            try {
+                $this->model::deleteFile($request->query('model_id'), $request->query('file_delete'));
+                return response()->json(['success' => true]);
+            } catch (Exception $e) {
+                return response()->json(['success' => false], 422);
+            }
         }
-    }
 
-    /**
-     * Delete selected file from request
-     * Used for delete files with POST in forms
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function deleteFileFromRequest(Request $request)
-    {
-//        $deleted = $this->destroyFile($request->query('filetodelete'));
-        $this->model::deleteFile($request->query('modelId'), $request->query('fieldFile'));
-        return response()->json(['ok' => '']);
+        # Delete Model
+        if ($request->post('item')) {
+            $success = [];
+            $errors  = [];
+
+            foreach ($request->post('item') as $id) {
+                try {
+                    $this->model::find($id)->delete();
+                    $sucess[] = $id;
+                } catch (Exception $e) {
+                    $errors[] = $id;
+                }
+            }
+            # Return Json data
+            if (!empty($error)) {
+                # Error
+                return response()->json(['success' => $sucess, 'errors' => $errors], 422);
+            } else {
+                # Success
+                return response()->json(['success' => $sucess, 'errors' => $errors], 200);
+            }
+        }
     }
 
     /**
@@ -148,7 +188,6 @@ trait CrudControllerTrait
     {
         abort(404);
     }
-
 
     /**
      * Raise single field error
@@ -163,6 +202,18 @@ trait CrudControllerTrait
         ]);
     }
 
+    /**
+     * Show alert messages
+     * @param $modelObj
+     */
+    public function showMessages($modelObj)
+    {
+        if (request()->route()->getActionMethod() == 'store') {
+            Msg::success(__("form::form.success_message"));
+        } else {
+            Msg::info(__('form::form.info_message'));
+        }
+    }
 
     /**
      * Raise form errors
@@ -176,6 +227,20 @@ trait CrudControllerTrait
     public function raiseFormErrors($messages)
     {
         throw ValidationException::withMessages($messages);
+    }
+
+    /**
+     * Save all uploaded files in requestData
+     * @param $requestData
+     * @return array
+     */
+    protected function uploadFiles($requestData): array
+    {
+        foreach ($this->getSavedFiles() as $file => $path)
+        {
+            $requestData[$file] = $path;
+        }
+        return $requestData;
     }
 
 }
