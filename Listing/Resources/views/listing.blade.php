@@ -65,7 +65,7 @@
             @endforeach
         </table>
     </form>
-    {{-- @include('listing::pagination') --}}
+    @include('listing::pagination')
 </div>
 <script rel="text/javascript">
     function handleActionClick(action, method) {

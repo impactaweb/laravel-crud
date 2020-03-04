@@ -34,7 +34,7 @@
 
             {{-- para manter as query strings ao submeter o form: --}}
             @foreach(request()->query() as $item => $valor)
-                @if($item != 'page' && $item != 'pp')
+                @if($item != 'page' && $item != 'pp' && !is_array($valor))
                     <input type="hidden" name="{{ $item }}" value="{{ $valor }}" />
                 @endif
             @endforeach
