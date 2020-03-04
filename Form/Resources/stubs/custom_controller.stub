@@ -11,14 +11,16 @@ use DummyModel;
 class DummyClass extends Controller
 {
     use CrudControllerTrait;
-    public $model = DummyModelName::class;
-    public $validation = DummyNameRequest::class;
+    use Upload;
 
     /**
-    * Função do relacionamento da model => id do campo na model
+    * Função do relacionamento da model => id do campo no name do form
     * @var array
     */
-    public $relations = [];
+    public $belongsToManyRelations = [];
+
+    public $model = DummyModelName::class;
+    public $validation = DummyNameRequest::class;
 
     public function index()
     {
