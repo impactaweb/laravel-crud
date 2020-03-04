@@ -1,16 +1,18 @@
 <form action="{{ request()->url() }}" method="get" class="frmBuscaAvancada">
 @foreach ($advancedSearchFields as $position => $field)
   
-  <select name="fields[]">
-        @foreach ($advancedSearchFields as $field)
-            <option value="{{ $field }}" {{ request()->get('fields')[$position] == $field ? 'selected' : '' }} >{{ $field }}</option>
-        @endforeach
-   </select>
+   {{-- Nome do campo na tabela: --}}
+   <input type="hidden" name="fields[]" value="{{ $field}}" />
+   <span>{{ $field }}: </span>
+
+   {{-- Nome do operador: --}}
    <select name="operators[]">
         @foreach ($advancedSearchOperators as $key => $name)
             <option value="{{ $key }}" {{ request()->get('operators')[$position] == $key ? 'selected' : '' }} >{{ __('listing::listing.operators.'.$name) }}</option>
         @endforeach
    </select> 
+
+   {{-- Valor digitado pelo usuário: --}}
    <input value="{{ request()->get('terms')[$position] }}" name="terms[]" />
    
    <hr>

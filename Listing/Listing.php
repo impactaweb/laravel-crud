@@ -521,7 +521,7 @@ class Listing {
                         break;
                         case 'in':
                             # termos separados por vírula:
-                            $values = explode(',', $terms['$index']);
+                            $values = explode(',', $terms[$index]);
                             $source = $source->whereIn($field, $values);
                         break;
                     }
