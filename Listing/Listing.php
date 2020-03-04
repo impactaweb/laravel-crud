@@ -94,9 +94,15 @@ class Listing {
 
     /**
      * Campos que serão utilizados na busca avançada:
+     * Se não for setado, pegará todos da source:
      * @var Array
      */
     private $advancedSearchFields; 
+
+    /**
+     * Campos que são para serem removidos da busca avançada
+     */
+    public $removeAdvancedSearchFields;
 
     public function __construct(string $index = null, string $actions = null) {
 
@@ -129,6 +135,8 @@ class Listing {
         $this->pagination = config($this->configFile . '.pagination');
         $this->perPage    = config($this->configFile . '.defaultPerPage');
         $this->perPageMax = config($this->configFile . '.defaultPerPageMaximum');
+        $this->removeAdvancedSearchFields = config($this->configFile . '.defaultFieldsRemovedFromAdvancedSearch');
+
         # Ações padrão:
         $this->setActions([
             'editar' => config($this->configFile . '.defaultActionEdit'),
@@ -231,11 +239,10 @@ class Listing {
             ];
             $columns = $checkbox + $columns;
         }
-
         foreach ($columns as $field => $params) {
 
             # se é checkbox, inserimos o checkbox de controle:
-            if ($field == '__checkbox') {
+            if ($field === '__checkbox') {
                 $this->columns[$field]['column_link'] = '<input type="checkbox" name="checkbox-listing" onchange="handleAllChecked()" />';
                 continue;
             }
@@ -249,10 +256,8 @@ class Listing {
                  * transformação. Basta verificar se está no formato
                  * [0 => 'field_tabela'] ao invés de ['field_tabela' => 'Campo Tabela']
                  * */
-                if (is_int($field)) {
-                    $field = $params;
-                    $params = $this->label($params);
-                }
+                $field = $params;
+                $params = $this->label($params);
                 # considera-se que enviou só o label mesmo:
                 $this->columns[$field] = ['label' => $params];
             }
@@ -388,6 +393,7 @@ class Listing {
         $this->checkIndice();
         $this->prepararQuery();
         $this->prepararDados();
+        $this->checkAdvancedSearchFields();
 
         $resposta = [
             'actions'    => $this->actions,
@@ -488,9 +494,25 @@ class Listing {
         return $this->checkboxIdField = $field;
     }
 
+    /**
+     * Adicionar campo específicos para a busca avançada:
+     */
     public function setAdvancedSearchFields(Array $fields)
     {
         return $this->advancedSearchFields = $fields;
+    }
+
+    /**
+     * Informa campos específicos para serem ignorados na busca avancada
+     * @param Array campos a serem ignorados
+     * @param Boolean se é para ignorar os campos já existentes.
+     */
+    public function removeAdvancedSearchFields(Array $fields, Bool $ignoreDefaults = false)
+    {
+        if ($ignoreDefaults) {
+            return $this->removeAdvancedSearchFields = $fields;
+        }
+        return $this->removeAdvancedSearchFields += $fields;        
     }
 
     /**
@@ -529,6 +551,31 @@ class Listing {
             }
         }
         return $source;
+    }
+
+    /**
+     * Check if the advanced search fields are set:
+     */
+    public function checkAdvancedSearchFields()
+    {
+        # capo reservado da lib a ser ignorado:
+        $this->removeAdvancedSearchFields[] = '__checkbox';
+
+        if (empty($this->advancedSearchFields)) {
+            // if its empty, we put all the source fields as default:
+            if ( is_object($this->data) ) {
+                $arr = [];
+                foreach ($this->data->first()->getAttributes() as $index => $value) {
+                    # remove the reserved fields:
+                    if ( in_array($index, $this->removeAdvancedSearchFields) ) {
+                        continue;
+                    }
+                    # 
+                    $arr[] = $index;
+                }
+                return $this->advancedSearchFields = $arr;
+            }
+        }
     }
 
 }
