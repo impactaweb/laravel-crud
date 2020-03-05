@@ -7,4 +7,6 @@ return [
     "save_next" => "Save and next",
     "cancel" => "Cancel",
     "panel_default" => 'Default Options',
+    "success_message" => 'Ok! Data successfully created!',
+    "info_message" => 'Ok! Data successfully saved',
 ];

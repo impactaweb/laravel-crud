@@ -20,13 +20,13 @@
             </a>
 
             @if($required != true)
-                &nbsp; ‹ &nbsp;
+            &nbsp; ‹ &nbsp;
                 <a href="#" class="excluir" data-destroy="{{ $dir}}{{$value}}" data-file-field="{{ $id }}">
                     Excluir
                 </a>
-                @endif
+            @endif
 
-        </span>
+            </span>
         @endif
 
         <div class="invalid-feedback"></div>

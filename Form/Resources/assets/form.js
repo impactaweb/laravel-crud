@@ -1888,16 +1888,16 @@
                 const id = $('[data-id]').val();
                 if(!path || !fieldFile || !id) return;
 
-                axios.delete(`${$mainForm.attr('action')}filetodelete=${path}&modelId=${id}&fieldFile=${fieldFile}`)
-                .then(function(res) {
-                    $('[data-container="loading"]').html('')
-                    $($link).parent('span').prev('input').val(null)
-                    $($link).parent('span').remove()
-                })
-                .catch(function(err) {
-                    $('[data-container="loading"]').html('')
-                    alert('Falha ao excluir o arquivo')
-                })
+                axios.delete(`${$mainForm.attr('action')}model_id=${id}&file_delete=${fieldFile}`)
+                    .then(function(res) {
+                        $('[data-container="loading"]').html('')
+                        $($link).parent('span').prev('input').val(null)
+                        $($link).parent('span').remove()
+                    })
+                    .catch(function(err) {
+                        $('[data-container="loading"]').html('')
+                        alert('Falha ao excluir o arquivo')
+                    })
             }
         })
 
@@ -1962,7 +1962,7 @@
                         $progress.css('width', percentCompleted + '%').html(percentCompleted === 100 ? 'Concluído' :  (percentCompleted + '%'));
                     },
                 }).then(handleSuccess)
-                .catch(handleFailure)
+                    .catch(handleFailure)
             }
 
 
