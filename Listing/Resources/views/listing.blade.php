@@ -37,6 +37,10 @@
         </div>
     </div>
 
+    <div>
+    @include('listing::advancedsearch')
+    </div>
+
     @if($actions)
     <form id="meuForm" action="" method="POST" >
         {{ csrf_field() }}

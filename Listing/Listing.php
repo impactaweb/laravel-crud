@@ -77,6 +77,33 @@ class Listing {
      */
     public $checkboxIdField;
 
+    /**
+     * Opções de operadores da busca avançada:
+     */
+    private $operators = [
+        'like'     => 'is like',
+        'not like' => 'not like',
+        '='        => 'equal',
+        '!='       => 'different',
+        '<'        => 'less than',
+        '<='       => 'less or equal than',
+        '>'        => 'greater than',
+        '>='       => 'greater or equal than',
+        'in'       => 'in',
+    ];
+
+    /**
+     * Campos que serão utilizados na busca avançada:
+     * Se não for setado, pegará todos da source:
+     * @var Array
+     */
+    private $advancedSearchFields; 
+
+    /**
+     * Campos que são para serem removidos da busca avançada
+     */
+    public $removeAdvancedSearchFields;
+
     public function __construct(string $index = null, string $actions = null) {
 
         if (!is_null($index)) {
@@ -108,6 +135,8 @@ class Listing {
         $this->pagination = config($this->configFile . '.pagination');
         $this->perPage    = config($this->configFile . '.defaultPerPage');
         $this->perPageMax = config($this->configFile . '.defaultPerPageMaximum');
+        $this->removeAdvancedSearchFields = config($this->configFile . '.defaultFieldsRemovedFromAdvancedSearch');
+
         # Ações padrão:
         $this->setActions([
             'editar' => config($this->configFile . '.defaultActionEdit'),
@@ -167,7 +196,7 @@ class Listing {
     }
 
     /**
-     * Seta a quantity de registros por página para a paginação
+     * Seta a quantidade de registros por página para a paginação
      * @param Integer
      */
     public function setPerPage(int $quantity)
@@ -210,11 +239,10 @@ class Listing {
             ];
             $columns = $checkbox + $columns;
         }
-
         foreach ($columns as $field => $params) {
 
             # se é checkbox, inserimos o checkbox de controle:
-            if ($field == '__checkbox') {
+            if ($field === '__checkbox') {
                 $this->columns[$field]['column_link'] = '<input type="checkbox" name="checkbox-listing" onchange="handleAllChecked()" />';
                 continue;
             }
@@ -228,10 +256,8 @@ class Listing {
                  * transformação. Basta verificar se está no formato
                  * [0 => 'field_tabela'] ao invés de ['field_tabela' => 'Campo Tabela']
                  * */
-                if (is_int($field)) {
-                    $field = $params;
-                    $params = $this->label($params);
-                }
+                $field = $params;
+                $params = $this->label($params);
                 # considera-se que enviou só o label mesmo:
                 $this->columns[$field] = ['label' => $params];
             }
@@ -279,6 +305,9 @@ class Listing {
                 $source = $source->orWhere($field, 'LIKE', '%'.request()->get('q').'%');
             }
         }
+
+        # Advanced Search
+        $source = $this->advancedSearch($source);
 
         # Pagination:
         if ($this->pagination) {
@@ -364,6 +393,7 @@ class Listing {
         $this->checkIndice();
         $this->prepararQuery();
         $this->prepararDados();
+        $this->checkAdvancedSearchFields();
 
         $resposta = [
             'actions'    => $this->actions,
@@ -371,6 +401,8 @@ class Listing {
             'data'       => $this->data,
             'pagination' => $this->pagination,
             'perPage'    => $this->perPage,
+            'advancedSearchFields' => $this->advancedSearchFields,
+            'advancedSearchOperators' => $this->operators,
         ];
 
         # é para tratar diferente uma requisição ajax? Retornaremos só o json
@@ -460,6 +492,90 @@ class Listing {
 
     public function setCheckboxIdField(String $field) {
         return $this->checkboxIdField = $field;
+    }
+
+    /**
+     * Adicionar campo específicos para a busca avançada:
+     */
+    public function setAdvancedSearchFields(Array $fields)
+    {
+        return $this->advancedSearchFields = $fields;
+    }
+
+    /**
+     * Informa campos específicos para serem ignorados na busca avancada
+     * @param Array campos a serem ignorados
+     * @param Boolean se é para ignorar os campos já existentes.
+     */
+    public function removeAdvancedSearchFields(Array $fields, Bool $ignoreDefaults = false)
+    {
+        if ($ignoreDefaults) {
+            return $this->removeAdvancedSearchFields = $fields;
+        }
+        return $this->removeAdvancedSearchFields += $fields;        
+    }
+
+    /**
+     * Busca avançada:
+     * @param Object <a source da Model/Table que terá a busca alterada>
+     * Também utiliza o request para pegar os campos, peradores e termos da busca
+     */
+    public function advancedSearch($source)
+    {
+        $fields     = request()->get('fields');
+        $operators = request()->get('operators');
+        $terms     = request()->get('terms');
+        if (is_array($fields) && !empty($fields)) {
+            foreach ($fields as $index => $field) {
+                if (!empty($terms[$index])) {
+                    switch($operators[$index]) {
+                        case '=' :
+                        case '!=':
+                        case '<' :
+                        case '>' :
+                        case '<=':
+                        case '>=':
+                            $source = $source->where($field, $operators[$index], $terms[$index]);
+                        break;
+                        case 'like':
+                        case 'not like':
+                            $source = $source->where($field, $operators[$index], '%'.$terms[$index].'%');
+                        break;
+                        case 'in':
+                            # termos separados por vírula:
+                            $values = explode(',', $terms[$index]);
+                            $source = $source->whereIn($field, $values);
+                        break;
+                    }
+                }
+            }
+        }
+        return $source;
+    }
+
+    /**
+     * Check if the advanced search fields are set:
+     */
+    public function checkAdvancedSearchFields()
+    {
+        # capo reservado da lib a ser ignorado:
+        $this->removeAdvancedSearchFields[] = '__checkbox';
+
+        if (empty($this->advancedSearchFields)) {
+            // if its empty, we put all the source fields as default:
+            if ( is_object($this->data) ) {
+                $arr = [];
+                foreach ($this->data->first()->getAttributes() as $index => $value) {
+                    # remove the reserved fields:
+                    if ( in_array($index, $this->removeAdvancedSearchFields) ) {
+                        continue;
+                    }
+                    # 
+                    $arr[] = $index;
+                }
+                return $this->advancedSearchFields = $arr;
+            }
+        }
     }
 
 }

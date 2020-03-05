@@ -36,5 +36,12 @@ return [
     'defaultActionEdit'   => [ 'url' => '/edit/', 'method' => 'post'],
     'defaultActionDelete' => [ 'url' => '/destroy/', 'method' => 'post'],
 
+    /**
+     * Busca avançada
+     * campos que serão ignorados por padrão na hora da busca:
+     */
+    'defaultFieldsRemovedFromAdvancedSearch' => [
+        'flag_excluido',
+    ],
 ];
 
