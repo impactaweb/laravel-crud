@@ -1,5 +1,6 @@
 <form action="{{ request()->url() }}" method="get" class="frmBuscaAvancada">
-
+    <input type="hidden" name="pp" value="{{ request()->get('pp') }}" />
+ 
     @foreach ($advancedSearchFields as $position => $field)
     
     {{-- Nome do campo na tabela: --}}

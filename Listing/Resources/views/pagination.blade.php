@@ -7,12 +7,12 @@
                 <div class="col-sm-5 pl-0">
                 <input
                     type="number"
-                    value="{{ request()->query('pp') ?? '1' }}"
+                    value="{{ request()->query('pp') ?? $perPage }}"
                     class="form-control"
                     name="pp"
                     onchange="this.form.submit()"
                     min="1"
-                    max="1000"
+                    max="{{ config('listing.defaultPerPageMaximum') }}"
                 >
                 </div>
             </div>
