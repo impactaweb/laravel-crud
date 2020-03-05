@@ -145,7 +145,7 @@ trait CrudControllerTrait
         return $this->salvarRedirecionar($request->all(), $belongsToManyRelations);
     }
 
-    public function destroy(Request $request)
+    public function destroyfile(Request $request)
     {
         # Delete files from request
         if ($request->query('model_id') && $request->query('file_delete')) {
@@ -156,7 +156,10 @@ trait CrudControllerTrait
                 return response()->json(['success' => false], 422);
             }
         }
-
+        return response()->json(['success' => false], 422);
+    }
+    public function destroy(Request $request)
+    {
         # Delete Model
         if ($request->post('item')) {
             $success = [];
