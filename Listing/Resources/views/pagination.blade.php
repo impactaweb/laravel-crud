@@ -1,4 +1,4 @@
-@if($pagination)
+@if($pagination && $data)
     {{-- dica: o método appends informa ao links() que deve manter a query string ao paginar --}}
     <div class="row justify-content-center">
         <form class="col row" action="{{ request()->url() }}" method="get" style="text-align:left;" class="frmRodape" />

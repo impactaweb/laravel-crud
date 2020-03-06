@@ -1,3 +1,4 @@
+@if( count($advancedSearchFields) > 0)
 <form action="{{ request()->url() }}" method="get" class="frmBuscaAvancada">
     <input type="hidden" name="pp" value="{{ request()->get('pp') }}" />
  
@@ -22,3 +23,4 @@
     <button type="submit">buscar</button>
 
 </form>
+@endif

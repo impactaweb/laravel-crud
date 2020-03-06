@@ -45,6 +45,7 @@
     <form id="meuForm" action="" method="POST" >
         {{ csrf_field() }}
     @endif
+        @if($data)
         <table class="table table-striped">
             {{-- Cabeçalho com as columns --}}
             <thead>
@@ -64,6 +65,7 @@
                 </tr>
             @endforeach
         </table>
+        @endif
     </form>
     @include('listing::pagination')
 </div>

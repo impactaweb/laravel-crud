@@ -97,7 +97,7 @@ class Listing {
      * Se não for setado, pegará todos da source:
      * @var Array
      */
-    private $advancedSearchFields; 
+    private $advancedSearchFields = []; 
 
     /**
      * Campos que são para serem removidos da busca avançada
@@ -220,11 +220,6 @@ class Listing {
     {
         if (empty($columns)) {
             return null;
-        }
-
-        # se existe o field índice, será adicionado em $columns[]:
-        if (!is_null($this->index)) {
-            $columns = [$this->index => 'ID'] + $columns;
         }
 
         # se existe a coluna "__checkbox" voltamos com erro, pois ela é reservada da lib:
@@ -565,15 +560,13 @@ class Listing {
             // if its empty, we put all the source fields as default:
             if ( is_object($this->data) ) {
                 $arr = [];
-                if ( $this->data->first() !== null) {
-                    foreach ($this->data->first()->getAttributes() as $index => $value) {
-                        # remove the reserved fields:
-                        if ( in_array($index, $this->removeAdvancedSearchFields) ) {
-                            continue;
-                        }
-                        # 
-                        $arr[] = $index;
+                foreach ($this->data->first() as $index => $value) {
+                    # remove the reserved fields:
+                    if ( in_array($index, $this->removeAdvancedSearchFields) ) {
+                        continue;
                     }
+                    # 
+                    $arr[] = $index;
                 }
                 return $this->advancedSearchFields = $arr;
             }
