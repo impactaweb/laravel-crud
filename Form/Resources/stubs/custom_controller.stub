@@ -11,7 +11,6 @@ use DummyModel;
 class DummyClass extends Controller
 {
     use CrudControllerTrait;
-    use Upload;
 
     /**
     * Função do relacionamento da model => id do campo no name do form
