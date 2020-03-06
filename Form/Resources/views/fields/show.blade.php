@@ -2,7 +2,7 @@
     @include('form::fields.label')
 
     <div class="@if($col >= '10') col @else col-md-{{$col}} @endif">
-        {!! $conteudo !!}
+        {!! $content !!}
         <div class="invalid-feedback"></div>
     </div>
 </div>

@@ -52,6 +52,25 @@ class Form
 
 	private $cancelLinkUrl = '#';
 
+	private $hideActions = false;
+
+    /**
+     * @return bool
+     */
+    public function isHideActions(): bool
+    {
+        return $this->hideActions;
+    }
+
+    /**
+     * @param bool $hideActions
+     */
+    public function setHideActions(bool $hideActions)
+    {
+        $this->hideActions = $hideActions;
+        return $this;
+    }
+
 	protected $request;
 
 	/**
@@ -219,6 +238,7 @@ class Form
 				"actionsTemplate" => config('form.templates.actions'),
 				"isCancelVisible" => $this->isCancelVisible(),
 				"cancelUrl" => $this->getCancelLinkUrl(),
+				"hideActions" => $this->isHideActions(),
 				"form" => $this,
 			]
 		);
