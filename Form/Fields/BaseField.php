@@ -77,10 +77,6 @@ class BaseField
         $this->id = $id;
         $this->label = $label;
 
-        if (isset($contexto['value'])) {
-            unset($contexto['value']);
-        }
-
         foreach ($contexto as $atributo => $parametro) {
             $this->$atributo = $parametro;
         }

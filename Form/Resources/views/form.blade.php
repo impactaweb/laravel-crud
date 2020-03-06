@@ -37,5 +37,8 @@
         @include($panelTemplate)
     </div>
 
-    @include($actionsTemplate)
+
+    @if($hideActions === false)
+        @include($actionsTemplate)
+    @endif
 </form>
