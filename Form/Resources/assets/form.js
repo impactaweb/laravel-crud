@@ -1800,7 +1800,7 @@
         }
 
         function handleFailure(error) {
-
+            $('[data-container="loading"]').html('')
             if (error.status >= 500) {
                 const alertError = `
                 <div class="container alert mb-1 alert-danger alert-dismissible fade show" role="alert" data-expect >
@@ -1813,7 +1813,6 @@
 
                 $alert.innerHTML = alertError
                 $alert.scrollIntoView()
-                $('[data-container="loading"]').html('')
                 return
             }
 
@@ -1821,13 +1820,13 @@
 
 
             const alertMessage = `
-        <div class="container alert mb-1 alert-danger alert-dismissible fade show" role="alert" data-expect >
-        <span data-content>Ops! Por favor corrija os campos do formulário</span>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times</span>
-        </button>
-        </div>
-        `
+            <div class="container alert mb-1 alert-danger alert-dismissible fade show" role="alert" data-expect >
+            <span data-content>Ops! Por favor corrija os campos do formulário</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times</span>
+            </button>
+            </div>
+            `
             const camposInvalidos = error.responseJSON.errors
 
             let hasScroll = false
@@ -1835,8 +1834,16 @@
 
             Object.keys(camposInvalidos).forEach(function (name) {
 
+                let input;
                 const erros = '<li>' + camposInvalidos[name].join('</li><li>') + '</li>'
-                const input = '[name="' + name + '"]'
+                if (name.includes('.')) {
+                    NAME = 'r.10'
+                    name = 'r[1]'
+                    name = name.split('.')
+                    input = '[name="' + name[0] + '[' + name[1] + ']"]';
+                } else {
+                    input = '[name="' + name + '"]';
+                }
                 const $input = $(input)
 
                 $input.hasClass('is-invalid') ? null : $input.toggleClass('is-invalid')
@@ -1852,8 +1859,6 @@
 
             $alert.innerHTML = alertMessage
             $alert.scrollIntoView()
-
-            $('[data-container="loading"]').html('')
         }
 
         $('select[multiple]').each(function(idx, ele) {
