@@ -1,4 +1,26 @@
+<div data-container="loading"></div>
 <div class="corpo-listing" >
+    <button type="button" class="btn d-none" data-toggle="modal" data-target="#excluirModal" data-excluir="abrirModal"></button>
+    <div class="modal fade" id="excluirModal" tabindex="-1" role="dialog" aria-labelledby="excluirModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title" id="excluirModalLabel">Excluir</h3>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja excluir os itens selecionados?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" data-excluir="cancel">Cancelar</button>
+              <button type="button" class="btn btn-danger" data-excluir="confirm">Excluir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     <div class="header row">
         @if($actions)
             <div class="col">
@@ -11,7 +33,9 @@
                     <button
                         type="button"
                         class="btn btn-lg btn-default"
-                        onclick="handleActionClick('{{ $url }}', '{{ $method }}');"
+                        btn-action-field="{{ $action }}"
+                        btn-method="{{ $method }}"
+                        btn-url="{{ $url }}"
                         title="{{ $action }}"
                     >
                         @switch($action)
@@ -26,7 +50,6 @@
                                 @break
                             @default
                                 {!! $action !!}
-
                         @endswitch
                     </button>
                 @endforeach
@@ -37,16 +60,12 @@
         </div>
     </div>
 
-    <div>
-    @include('listing::advancedsearch')
-    </div>
-
     @if($actions)
     <form id="meuForm" action="" method="POST" >
         {{ csrf_field() }}
     @endif
         @if($data)
-        <table class="table table-striped">
+        <table class="table table-striped" id="listagemTable">
             {{-- Cabeçalho com as columns --}}
             <thead>
                 <tr>
@@ -70,13 +89,6 @@
     @include('listing::pagination')
 </div>
 <script rel="text/javascript">
-    function handleActionClick(action, method) {
-        const $form = document.querySelector('#meuForm')
-        $form.setAttribute('action', action)
-        $form.setAttribute('method', method)
-        $form.submit()
-    }
-
     function handleAllChecked() {
         const $mainCheckbox = document.querySelector('[name="checkbox-listing"]')
         $mainCheckbox.checked
@@ -84,16 +96,5 @@
             $ele.checked = $mainCheckbox.checked
         })
     }
-
-    (function(){
-        const search = new URLSearchParams(window.location.search)
-        Array.from(document.querySelectorAll('[data-paginate]'))
-            .forEach(function($pag) {
-                const query = new URLSearchParams($pag.href)
-                search.set('pp', search.get('pp') || query.get('pp') || '')
-                search.set('page', query.get('page') || '1')
-                $pag.href = '?' + search.toString()
-            })
-    })()
 </script>
 

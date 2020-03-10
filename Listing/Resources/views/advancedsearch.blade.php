@@ -1,26 +1,27 @@
 @if( count($advancedSearchFields) > 0)
-<form action="{{ request()->url() }}" method="get" class="frmBuscaAvancada">
-    <input type="hidden" name="pp" value="{{ request()->get('pp') }}" />
- 
+<form action="{{ request()->url() }}" method="get" class="frmBuscaAvancada" id="formBuscaAvaçada">
+    <input type="hidden" name="pp" value="1">
+
     @foreach ($advancedSearchFields as $position => $field)
-    
-    {{-- Nome do campo na tabela: --}}
-    <input type="hidden" name="fields[]" value="{{ $field}}" />
-    <span>{{ $field }}: </span>
-
-    {{-- Nome do operador: --}}
-    <select name="operators[]">
-            @foreach ($advancedSearchOperators as $key => $name)
-                <option value="{{ $key }}" {{ request()->get('operators')[$position] == $key ? 'selected' : '' }} >{{ __('listing::listing.operators.'.$name) }}</option>
-            @endforeach
-    </select> 
-
-    {{-- Valor digitado pelo usuário: --}}
-    <input value="{{ request()->get('terms')[$position] }}" name="terms[]" />
-    
-    <hr>
+        <input type="hidden" name="fields[]" value="{{ $field }}">
+        <div class="form-group row">
+            <div class="col">
+                <label class="col-auto col-form-label font-weight-bold" style="text-transform: capitalize;">{{ $field }}:</label>
+            </div>
+            <div class="col">
+                <select name="operators[]" class="form-control">
+                    @foreach ($advancedSearchOperators as $key => $name)
+                        <option value="{{ $key }}" {{ request()->get('operators')[$position] == $key ? 'selected' : '' }}>
+                            {{ __('listing::listing.operators.'.$name) }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" value="{{ request()->get('terms')[$position] }}" name="terms[]">
+            </div>
+        </div>
     @endforeach
-    <button type="submit">buscar</button>
 
 </form>
 @endif
