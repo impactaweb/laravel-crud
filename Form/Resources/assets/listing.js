@@ -118,7 +118,6 @@
 
     function handleDblClick() {
         const $item = $(this)
-        console.log(this)
 
         $('.listing-checkboxes').prop('checked', false)
             .parents('tr')
