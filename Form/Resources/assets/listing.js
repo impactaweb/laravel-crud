@@ -118,16 +118,15 @@
 
     function handleDblClick() {
         const $item = $(this)
+        console.log(this)
 
-        $item
-            .find('input[type="checkbox"]:first')
-            .prop('checked', false)
+        $('.listing-checkboxes').prop('checked', false)
             .parents('tr')
             .removeClass('active')
 
         $item
             .addClass('active')
-            .find('input[type="checkbox"]:first')
+            .find('.listing-checkboxes')
             .prop('checked', 'checked')
 
         if ($('#psListing [btn-action-field="visualizar"]').length > 0){
