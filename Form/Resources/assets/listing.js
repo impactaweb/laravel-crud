@@ -92,7 +92,6 @@
                 window.location.reload()
                 return
             }
-
             data.success.forEach(function(id) {
                 document.querySelector(`input[value="${id}"]`).parentNode.parentNode.remove()
             })
@@ -106,15 +105,36 @@
 
     function handleChange() {
         if(this.checked) {
-            $(this.parentNode.parentNode).css('text-shadow', '0 0 2px #222222')
+            $(this.parentNode.parentNode).addClass('active')
             return
         }
 
-        $(this.parentNode.parentNode).css('text-shadow', 'none')
+        $(this.parentNode.parentNode).removeClass('active')
     }
 
     function handleBuscaAvancada() {
         $('#formBuscaAvaçada').submit()
+    }
+
+    function handleDblClick() {
+        const $item = $(this)
+
+        $item
+            .find('input[type="checkbox"]:first')
+            .prop('checked', false)
+            .parents('tr')
+            .removeClass('active')
+
+        $item
+            .addClass('active')
+            .find('input[type="checkbox"]:first')
+            .prop('checked', 'checked')
+
+        if ($('#psListing [btn-action-field="visualizar"]').length > 0){
+            $('#psListing [btn-action-field="visualizar"]').click();
+        } else if ($('#psListing [btn-action-field="editar"]').length > 0){
+            $('#psListing [btn-action-field="editar"]').click();
+        }
     }
 
     function getCheckeds() {
@@ -143,6 +163,7 @@
     $('[data-excluir="confirm"]').click(handleConfirm)
     $('#listagemTable').checkboxes('range', true)
     $('[data-avancada="buscar"]').click(handleBuscaAvancada)
+    $('#listagemTable tbody tr').dblclick(handleDblClick)
 
     $checkboxs.each(function(idx, $item) {
         $item.checked = false

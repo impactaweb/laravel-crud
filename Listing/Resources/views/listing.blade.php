@@ -1,5 +1,5 @@
 <div data-container="loading"></div>
-<div class="corpo-listing" >
+<div class="corpo-listing" id="psListing">
     <button type="button" class="btn d-none" data-toggle="modal" data-target="#excluirModal" data-excluir="abrirModal"></button>
     <div class="modal fade" id="excluirModal" tabindex="-1" role="dialog" aria-labelledby="excluirModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -14,7 +14,7 @@
                 Tem certeza que deseja excluir os itens selecionados?
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal" data-excluir="cancel">Cancelar</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" data-excluir="cancel">Cancelar</button>
               <button type="button" class="btn btn-danger" data-excluir="confirm">Excluir</button>
             </div>
           </div>
@@ -65,7 +65,7 @@
         {{ csrf_field() }}
     @endif
         @if($data)
-        <table class="table table-striped" id="listagemTable">
+        <table class="table table-striped table-hover" id="listagemTable">
             {{-- Cabeçalho com as columns --}}
             <thead>
                 <tr>

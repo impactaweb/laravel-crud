@@ -62,7 +62,7 @@
             <a
                 href="{{ request()->url() }}"
                 title="limpar busca"
-                class="btn btn-secondary"
+                class="btn btn-default"
             >Limpar</a>
             <button type="button" class="btn btn-primary" data-avancada="buscar">Buscar</button>
         </div>

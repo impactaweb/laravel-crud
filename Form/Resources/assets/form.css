@@ -145,3 +145,11 @@ button.btn.btn-multiselect {
       background-color: #e0e0e0;
       background-position: 0 -15px;
 }
+
+.corpo-listing #listagemTable tbody tr.active {
+    text-shadow: 0 0 2px #222222;
+}
+
+.corpo-listing .btn.btn-default {
+  background-image: linear-gradient(to bottom,#fff 0,#e0e0e0 100%);
+}
