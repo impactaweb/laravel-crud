@@ -1889,9 +1889,12 @@
                 const fieldFile = $link.getAttribute('data-file-field');
                 const $mainForm = $('#form');
                 const id = $('[data-id]').val();
+
                 if(!path || !fieldFile || !id) return;
 
-                axios.delete(`${$mainForm.attr('action')}model_id=${id}&file_delete=${fieldFile}`)
+                axios.post(`${window.location.pathname.replace('/editar', '')}/destroyfile?model_id=${id}&file_delete=${fieldFile}`, {
+                    _token: $('[name="_token"]').val()
+                })
                     .then(function(res) {
                         $('[data-container="loading"]').html('')
                         $($link).parent('span').prev('input').val(null)
