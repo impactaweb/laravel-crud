@@ -104,6 +104,13 @@ class Listing {
      */
     public $removeAdvancedSearchFields;
 
+    /**
+     * Flag para interromper listagem:
+     * Caso tenhamos alguma ação da lista (ex: alterar um flag_status, etc...) devemos interromper 
+     * a execução da listagem e retornar:
+     */
+    private $requestActionResponse;
+
     public function __construct(string $index = null, string $actions = null) {
 
         if (!is_null($index)) {
@@ -269,8 +276,17 @@ class Listing {
      * então o get() é feito neste método ao final de tudo + paginação.
      */
     public function setSource($source)
-    {
+    {        
         $this->source = $source;
+
+        # inicia o builder caso tenha passado a Model pura, para não dar exception ao tentar montar query numa string:
+        $this->source = (is_string($this->source)) ? $this->source::query() : $this->source;
+
+        # Se há um post para a listagem realizar alguma ação após o setSource():
+        $response = $this->requestActions();
+        if ($response) {
+            $this->requestActionResponse = $response;
+        }
     }
 
     /**
@@ -282,9 +298,7 @@ class Listing {
             return null;
         }
 
-        # inicia o builder caso tenha passado a Model pura, para não dar exception ao tentar montar query numa string:
-        $source = (is_string($this->source)) ? $this->source::query() : $this->source;
-
+        $source = $this->source;
         # verificamos se tem ordenação:
         if (request()->get('ord') !== null) {
             $source = $source->orderBy(request()->get('ord'), (request()->get('dir') !== null) ? request()->get('dir') : 'ASC');
@@ -362,6 +376,24 @@ class Listing {
                                     $this->data[$key]->$field = $params['callback']($registro->$field);
                                 }
                             break;
+
+                            case 'type':
+                                switch($params['type']) {
+                                    case 'flag':
+                                        # certificando-se que não irá dar erro
+                                        if (is_null($this->data[$key]->$field)) {
+                                            $this->data[$key]->$field = 0;
+                                        }
+                                        $texto = ($this->data[$key]->$field > 0) ? 'Sim' : 'Não';
+                                        $this->data[$key]->$field = '<a href="javascript:void(0)" 
+                                                                    class="listing_flag" 
+                                                                    data-id="'.$this->data[$key]->{$this->index}.'" 
+                                                                    data-field="'.$field.'"
+                                                                    data-current-flag="'.$this->data[$key]->$field.'"
+                                                                    >'.$texto.'</a>';
+                                    break;
+                                }
+                            break;
                         }
                     }
                 }
@@ -385,6 +417,9 @@ class Listing {
      */
     public function render($view = '')
     {
+        if (!empty($this->requestActionResponse)) {
+            abort(200, json_encode($this->requestActionResponse));
+        }
         $this->checkIndice();
         $this->prepararQuery();
         $this->prepararDados();
@@ -571,6 +606,43 @@ class Listing {
                 return $this->advancedSearchFields = $arr;
             }
         }
+    }
+
+    /**
+     * Verifica e há ações para a listagem realizar, como
+     * alterar uma flag, etc...
+     * @return array
+     */
+    public function requestActions()
+    {
+        if (request()->get('listingAction') !== null) {
+
+            switch(request()->get('listingAction')) {
+                case 'flag':
+                    return $this->setSourceFlag(request()->get('id'), request()->get('field'), request()->get('currentFlag'));
+                break;
+
+                default: return ['erro' => 'nenhuma ação informada'];
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Set Flag
+     * Altera o status(flag) de uma determinada source:
+     * @param $id do registro
+     * @param $field nome do campo flag
+     * @param $flagAtual Número ou boolean
+     */
+    public function setSourceFlag($id, $field, $currentFlag)
+    {
+        if ($this->source
+            ->where($this->index, $id)
+            ->update([$field => !$currentFlag])) {
+                return ['success' => true];
+        }
+        return ['success' => false];
     }
 
 }

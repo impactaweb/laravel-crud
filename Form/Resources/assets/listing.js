@@ -147,6 +147,38 @@
         return ids.length > 0 ? ids : false
     }
 
+    // Função para atualizar a flag de um registro:
+    function handleListingFlag() {
+        console.log('clicou para alterar a flag');
+        let id          = $(this).data('id');
+        let field       = $(this).data('field');
+        let currentFlag = $(this).data('current-flag');
+        console.log(id, field, currentFlag);
+        $.ajax({
+            type: "GET",
+            url: window.location.href,
+            context: this,
+            data: {
+                'listingAction': 'flag', 
+                'id': id, 
+                'field': field, 
+                'currentFlag': currentFlag
+            },
+            success: function(data, textStatus, xhr) {
+                if(xhr.status == 200) {
+                    let text = 'Não';
+                    if (parseInt(id) > 0) { 
+                        text = 'Sim';
+                    }
+                    $(this).html(text);
+                }
+            },
+            error: function(err) {
+                console.log(err);
+            }
+        });
+    }
+
     const search = new URLSearchParams(window.location.search)
     Array.from(document.querySelectorAll('[data-paginate]'))
         .forEach(function($pag) {
@@ -162,6 +194,7 @@
     $('#listagemTable').checkboxes('range', true)
     $('[data-avancada="buscar"]').click(handleBuscaAvancada)
     $('#listagemTable tbody tr').dblclick(handleDblClick)
+    $('.listing_flag').click(handleListingFlag)    
 
     $checkboxs.each(function(idx, $item) {
         $item.checked = false
