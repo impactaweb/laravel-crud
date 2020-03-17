@@ -166,8 +166,23 @@
             },
             success: function(data, textStatus, xhr) {
                 if(xhr.status == 200) {
+                    // stamos a nova flag
+                    if (currentFlag == '0') {
+                        currentFlag = '1';
+                        $(this).removeClass('listing_off');
+                        $(this).addClass('listing_on');
+                    } else {
+                        currentFlag = '0';
+                        $(this).removeClass('listing_on');
+                        $(this).addClass('listing_off');
+                    }
+                    // alteramos o valor no atributo:
+                    $(this).data('current-flag', '' + currentFlag);
+
+                    // alteramos o texto
                     let text = 'Não';
-                    if (parseInt(id) > 0) { 
+                    // se a flag originalmente era 0, então voltou como 1:
+                    if (currentFlag == '1') { 
                         text = 'Sim';
                     }
                     $(this).html(text);

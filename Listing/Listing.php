@@ -381,12 +381,11 @@ class Listing {
                                 switch($params['type']) {
                                     case 'flag':
                                         # certificando-se que não irá dar erro
-                                        if (is_null($this->data[$key]->$field)) {
-                                            $this->data[$key]->$field = 0;
-                                        }
+                                        $this->data[$key]->$field = is_null($this->data[$key]->$field) ? '0' : $this->data[$key]->$field;
+                                        $class = ($this->data[$key]->$field > 0)  ? 'listing_on' : 'listing_off';
                                         $texto = ($this->data[$key]->$field > 0) ? 'Sim' : 'Não';
                                         $this->data[$key]->$field = '<a href="javascript:void(0)" 
-                                                                    class="listing_flag" 
+                                                                    class="listing_flag '.$class.'" 
                                                                     data-id="'.$this->data[$key]->{$this->index}.'" 
                                                                     data-field="'.$field.'"
                                                                     data-current-flag="'.$this->data[$key]->$field.'"
