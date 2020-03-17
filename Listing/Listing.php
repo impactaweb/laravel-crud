@@ -28,6 +28,11 @@ class Listing {
     private $index;
 
     /**
+     * Para inserir na tabela o campo ID automaticamente:
+     */
+    private $autoId;
+
+    /**
      * @var Boolean ativa/desativa a paginação na query. Default: true <Boolean>
      */
     public $pagination;
@@ -116,11 +121,13 @@ class Listing {
      */
     private $flagTexts;
 
-    public function __construct(string $index = null, string $actions = null) {
+    public function __construct(string $index = null, bool $autoId = true, string $actions = null) {
 
         if (!is_null($index)) {
             $this->setIndex($index);
         }
+
+        $this->autoId = $autoId;
 
         # verifica se há qtd de itens por página alterados pelo usuário da sessão:
         $this->checkQuantityPerPage();
@@ -238,6 +245,11 @@ class Listing {
         # se existe a coluna "__checkbox" voltamos com erro, pois ela é reservada da lib:
         if (in_array('__checkbox', $columns)) {
             throw new \Exception('Listagem: a coluna __checkbox é reservada e não pode ser inserida em setColumns');
+        }
+
+        # se é para inserir o ID automaticamente
+        if ($this->autoId && !empty($this->index)) {
+            $columns = [$this->index => [ 'label' => 'ID']] + $columns;
         }
 
         # se houver ação de formulário inserimos checkboxes:
