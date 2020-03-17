@@ -149,11 +149,14 @@
 
     // Função para atualizar a flag de um registro:
     function handleListingFlag() {
-        console.log('clicou para alterar a flag');
+        
         let id          = $(this).data('id');
         let field       = $(this).data('field');
         let currentFlag = $(this).data('current-flag');
-        console.log(id, field, currentFlag);
+
+        // loading class :
+        $(this).addClass('listing_loading');
+        
         $.ajax({
             type: "GET",
             url: window.location.href,
@@ -190,6 +193,9 @@
             },
             error: function(err) {
                 console.log(err);
+            },
+            complete: function() {
+                $(this).removeClass('listing_loading');
             }
         });
     }

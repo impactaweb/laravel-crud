@@ -42,6 +42,11 @@ return [
      */
     'defaultFieldsRemovedFromAdvancedSearch' => [
         'flag_excluido',
-    ],
+    ],    
+    
+    /**
+     * Textos para a flag:
+     */
+    'defaultFlagTexts' => ['off', 'on'],
 ];
 

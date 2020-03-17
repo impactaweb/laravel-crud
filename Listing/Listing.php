@@ -111,6 +111,11 @@ class Listing {
      */
     private $requestActionResponse;
 
+    /**
+     * Textos padrão para a flag:
+     */
+    private $flagTexts;
+
     public function __construct(string $index = null, string $actions = null) {
 
         if (!is_null($index)) {
@@ -143,6 +148,7 @@ class Listing {
         $this->perPage    = config($this->configFile . '.defaultPerPage');
         $this->perPageMax = config($this->configFile . '.defaultPerPageMaximum');
         $this->removeAdvancedSearchFields = config($this->configFile . '.defaultFieldsRemovedFromAdvancedSearch');
+        $this->flagTexts  = config($this->configFile . '.defaultFlagTexts') ? config($this->configFile . '.defaultFlagTexts') : ['Não', 'Sim'];
 
         # Ações padrão:
         $this->setActions([
@@ -382,14 +388,18 @@ class Listing {
                                     case 'flag':
                                         # certificando-se que não irá dar erro
                                         $this->data[$key]->$field = is_null($this->data[$key]->$field) ? '0' : $this->data[$key]->$field;
+                                        if (isset($params['flagTexts'])) {
+                                            $this->flagTexts = $params['flagTexts'];
+                                        }
                                         $class = ($this->data[$key]->$field > 0)  ? 'listing_on' : 'listing_off';
-                                        $texto = ($this->data[$key]->$field > 0) ? 'Sim' : 'Não';
                                         $this->data[$key]->$field = '<a href="javascript:void(0)" 
                                                                     class="listing_flag '.$class.'" 
                                                                     data-id="'.$this->data[$key]->{$this->index}.'" 
                                                                     data-field="'.$field.'"
+                                                                    data-flag-text-on="'.$this->flagTexts[1].'"
+                                                                    data-flag-text-off="'.$this->flagTexts[0].'"
                                                                     data-current-flag="'.$this->data[$key]->$field.'"
-                                                                    >'.$texto.'</a>';
+                                                                    >'.$this->flagTexts[$this->data[$key]->$field].'</a>';
                                     break;
                                 }
                             break;
