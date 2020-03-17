@@ -153,6 +153,8 @@
         let id          = $(this).data('id');
         let field       = $(this).data('field');
         let currentFlag = $(this).data('current-flag');
+        let flagTextOn  = $(this).data('flag-text-on');
+        let flagTextOff = $(this).data('flag-text-off');
 
         // loading class :
         $(this).addClass('listing_loading');
@@ -183,10 +185,10 @@
                     $(this).data('current-flag', '' + currentFlag);
 
                     // alteramos o texto
-                    let text = 'Não';
+                    let text = flagTextOff;
                     // se a flag originalmente era 0, então voltou como 1:
                     if (currentFlag == '1') { 
-                        text = 'Sim';
+                        text = flagTextOn;
                     }
                     $(this).html(text);
                 }
