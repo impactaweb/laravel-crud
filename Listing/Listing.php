@@ -28,6 +28,11 @@ class Listing {
     private $index;
 
     /**
+     * Para inserir na tabela o campo ID automaticamente:
+     */
+    private $autoId;
+
+    /**
      * @var Boolean ativa/desativa a paginação na query. Default: true <Boolean>
      */
     public $pagination;
@@ -104,11 +109,25 @@ class Listing {
      */
     public $removeAdvancedSearchFields;
 
-    public function __construct(string $index = null, string $actions = null) {
+    /**
+     * Flag para interromper listagem:
+     * Caso tenhamos alguma ação da lista (ex: alterar um flag_status, etc...) devemos interromper 
+     * a execução da listagem e retornar:
+     */
+    private $requestActionResponse;
+
+    /**
+     * Textos padrão para a flag:
+     */
+    private $flagTexts;
+
+    public function __construct(string $index = null, bool $autoId = true, string $actions = null) {
 
         if (!is_null($index)) {
             $this->setIndex($index);
         }
+
+        $this->autoId = $autoId;
 
         # verifica se há qtd de itens por página alterados pelo usuário da sessão:
         $this->checkQuantityPerPage();
@@ -136,6 +155,7 @@ class Listing {
         $this->perPage    = config($this->configFile . '.defaultPerPage');
         $this->perPageMax = config($this->configFile . '.defaultPerPageMaximum');
         $this->removeAdvancedSearchFields = config($this->configFile . '.defaultFieldsRemovedFromAdvancedSearch');
+        $this->flagTexts  = config($this->configFile . '.defaultFlagTexts') ? config($this->configFile . '.defaultFlagTexts') : ['Não', 'Sim'];
 
         # Ações padrão:
         $this->setActions([
@@ -227,6 +247,11 @@ class Listing {
             throw new \Exception('Listagem: a coluna __checkbox é reservada e não pode ser inserida em setColumns');
         }
 
+        # se é para inserir o ID automaticamente
+        if ($this->autoId && !empty($this->index)) {
+            $columns = [$this->index => [ 'label' => 'ID']] + $columns;
+        }
+
         # se houver ação de formulário inserimos checkboxes:
         if ( !empty($this->getActions()) && ($showCheckbox) ) {
             $checkbox['__checkbox'] = [
@@ -269,8 +294,17 @@ class Listing {
      * então o get() é feito neste método ao final de tudo + paginação.
      */
     public function setSource($source)
-    {
+    {        
         $this->source = $source;
+
+        # inicia o builder caso tenha passado a Model pura, para não dar exception ao tentar montar query numa string:
+        $this->source = (is_string($this->source)) ? $this->source::query() : $this->source;
+
+        # Se há um post para a listagem realizar alguma ação após o setSource():
+        $response = $this->requestActions();
+        if ($response) {
+            $this->requestActionResponse = $response;
+        }
     }
 
     /**
@@ -282,9 +316,7 @@ class Listing {
             return null;
         }
 
-        # inicia o builder caso tenha passado a Model pura, para não dar exception ao tentar montar query numa string:
-        $source = (is_string($this->source)) ? $this->source::query() : $this->source;
-
+        $source = $this->source;
         # verificamos se tem ordenação:
         if (request()->get('ord') !== null) {
             $source = $source->orderBy(request()->get('ord'), (request()->get('dir') !== null) ? request()->get('dir') : 'ASC');
@@ -362,6 +394,27 @@ class Listing {
                                     $this->data[$key]->$field = $params['callback']($registro->$field);
                                 }
                             break;
+
+                            case 'type':
+                                switch($params['type']) {
+                                    case 'flag':
+                                        # certificando-se que não irá dar erro
+                                        $this->data[$key]->$field = is_null($this->data[$key]->$field) ? '0' : $this->data[$key]->$field;
+                                        if (isset($params['flagTexts'])) {
+                                            $this->flagTexts = $params['flagTexts'];
+                                        }
+                                        $class = ($this->data[$key]->$field > 0)  ? 'listing_on' : 'listing_off';
+                                        $this->data[$key]->$field = '<a href="javascript:void(0)" 
+                                                                    class="listing_flag '.$class.'" 
+                                                                    data-id="'.$this->data[$key]->{$this->index}.'" 
+                                                                    data-field="'.$field.'"
+                                                                    data-flag-text-on="'.$this->flagTexts[1].'"
+                                                                    data-flag-text-off="'.$this->flagTexts[0].'"
+                                                                    data-current-flag="'.$this->data[$key]->$field.'"
+                                                                    >'.$this->flagTexts[$this->data[$key]->$field].'</a>';
+                                    break;
+                                }
+                            break;
                         }
                     }
                 }
@@ -385,6 +438,9 @@ class Listing {
      */
     public function render($view = '')
     {
+        if (!empty($this->requestActionResponse)) {
+            abort(200, json_encode($this->requestActionResponse));
+        }
         $this->checkIndice();
         $this->prepararQuery();
         $this->prepararDados();
@@ -571,6 +627,43 @@ class Listing {
                 return $this->advancedSearchFields = $arr;
             }
         }
+    }
+
+    /**
+     * Verifica e há ações para a listagem realizar, como
+     * alterar uma flag, etc...
+     * @return array
+     */
+    public function requestActions()
+    {
+        if (request()->get('listingAction') !== null) {
+
+            switch(request()->get('listingAction')) {
+                case 'flag':
+                    return $this->setSourceFlag(request()->get('id'), request()->get('field'), request()->get('currentFlag'));
+                break;
+
+                default: return ['erro' => 'nenhuma ação informada'];
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Set Flag
+     * Altera o status(flag) de uma determinada source:
+     * @param $id do registro
+     * @param $field nome do campo flag
+     * @param $flagAtual Número ou boolean
+     */
+    public function setSourceFlag($id, $field, $currentFlag)
+    {
+        if ($this->source
+            ->where($this->index, $id)
+            ->update([$field => !$currentFlag])) {
+                return ['success' => true];
+        }
+        return ['success' => false];
     }
 
 }

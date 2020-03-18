@@ -147,6 +147,61 @@
         return ids.length > 0 ? ids : false
     }
 
+    // Função para atualizar a flag de um registro:
+    function handleListingFlag() {
+        
+        let id          = $(this).data('id');
+        let field       = $(this).data('field');
+        let currentFlag = $(this).data('current-flag');
+        let flagTextOn  = $(this).data('flag-text-on');
+        let flagTextOff = $(this).data('flag-text-off');
+
+        // loading class :
+        $(this).addClass('listing_loading');
+        
+        $.ajax({
+            type: "GET",
+            url: window.location.href,
+            context: this,
+            data: {
+                'listingAction': 'flag', 
+                'id': id, 
+                'field': field, 
+                'currentFlag': currentFlag
+            },
+            success: function(data, textStatus, xhr) {
+                if(xhr.status == 200) {
+                    // stamos a nova flag
+                    if (currentFlag == '0') {
+                        currentFlag = '1';
+                        $(this).removeClass('listing_off');
+                        $(this).addClass('listing_on');
+                    } else {
+                        currentFlag = '0';
+                        $(this).removeClass('listing_on');
+                        $(this).addClass('listing_off');
+                    }
+                    // alteramos o valor no atributo:
+                    $(this).data('current-flag', '' + currentFlag);
+
+                    // alteramos o texto
+                    let text = flagTextOff;
+                    // se a flag originalmente era 0, então voltou como 1:
+                    if (currentFlag == '1') { 
+                        text = flagTextOn;
+                    }
+                    $(this).html(text);
+                }
+            },
+            error: function(err) {
+                console.log(err);
+            },
+            complete: function() {
+                $(this).removeClass('listing_loading');
+            }
+        });
+    }
+
     const search = new URLSearchParams(window.location.search)
     Array.from(document.querySelectorAll('[data-paginate]'))
         .forEach(function($pag) {
@@ -162,6 +217,7 @@
     $('#listagemTable').checkboxes('range', true)
     $('[data-avancada="buscar"]').click(handleBuscaAvancada)
     $('#listagemTable tbody tr').dblclick(handleDblClick)
+    $('.listing_flag').click(handleListingFlag)    
 
     $checkboxs.each(function(idx, $item) {
         $item.checked = false
