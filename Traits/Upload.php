@@ -91,13 +91,12 @@ trait Upload
     /**
      * Delete file from path
      * @param string $path Path completo onde se encontra o arquivo
-     * @param string $fileHashName Hash do arquivo
      * @return bool
      */
-    public function destroyFile(string $path, string $fileHashName): bool
+    public function destroyFile(string $path): bool
     {
         if (file_exists(storage_path($path))) {
-            return Storage::move($path, storage_path('trash/' . $fileHashName));
+            return Storage::move($path, storage_path('trash/' . $path));
         } else {
             return false;
         }
