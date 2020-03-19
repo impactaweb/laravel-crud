@@ -284,6 +284,22 @@ class Listing {
 
             # link para ordenação:
             $this->columns[$field]['column_link'] = $this->makeOrderLink($field);
+
+            /**
+             * Agora verificamos se a coluna é um relacionamento
+             * ex: candidato.nome
+             */ 
+            $f = explode('.', $field);
+            if (is_array($f)) {
+                // remove o primeiro item pois já será o campo original:
+                $this->columns[$field]['original'] = $f[0];
+                unset($f[0]);
+                foreach ($f as $related) {
+                    if (!empty($related)) {
+                        $this->columns[$field]['relations'][] = $related;
+                    }
+                }
+            }
         }
     }
 
