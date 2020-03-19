@@ -79,25 +79,7 @@
             @foreach ($data as $item)
                 <tr>
                 @foreach ($columns as $column => $params)
-                    {{-- valor padrão para relacionamento vazio: --}}
-                    <?php $valor = config('listing.defaultEmptyRelationValue'); ?>
-                    
-                    {{-- valor customizado para relacionamento vazio: --}}
-                    @if (isset($params['emptyRelationValue']))
-                        <?php $valor = $params['emptyRelationValue']; ?>
-                    @endif
-
-                    @if (isset($params['relations']))
-                        @if ( !is_null($item->{$params['original']}) )
-                            <?php $valor = $item->{$params['original']}; ?>
-                            @foreach ($params['relations'] as $related)
-                                <?php $valor = $valor->{$related}; ?>
-                            @endforeach
-                        @endif
-                    @else
-                        <?php $valor = $item->{$column}; ?>
-                    @endif
-                    <td>{!! $valor !!}</td>
+                    <td>{!! $item->$column !!}</td>
                 @endforeach
                 </tr>
             @endforeach

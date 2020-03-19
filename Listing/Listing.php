@@ -403,7 +403,23 @@ class Listing {
                         continue;
                     }
 
+                    # valor padrão em caso de relacionamento vazio:
+                    $valor = isset($params['emptyRelationValue']) ? $params['emptyRelationValue'] : config('listing.defaultEmptyRelationValue');
+
+                    # Joga o valor correto considerando relacionamento:
+                    if (isset($params['relations'])) {
+                        if ( !is_null($this->data[$key]->{$params['original']}) ) {
+                            $valor = $this->data[$key]->{$params['original']};
+                            foreach ($params['relations'] as $related) {
+                                $valor = $valor->{$related};
+                            }
+                        }
+                        $this->data[$key]->$field = $valor;
+                    }
+
+                    // Verifica callbacks e etc:
                     foreach ($params as $item => $valor) {
+
                         switch ($item) {
                             case 'callback':
                                 if ($this->checkEmpty &&  !empty($registro->$field)) {
