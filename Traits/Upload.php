@@ -88,23 +88,19 @@ trait Upload
     }
 
 
-
-// TODO - Rever utilização ao implementar file async
-//    /**
-//     * Delete file from path
-//     * @param string $path
-//     * @param string $clientFolder
-//     * @return bool
-//     */
-//    public function destroyFile(string $path, string $clientFolder): bool
-//    {
-//        if (file_exists(storage_path($clientFolder . '/' . $path))) {
-//            return Storage::delete($path);
-//        } else if (file_exists(storage_path($clientFolder . $path))) {
-//            return Storage::delete($clientFolder . $path);
-//        } else {
-//            return false;
-//        }
-//    }
+    /**
+     * Delete file from path
+     * @param string $path Path completo onde se encontra o arquivo
+     * @param string $fileHashName Hash do arquivo
+     * @return bool
+     */
+    public function destroyFile(string $path, string $fileHashName): bool
+    {
+        if (file_exists(storage_path($path))) {
+            return Storage::move($path, storage_path('trash/' . $fileHashName));
+        } else {
+            return false;
+        }
+    }
 
 }
