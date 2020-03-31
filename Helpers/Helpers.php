@@ -56,3 +56,19 @@ if(!function_exists('endsWith')) {
         return (substr($string, -$len) === $endString);
     }
 }
+
+if(!function_exists('listingRelationLabel')) {
+    /**
+     * Trata a string do label de busca avançada em caso de relacionamentos, removendo os pontos e deixando apenas o útimo item
+     * @param $label
+     * @return $string
+     */
+    function listingRelationLabel($label)
+    {
+        $array = explode('.', $label);
+        if (count($array) > 1) {
+            $label = end($array);
+        }
+        return $label;
+    }
+}

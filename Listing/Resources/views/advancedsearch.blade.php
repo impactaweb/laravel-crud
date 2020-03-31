@@ -6,7 +6,7 @@
         <input type="hidden" name="fields[]" value="{{ $field }}">
         <div class="form-group row">
             <div class="col">
-                <label class="col-auto col-form-label font-weight-bold" style="text-transform: capitalize;">{{ $field }}:</label>
+                <label class="col-auto col-form-label font-weight-bold" style="text-transform: capitalize;">{{ listingRelationLabel($field) }}:</label>
             </div>
             <div class="col">
                 <select name="operators[]" class="form-control">

@@ -1,6 +1,7 @@
 <?php
 
 namespace Impactaweb\Crud\Listing;
+require_once __DIR__ . '/../Helpers/Helpers.php';
 
 class Listing {
     /**
@@ -614,31 +615,54 @@ class Listing {
         }
         
         foreach ($fields as $index => $field) {
-            
+
             if (empty($terms[$index])) 
                 continue;
 
+            # se for pelo relacionamento:
+            $relField = null; # campo que será feita a busca dentro do relacionamento
+            $rel = explode('.', $field);
+            if (count($rel) > 1) {
+                $relMethod = $rel[0]; 
+                $relField  = end($rel);
+            }
+
+
             switch($operators[$index]) {
-                case '=' :
-                case '!=':
-                case '<' :
-                case '>' :
-                case '<=':
-                case '>=':
-                    $source = $source->where($field, $operators[$index], $terms[$index]);
-                    break;
                 case 'like':
                 case 'not like':
-                    $source = $source->where($field, $operators[$index], '%'.$terms[$index].'%');
-                    break;
-                case 'in':
-                    # termos separados por vírula:
-                    $values = explode(',', $terms[$index]);
-                    $source = $source->whereIn($field, $values);
+                    $terms[$index] = '%'.$terms[$index].'%';
                     break;
             }
+
+            # Realiza a busca:
+            # o IN é um pouco diferente:
+            if ($operators[$index] == 'in') {
+                $values = explode(',', $terms[$index]);
+                if ($relField) {
+                    $source = $source->whereHas($relMethod, function($q) use($relField, $values) {
+                        $q->whereIn($relField, $values);
+                    });
+                    break;
+                }
+                $source = $source->whereIn($field, $values);
+                return $source;
+            }
+
+            # as outras buscas são padrão:
+            # caso seja pelo relacionamento:
+            if ($relField) {
+                $source = $source->whereHas($relMethod, function($q) use($relField, $operators, $terms, $index) {
+                    $q->where($relField, $operators[$index], $terms[$index]);
+                });
+                return $source;
+            }
+
+            # sem o relacionamento:
+            $source = $source->where($field, $operators[$index], $terms[$index]);
+            return $source;
         }
-        return $source;
+        
     }
 
     /**
