@@ -1,6 +1,6 @@
 @if( count($advancedSearchFields) > 0)
 <form action="{{ request()->url() }}" method="get" class="frmBuscaAvancada" id="formBuscaAvaçada">
-    <input type="hidden" name="pp" value="1">
+    <input type="hidden" name="pp" value="{{ request()->query('pp') ?? $perPage }}">
 
     @foreach ($advancedSearchFields as $position => $field)
         <input type="hidden" name="fields[]" value="{{ $field }}">
