@@ -605,32 +605,37 @@ class Listing {
      */
     public function advancedSearch($source)
     {
-        $fields     = request()->get('fields');
+        $fields = request()->get('fields');
         $operators = request()->get('operators');
-        $terms     = request()->get('terms');
-        if (is_array($fields) && !empty($fields)) {
-            foreach ($fields as $index => $field) {
-                if (!empty($terms[$index])) {
-                    switch($operators[$index]) {
-                        case '=' :
-                        case '!=':
-                        case '<' :
-                        case '>' :
-                        case '<=':
-                        case '>=':
-                            $source = $source->where($field, $operators[$index], $terms[$index]);
-                        break;
-                        case 'like':
-                        case 'not like':
-                            $source = $source->where($field, $operators[$index], '%'.$terms[$index].'%');
-                        break;
-                        case 'in':
-                            # termos separados por vírula:
-                            $values = explode(',', $terms[$index]);
-                            $source = $source->whereIn($field, $values);
-                        break;
-                    }
-                }
+        $terms = request()->get('terms');    
+        
+        if (!is_array($fields) || empty($fields)) {
+            return $source;
+        }
+        
+        foreach ($fields as $index => $field) {
+            
+            if (empty($terms[$index])) 
+                continue;
+
+            switch($operators[$index]) {
+                case '=' :
+                case '!=':
+                case '<' :
+                case '>' :
+                case '<=':
+                case '>=':
+                    $source = $source->where($field, $operators[$index], $terms[$index]);
+                    break;
+                case 'like':
+                case 'not like':
+                    $source = $source->where($field, $operators[$index], '%'.$terms[$index].'%');
+                    break;
+                case 'in':
+                    # termos separados por vírula:
+                    $values = explode(',', $terms[$index]);
+                    $source = $source->whereIn($field, $values);
+                    break;
             }
         }
         return $source;
