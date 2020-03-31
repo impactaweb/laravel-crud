@@ -348,16 +348,11 @@ class Listing {
                 }
 
                 # se for pelo relacionamento:
-                $relField = null; # campo que será feita a busca dentro do relacionamento
-                $rel = explode('.', $field);
-                if (count($rel) > 1) {
-                    $relMethod = $rel[0]; 
-                    $relField  = end($rel);
-                }
+                $rel = $this->isRelation($field);
 
-                if ($relField) {
-                    $source = $source->orWhereHas($relMethod, function($q) use($relField) {
-                        $q->where($relField, 'LIKE', '%'.request()->get('q').'%');
+                if (is_array($rel)) {
+                    $source = $source->orWhereHas($rel['method'], function($q) use($rel) {
+                        $q->where($rel['field'], 'LIKE', '%'.request()->get('q').'%');
                     });
                 } else {
                     $source = $source->orWhere($field, 'LIKE', '%'.request()->get('q').'%');
@@ -635,14 +630,9 @@ class Listing {
                 continue;
 
             # se for pelo relacionamento:
-            $relField = null; # campo que será feita a busca dentro do relacionamento
-            $rel = explode('.', $field);
-            if (count($rel) > 1) {
-                $relMethod = $rel[0]; 
-                $relField  = end($rel);
-            }
+            $rel = $this->isRelation($field); # campo que será feita a busca dentro do relacionamento
 
-
+            #
             switch($operators[$index]) {
                 case 'like':
                 case 'not like':
@@ -654,9 +644,9 @@ class Listing {
             # o IN é um pouco diferente:
             if ($operators[$index] == 'in') {
                 $values = explode(',', $terms[$index]);
-                if ($relField) {
-                    $source = $source->whereHas($relMethod, function($q) use($relField, $values) {
-                        $q->whereIn($relField, $values);
+                if (is_array($rel)) {
+                    $source = $source->whereHas($rel['method'], function($q) use($rel, $values) {
+                        $q->whereIn($rel['field'], $values);
                     });
                     break;
                 }
@@ -666,9 +656,9 @@ class Listing {
 
             # as outras buscas são padrão:
             # caso seja pelo relacionamento:
-            if ($relField) {
-                $source = $source->whereHas($relMethod, function($q) use($relField, $operators, $terms, $index) {
-                    $q->where($relField, $operators[$index], $terms[$index]);
+            if (is_array($rel)) {
+                $source = $source->whereHas($rel['method'], function($q) use($rel, $operators, $terms, $index) {
+                    $q->where($rel['field'], $operators[$index], $terms[$index]);
                 });
                 return $source;
             }
@@ -740,6 +730,21 @@ class Listing {
                 return ['success' => true];
         }
         return ['success' => false];
+    }
+
+    /**
+     * Identifica se um campo é de um relacionamento e retorna 
+     * os itens necessários:
+     * @param $field String
+     * @return $array Array com o método e campo
+     */
+    public function isRelation($field)
+    {
+        $rel = explode('.', $field);
+        if (count($rel) > 1) {
+            return ['method' => $rel[0], 'field' => end($rel)];
+        }
+        return null;         
     }
 
 }
