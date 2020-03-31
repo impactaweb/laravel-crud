@@ -36,7 +36,7 @@ trait Upload
         $request = request();
         if ($request->hasFile($field)) {
             $file = $request->file($field);
-            $path = $file->store($this->pathJoins($this->getPublicFolder(), $folder));
+            $path = $file->store($folder);
             if (file_exists($path)) {
                 throw ValidationException::withMessages(
                     [$fieldName => "Falha no upload do {$file->getClientOriginalName()}{$file->extension()}"]);
