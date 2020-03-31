@@ -742,7 +742,10 @@ class Listing {
     {
         $rel = explode('.', $field);
         if (count($rel) > 1) {
-            return ['method' => $rel[0], 'field' => end($rel)];
+            $field  = end($rel);
+            array_pop($rel);
+            $method = implode('.', $rel);
+            return ['method' => $method, 'field' => end($rel)];
         }
         return null;         
     }
