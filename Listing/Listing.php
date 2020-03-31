@@ -346,7 +346,22 @@ class Listing {
                 if ($field == '__checkbox') {
                     continue;
                 }
-                $source = $source->orWhere($field, 'LIKE', '%'.request()->get('q').'%');
+
+                # se for pelo relacionamento:
+                $relField = null; # campo que será feita a busca dentro do relacionamento
+                $rel = explode('.', $field);
+                if (count($rel) > 1) {
+                    $relMethod = $rel[0]; 
+                    $relField  = end($rel);
+                }
+
+                if ($relField) {
+                    $source = $source->orWhereHas($relMethod, function($q) use($relField) {
+                        $q->where($relField, 'LIKE', '%'.request()->get('q').'%');
+                    });
+                } else {
+                    $source = $source->orWhere($field, 'LIKE', '%'.request()->get('q').'%');
+                }
             }
         }
 
