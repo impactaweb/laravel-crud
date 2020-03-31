@@ -743,7 +743,9 @@ class Listing {
         $rel = explode('.', $field);
         if (count($rel) > 1) {
             $field  = end($rel);
+            # removemos o campo do array
             array_pop($rel);
+            # o que resta são os N relacionamentos:
             $method = implode('.', $rel);
             return ['method' => $method, 'field' => end($rel)];
         }
