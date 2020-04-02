@@ -38,7 +38,11 @@
         }
 
         if(btnAction === 'editar') {
-            window.location.href = `${window.location.pathname}/${selecteds[0]}/editar?${ids}${querys.toString()}`
+            let pathname = window.location.pathname
+            pathname = pathname.lastIndexOf('/') + 1 === pathname.length 
+                ? pathname.slice(1, pathname.lastIndexOf('/'))
+                : pathname
+            window.location.replace(`${window.location.origin}/${pathname}/${selecteds[0]}/editar?${ids}${querys.toString()}`)
             return
         }
 
@@ -95,7 +99,7 @@
             data.success.forEach(function(id) {
                 document.querySelector(`input[value="${id}"]`).parentNode.parentNode.remove()
             })
-
+            window.location.reload()
         })
         .catch(function(err) {
             $('[data-container="loading"]').html('')
