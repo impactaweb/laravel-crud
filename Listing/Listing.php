@@ -519,7 +519,7 @@ class Listing {
         # caso seja um relacionamento, não faz o link para clicar (pois ainda não temos essa ordenação por relacionamento)
         $rel = $this->isRelation($field);
         if (isset($rel['method'])) {
-            return $field;
+            return $this->columns[$field]['label'];
         }
 
         # se já existe ordem, verificamos a direção para mudá-la
