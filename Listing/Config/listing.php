@@ -48,5 +48,10 @@ return [
      * Textos para a flag:
      */
     'defaultFlagTexts' => ['off', 'on'],
+
+    /**
+     * Texto padrão para relacionamentos vazios:
+     */
+    'defaultEmptyRelationValue' => '-',
 ];
 

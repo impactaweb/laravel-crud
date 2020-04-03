@@ -25,7 +25,7 @@
                 id="c-{{$id}}-nao"
                 class=""
                 value="0"
-                @if($value == 0)
+                @if($value === 0 || $value === '0')
                     checked="checked"
                 @endif
                 @if($required)

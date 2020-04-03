@@ -1,6 +1,7 @@
 <?php
 
 namespace Impactaweb\Crud\Listing;
+require_once __DIR__ . '/../Helpers/Helpers.php';
 
 class Listing {
     /**
@@ -284,6 +285,22 @@ class Listing {
 
             # link para ordenação:
             $this->columns[$field]['column_link'] = $this->makeOrderLink($field);
+
+            /**
+             * Agora verificamos se a coluna é um relacionamento
+             * ex: candidato.nome
+             */ 
+            $f = explode('.', $field);
+            if (is_array($f)) {
+                // remove o primeiro item pois já será o campo original:
+                $this->columns[$field]['original'] = $f[0];
+                unset($f[0]);
+                foreach ($f as $related) {
+                    if (!empty($related)) {
+                        $this->columns[$field]['relations'][] = $related;
+                    }
+                }
+            }
         }
     }
 
@@ -329,7 +346,17 @@ class Listing {
                 if ($field == '__checkbox') {
                     continue;
                 }
-                $source = $source->orWhere($field, 'LIKE', '%'.request()->get('q').'%');
+
+                # se for pelo relacionamento:
+                $rel = $this->isRelation($field);
+
+                if (is_array($rel)) {
+                    $source = $source->orWhereHas($rel['method'], function($q) use($rel) {
+                        $q->where($rel['field'], 'LIKE', '%'.request()->get('q').'%');
+                    });
+                } else {
+                    $source = $source->orWhere($field, 'LIKE', '%'.request()->get('q').'%');
+                }
             }
         }
 
@@ -387,7 +414,23 @@ class Listing {
                         continue;
                     }
 
+                    # valor padrão em caso de relacionamento vazio:
+                    $valor = isset($params['emptyRelationValue']) ? $params['emptyRelationValue'] : config('listing.defaultEmptyRelationValue');
+
+                    # Joga o valor correto considerando relacionamento:
+                    if (isset($params['relations'])) {
+                        if ( !is_null($this->data[$key]->{$params['original']}) ) {
+                            $valor = $this->data[$key]->{$params['original']};
+                            foreach ($params['relations'] as $related) {
+                                $valor = $valor->{$related};
+                            }
+                        }
+                        $this->data[$key]->$field = $valor;
+                    }
+
+                    // Verifica callbacks e etc:
                     foreach ($params as $item => $valor) {
+
                         switch ($item) {
                             case 'callback':
                                 if ($this->checkEmpty &&  !empty($registro->$field)) {
@@ -473,6 +516,12 @@ class Listing {
      */
     public function makeOrderLink($field)
     {
+        # caso seja um relacionamento, não faz o link para clicar (pois ainda não temos essa ordenação por relacionamento)
+        $rel = $this->isRelation($field);
+        if (isset($rel['method'])) {
+            return $this->columns[$field]['label'];
+        }
+
         # se já existe ordem, verificamos a direção para mudá-la
         $dir = request()->get('dir') ?? 'ASC';
         $ord = request()->get('ord');
@@ -573,35 +622,58 @@ class Listing {
      */
     public function advancedSearch($source)
     {
-        $fields     = request()->get('fields');
+        $fields = request()->get('fields');
         $operators = request()->get('operators');
-        $terms     = request()->get('terms');
-        if (is_array($fields) && !empty($fields)) {
-            foreach ($fields as $index => $field) {
-                if (!empty($terms[$index])) {
-                    switch($operators[$index]) {
-                        case '=' :
-                        case '!=':
-                        case '<' :
-                        case '>' :
-                        case '<=':
-                        case '>=':
-                            $source = $source->where($field, $operators[$index], $terms[$index]);
-                        break;
-                        case 'like':
-                        case 'not like':
-                            $source = $source->where($field, $operators[$index], '%'.$terms[$index].'%');
-                        break;
-                        case 'in':
-                            # termos separados por vírula:
-                            $values = explode(',', $terms[$index]);
-                            $source = $source->whereIn($field, $values);
-                        break;
-                    }
-                }
-            }
+        $terms = request()->get('terms');    
+        
+        if (!is_array($fields) || empty($fields)) {
+            return $source;
         }
-        return $source;
+        
+        foreach ($fields as $index => $field) {
+
+            if (empty($terms[$index])) 
+                continue;
+
+            # se for pelo relacionamento:
+            $rel = $this->isRelation($field); # campo que será feita a busca dentro do relacionamento
+
+            #
+            switch($operators[$index]) {
+                case 'like':
+                case 'not like':
+                    $terms[$index] = '%'.$terms[$index].'%';
+                    break;
+            }
+
+            # Realiza a busca:
+            # o IN é um pouco diferente:
+            if ($operators[$index] == 'in') {
+                $values = explode(',', $terms[$index]);
+                if (is_array($rel)) {
+                    $source = $source->whereHas($rel['method'], function($q) use($rel, $values) {
+                        $q->whereIn($rel['field'], $values);
+                    });
+                    break;
+                }
+                $source = $source->whereIn($field, $values);
+                return $source;
+            }
+
+            # as outras buscas são padrão:
+            # caso seja pelo relacionamento:
+            if (is_array($rel)) {
+                $source = $source->whereHas($rel['method'], function($q) use($rel, $operators, $terms, $index) {
+                    $q->where($rel['field'], $operators[$index], $terms[$index]);
+                });
+                return $source;
+            }
+
+            # sem o relacionamento:
+            $source = $source->where($field, $operators[$index], $terms[$index]);
+            return $source;
+        }
+        
     }
 
     /**
@@ -664,6 +736,26 @@ class Listing {
                 return ['success' => true];
         }
         return ['success' => false];
+    }
+
+    /**
+     * Identifica se um campo é de um relacionamento e retorna 
+     * os itens necessários:
+     * @param $field String
+     * @return $array Array com o método e campo
+     */
+    public function isRelation($field)
+    {
+        $rel = explode('.', $field);
+        if (count($rel) > 1) {
+            $field  = end($rel);
+            # removemos o campo do array
+            array_pop($rel);
+            # o que resta são os N relacionamentos:
+            $method = implode('.', $rel);
+            return ['method' => $method, 'field' => $field];
+        }
+        return null;         
     }
 
 }

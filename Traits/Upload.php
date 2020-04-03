@@ -36,7 +36,7 @@ trait Upload
         $request = request();
         if ($request->hasFile($field)) {
             $file = $request->file($field);
-            $path = $file->store($this->pathJoins($this->getPublicFolder(), $folder));
+            $path = $file->store($folder);
             if (file_exists($path)) {
                 throw ValidationException::withMessages(
                     [$fieldName => "Falha no upload do {$file->getClientOriginalName()}{$file->extension()}"]);
@@ -88,23 +88,18 @@ trait Upload
     }
 
 
-
-// TODO - Rever utilização ao implementar file async
-//    /**
-//     * Delete file from path
-//     * @param string $path
-//     * @param string $clientFolder
-//     * @return bool
-//     */
-//    public function destroyFile(string $path, string $clientFolder): bool
-//    {
-//        if (file_exists(storage_path($clientFolder . '/' . $path))) {
-//            return Storage::delete($path);
-//        } else if (file_exists(storage_path($clientFolder . $path))) {
-//            return Storage::delete($clientFolder . $path);
-//        } else {
-//            return false;
-//        }
-//    }
+    /**
+     * Delete file from path
+     * @param string $path Path completo onde se encontra o arquivo
+     * @return bool
+     */
+    public function destroyFile(string $path): bool
+    {
+        if (file_exists(storage_path($path))) {
+            return Storage::move($path, storage_path('trash/' . $path));
+        } else {
+            return false;
+        }
+    }
 
 }
