@@ -753,7 +753,7 @@ class Listing {
             array_pop($rel);
             # o que resta são os N relacionamentos:
             $method = implode('.', $rel);
-            return ['method' => $method, 'field' => end($rel)];
+            return ['method' => $method, 'field' => $field];
         }
         return null;         
     }

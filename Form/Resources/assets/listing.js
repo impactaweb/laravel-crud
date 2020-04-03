@@ -88,7 +88,7 @@
                 window.location.reload()
                 // document.querySelector(`input[value="${id}"]`).parentNode.parentNode.remove()
             })
-
+            window.location.reload()
         })
         .catch(function(err) {
             $('[data-container="loading"]').html('')
