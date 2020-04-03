@@ -1,4 +1,4 @@
-@if($pagination && $data)
+@if($pagination && $data && $data->total() > 0)
 
     <form class="" action="{{ request()->url() }}" method="get"/>
 
