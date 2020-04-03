@@ -1,25 +1,7 @@
 <div data-container="loading"></div>
 <div class="corpo-listing" id="psListing">
-    <button type="button" class="btn d-none" data-toggle="modal" data-target="#excluirModal" data-excluir="abrirModal"></button>
-    <div class="modal fade" id="excluirModal" tabindex="-1" role="dialog" aria-labelledby="excluirModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h3 class="modal-title" id="excluirModalLabel">Excluir</h3>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-                Tem certeza que deseja excluir os itens selecionados?
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal" data-excluir="cancel">Cancelar</button>
-              <button type="button" class="btn btn-danger" data-excluir="confirm">Excluir</button>
-            </div>
-          </div>
-        </div>
-      </div>
+
+    @include('listing::remove-modal')
 
     <div class="header row">
         @if($actions)
@@ -32,21 +14,22 @@
                     ?>
                     <button
                         type="button"
-                        class="btn btn-lg btn-default"
+                        class="btn btn-lg btn-default tooltips"
                         btn-action-field="{{ $action }}"
                         btn-method="{{ $method }}"
                         btn-url="{{ $url }}"
                         title="{{ $action }}"
+                        data-toggle="tooltip" data-placement="top" 
                     >
                         @switch($action)
                             @case('editar')
-                                <i class="fas fa-pen"></i>
+                                <i class="far fa-edit"></i>
                                 @break
                             @case('inserir')
-                                <i class="fas fa-plus"></i>
+                                <i class="far fa-plus-square"></i>
                                 @break
                             @case('excluir')
-                                <i class="fas fa-trash-alt"></i>
+                                <i class="far fa-trash-alt"></i>
                                 @break
                             @default
                                 {!! $action !!}
@@ -60,41 +43,38 @@
         </div>
     </div>
 
-    @if($actions)
     <form id="meuForm" action="" method="POST" >
         {{ csrf_field() }}
-    @endif
-        @if($data)
-        <table class="table table-striped table-hover" id="listagemTable">
-            {{-- Cabeçalho com as columns --}}
-            <thead>
-                <tr>
-                @foreach($columns as $column => $params)
-                    <th scope="col" class="border-top-0">{!! $params['column_link'] !!}</th>
-                @endforeach
-                </tr>
-            </thead>
 
-            {{-- Registros --}}
-            @foreach ($data as $item)
-                <tr>
-                @foreach ($columns as $column => $params)
-                    <td>{!! $item->$column !!}</td>
-                @endforeach
-                </tr>
+    @if($data && $columns)
+    <table class="table table-striped table-hover table-sm" id="listagemTable" data-redir="{{ url()->full() }}">
+        {{-- Cabeçalho com as columns --}}
+        <thead>
+            <tr>
+            @foreach($columns as $column => $params)
+                <th scope="col" class="border-top-0">{!! $params['column_link'] !!}</th>
             @endforeach
-        </table>
-        @endif
+            </tr>
+        </thead>
+
+        {{-- Registros --}}
+        @forelse ($data as $item)
+            <tr>
+            @foreach ($columns as $column => $params)
+                <td>{!! $item->$column !!}</td>
+            @endforeach
+            </tr>
+        @empty
+            <tr class="empty">
+                <td colspan="{{ count($columns) }}">Nenhum item encontrado</td>
+            </tr>
+        @endforelse
+    </table>
+    @endif
+
     </form>
     @include('listing::pagination')
 </div>
-<script rel="text/javascript">
-    function handleAllChecked() {
-        const $mainCheckbox = document.querySelector('[name="checkbox-listing"]')
-        $mainCheckbox.checked
-        Array.from(document.querySelectorAll('.listing-checkboxes')).forEach(function($ele) {
-            $ele.checked = $mainCheckbox.checked
-        })
-    }
-</script>
 
+<style>
+</style>

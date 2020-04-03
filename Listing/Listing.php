@@ -264,7 +264,7 @@ class Listing {
 
             # se é checkbox, inserimos o checkbox de controle:
             if ($field === '__checkbox') {
-                $this->columns[$field]['column_link'] = '<input type="checkbox" name="checkbox-listing" onchange="handleAllChecked()" />';
+                $this->columns[$field]['column_link'] = '<input type="checkbox" name="checkbox-listing" />';
                 continue;
             }
 

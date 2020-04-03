@@ -8,50 +8,38 @@
 
         const btnAction = this.getAttribute('btn-action-field')
         const btnMethod = this.getAttribute('btn-method')
-        const btnUrl = this.getAttribute('btn-url')
         let ids = ''
+        
+        // Pega o path e remove todos "/" do final da string
+        let pathname = window.location.pathname.replace(/\/+$/,'')
 
         const selecteds = getCheckeds()
 
-        if(btnAction === 'inserir') {
-            window.location.href = btnUrl
+        if (btnAction === 'inserir') {
+            window.location.href = `${pathname}/criar?redir=${encodeURIComponent(pathname + window.location.search)}`
             return
         }
 
-        if(!selecteds.length) {
+        if (!selecteds.length) {
             alert('Selecione no minimo 1 item da listagem')
             return
         }
 
-        const querys = new URLSearchParams(window.location.search)
-
-        querys.delete('operators[]')
-        querys.delete('terms[]')
-        querys.delete('fields[]')
-
-        if(!querys.has('redir')) {
-            querys.set('redir', window.location.pathname)
-        }
-
-        if(selecteds.length > 1) {
+        if (selecteds.length > 1) {
             ids = `ids=${selecteds.join(',')}&`
         }
 
-        if(btnAction === 'editar') {
-            let pathname = window.location.pathname
-            pathname = pathname.lastIndexOf('/') + 1 === pathname.length 
-                ? pathname.slice(1, pathname.lastIndexOf('/'))
-                : pathname
-            window.location.replace(`${window.location.origin}/${pathname}/${selecteds[0]}/editar?${ids}${querys.toString()}`)
+        if (btnAction === 'editar') {
+            window.location.href = `${pathname}/${selecteds[0]}/editar?${ids}&redir=${encodeURIComponent(pathname + window.location.search)}`
             return
         }
 
-        if(btnAction === 'excluir') {
+        if (btnAction === 'excluir') {
             modalExcluir(selecteds)
             return
         }
 
-        $form.action = btnUrl
+        $form.action = this.getAttribute('btn-url')
         $form.method = btnMethod
         $form.submit()
     }
@@ -97,7 +85,8 @@
                 return
             }
             data.success.forEach(function(id) {
-                document.querySelector(`input[value="${id}"]`).parentNode.parentNode.remove()
+                window.location.reload()
+                // document.querySelector(`input[value="${id}"]`).parentNode.parentNode.remove()
             })
             window.location.reload()
         })
@@ -107,7 +96,7 @@
         })
     }
 
-    function handleChange() {
+    function handleCheckboxChange(e) {
         if(this.checked) {
             $(this.parentNode.parentNode).addClass('active')
             return
@@ -119,6 +108,23 @@
     function handleBuscaAvancada() {
         $('#formBuscaAvaçada').submit()
     }
+
+    function handleTdClick() {
+        if ($('input.listing-checkboxes',this).length) {
+            e.preventDefault()
+            return 
+        }
+
+        const $checkbox = $(this).parents('tr').find('.listing-checkboxes:first')
+        if ($checkbox.is(':checked')) {
+            $checkbox.prop('checked', false)
+            $(this).parents('tr').removeClass('active')
+        } else {
+            $checkbox.prop('checked', 'checked')
+            $(this).parents('tr').addClass('active')
+        }
+    }
+
 
     function handleDblClick() {
         const $item = $(this)
@@ -206,6 +212,22 @@
         });
     }
 
+    function handleAllChecked() {
+        if ($('[name="checkbox-listing"]').is(':checked')) {
+            $('.listing-checkboxes')
+                .prop('checked', 'checked')
+                .parents('tr')
+                .addClass('active');
+
+        } else {
+            $('.listing-checkboxes').prop('checked', false)
+            .parents('tr')
+            .removeClass('active')
+        }
+
+    }
+
+    /*
     const search = new URLSearchParams(window.location.search)
     Array.from(document.querySelectorAll('[data-paginate]'))
         .forEach(function($pag) {
@@ -214,17 +236,28 @@
             search.set('page', query.get('page') || '1')
             $pag.href = '?' + search.toString()
         })
+    */
+
 
     $('[btn-action-field]').click(handleActionClick)
-    $('input.listing-checkboxes').change(handleChange)
+    $('input.listing-checkboxes').change(handleCheckboxChange)
     $('[data-excluir="confirm"]').click(handleConfirm)
     $('#listagemTable').checkboxes('range', true)
     $('[data-avancada="buscar"]').click(handleBuscaAvancada)
-    $('#listagemTable tbody tr').dblclick(handleDblClick)
+    $('#listagemTable tbody tr:not(.empty) td').click(handleTdClick)
+    $('#listagemTable tbody tr:not(.empty)').dblclick(handleDblClick)
     $('.listing_flag').click(handleListingFlag)    
+    $('input[name="checkbox-listing"]').click(handleAllChecked)
 
     $checkboxs.each(function(idx, $item) {
         $item.checked = false
     })
-
+    
+    // Ativar tooltip para todos os actions
+    if (!($('[data-toggle="tooltip"]:first').data && $('[data-toggle="tooltip"]:first').data('bs.tooltip'))) {
+        $('[data-toggle="tooltip"]').tooltip()
+    }
+    
+    
 })(jQuery, axios)
+
