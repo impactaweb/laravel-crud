@@ -38,7 +38,11 @@
         }
 
         if(btnAction === 'editar') {
-            window.location.href = `${window.location.pathname}/${selecteds[0]}/editar?${ids}${querys.toString()}`
+            let pathname = window.location.pathname
+            pathname = pathname.lastIndexOf('/') + 1 === pathname.length 
+                ? pathname.slice(1, pathname.lastIndexOf('/'))
+                : pathname
+            window.location.href = `${pathname}/${selecteds[0]}/editar?${ids}${querys.toString()}`
             return
         }
 

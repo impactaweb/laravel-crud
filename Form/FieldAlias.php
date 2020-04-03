@@ -28,7 +28,8 @@ class FieldAlias
         "datetime" => Fields\DateTimeField::class,
         "time" => Fields\TimeField::class,
         "rtf" => Fields\RtfField::class,
-        'multiselectgroup' => Fields\MultiSelectGroupField::class
+        'multiselectgroup' => Fields\MultiSelectGroupField::class,
+        'flextext' => Fields\FlexText::class
     ];
 
 }

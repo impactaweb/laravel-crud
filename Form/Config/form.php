@@ -31,7 +31,8 @@ return [
             'datetime' => 'form::fields.datetime',
             'time' => 'form::fields.time',
             'rtf' => 'form::fields.rtf',
-            'multiselectgroup' => 'form::fields.multiselectgroup'
+            'multiselectgroup' => 'form::fields.multiselectgroup',
+            'flextext' => 'form::fields.flextext'
         ],
 
     ],
