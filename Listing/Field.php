@@ -7,6 +7,7 @@ class Field {
     public $name;
     public $label;
     public $activeByDefault = true;
+    public $flagOrderby = true;
 
     public function __construct(string $name, string $label, array $options = [])
     {
@@ -37,6 +38,26 @@ class Field {
     public function activeByDefault()
     {
         return $this->activeByDefault;
+    }
+
+    public function getFieldOrderbyLink()
+    {
+        $request = request();
+        $fieldName = $this->getName();
+        if ($this->flagOrderby) {
+
+            if (($request->get('ord') ?? $fieldName) != $fieldName) {
+                $direction = 'asc';
+            } else {
+                // Aqui, deve inverter o valor (desc vira asc, asc vira desc)
+                $direction = strtolower($request->get('dir') ?? 'asc') == 'desc' ? 'asc' : 'desc';
+            }
+
+            $fullUrl = $request->fullUrlWithQuery(['ord' => $fieldName, 'dir' => $direction]);
+            return '<a href="' . $fullUrl . '" class="order-' . $direction . '">' . $this->getLabel() . '</a>';
+        }
+
+        return $this->getLabel();
     }
 
 }

@@ -13,16 +13,27 @@ return [
 
     /**
      * Paginação: quantidade padrão de itens por página:
-     * <Boolean>
-     */
-    'pagination' => true,
-    
-    /**
-     * Paginação: quantidade padrão de itens por página:
      * <Int>
      */
     'defaultPerPage' => 10,
 
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Paginação: quantidade padrão de itens por página:
+     * <Boolean>
+     */
+    'pagination' => true,
+    
+    
     /**
      * Paginação: quantidade máxima de itens por página: 
      * <Int>

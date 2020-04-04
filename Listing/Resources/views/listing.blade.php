@@ -52,7 +52,16 @@
         <thead>
             <tr>
             @foreach($columns as $column)
-                <th scope="col" class="border-top-0">{!! $column->getLabel() !!}</th>
+
+                @if($loop->first && $column->getName() == $primaryKey)
+                    <th scope="col" class="border-top-0">
+                        <input type="checkbox" name="checkbox-listing" />
+                    </th>
+                @endif
+
+                <th scope="col" class="border-top-0">
+                    {!! $column->getFieldOrderbyLink() !!}
+                </th>
             @endforeach
             </tr>
         </thead>
@@ -61,6 +70,13 @@
         @forelse ($data->items() as $item)
             <tr>
             @foreach ($columns as $column)
+
+                @if($loop->first && $column->getName() == $primaryKey)
+                <td>
+                    <input type="checkbox" name="checkbox-listing" />
+                </td>
+                @endif
+
                 <td>{!! $item->{$column->getIndexName()} !!}</td>
             @endforeach
             </tr>

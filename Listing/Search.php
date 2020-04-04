@@ -5,7 +5,7 @@ namespace Impactaweb\Crud\Listing;
 class Search {
 
     public $fields;
-    private $operators = [
+    static public $operators = [
         'like'     => 'is like',
         'not like' => 'not like',
         '='        => 'equal',

@@ -33,7 +33,7 @@ class DataSource {
     /**
      * Retorna o Colletion da query
      */
-    public function getData(array $columns, ?array $orderby = [], int $perPagePagination = 10, ?array $queryString = [])
+    public function getData(array $columns, ?array $orderby = [], int $perPagePagination = 20, ?array $queryString = [])
     {
         $this->columns = $columns;
 
@@ -41,10 +41,8 @@ class DataSource {
         $this->buildWhere($queryString);
         $this->buildSelect();
 
-        if ($orderby) {
-            $this->orderbyList = [$orderby];
-            $this->buildOrderby();
-        }
+        $this->orderbyList = [$orderby];
+        $this->buildOrderby();
 
         return $this->dataSource->paginate($perPagePagination);
     }
@@ -117,7 +115,8 @@ class DataSource {
             
             if ($orderbyAllowed) {
                 $allowedOrderbyColumns[] = $column;
-                $this->columnsSelect[$column] = ($join ? $join->getRelated() : $source)->getTable() . "." . end($columnParts);
+                $qualifiedColumn = ($join ? $join->getRelated() : $source)->getTable() . "." . end($columnParts);
+                $this->columnsSelect[$column] = $qualifiedColumn;
             }
 
         }
@@ -138,28 +137,6 @@ class DataSource {
     public function buildSelect()
     {
         $this->dataSource = $this->dataSource->select($this->columnsSelect);
-    }
-
-    /**
-     * Constroi o order by conforme a query
-     */
-    public function buildOrderby()
-    {
-        foreach ($this->orderbyList as $orderby) {
-            $column = $this->columnsSelect[$orderby[0] ?? 0] ?? null;
-            $direction = ($orderby[1] ?? null == 'DESC' ? 'DESC' : 'ASC');
-
-            // Verifica se a coluna está disponível para ordenação
-            if (!$column) {
-                continue;
-            }
-
-            // Verifica se a coluna pode ser usada para ordenação
-            if (in_array($orderby[0], $this->allowedOrderbyColumns)) {
-                $this->dataSource = $this->dataSource->orderBy($column, $direction);
-            }
-        }
-        
     }
 
     /**
@@ -242,5 +219,41 @@ class DataSource {
         }
 
         $this->dataSource = $this->dataSource->whereRaw($whereRaw, $whereRawValues);
+    }
+
+
+    /**
+     * Constroi o order by conforme a query
+     */
+    public function buildOrderby()
+    {
+        $orderByColumns = [];
+        foreach ($this->orderbyList as $orderby) {
+            $column = $this->columnsSelect[$orderby[0] ?? 0] ?? null;
+            $direction = (strtolower($orderby[1]) == 'desc' ? 'desc' : 'asc');
+
+            // Verifica se a coluna está disponível para ordenação
+            if (!$column) {
+                continue;
+            }
+            
+            // Verifica se a coluna pode ser usada para ordenação
+            if (in_array($orderby[0], $this->allowedOrderbyColumns)) {
+                $this->dataSource = $this->dataSource->orderBy($column, $direction);
+            }
+
+            $orderByColumns[] = $column;
+        }
+
+        // Insiro aqui a chave primária para não variar a ordem
+        $primaryKey = $this->dataSource->getModel()->getQualifiedKeyName();
+        if (!in_array($primaryKey, $orderByColumns)) {
+            $this->dataSource = $this->dataSource->orderBy($primaryKey, 'desc');
+        }
+    }
+
+    public function getAllowedOrderbyColumns(): array
+    {
+        return $this->allowedOrderbyColumns;
     }
 }

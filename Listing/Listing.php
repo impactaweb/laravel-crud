@@ -2,6 +2,7 @@
 
 namespace Impactaweb\Crud\Listing;
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use Impactaweb\Crud\Listing\DataSource;
 use Impactaweb\Crud\Listing\Field;
 use Impactaweb\Crud\Listing\FieldCollection;
@@ -27,8 +28,12 @@ class Listing {
             $this->actions = $options['actions'];
         }
 
+        if (isset($options['orderby']) && is_array($options['orderby']) && count($options['orderby']) == 2) {
+            $this->defaultOrderby = $this->setDefaultOrderby($options['orderby'][0], $options['orderby'][1]);
+        }
+
         if (isset($options['pp']) && is_numeric($options['pp'])) {
-            $this->perPagePagination = $options['pp'];
+            $this->setPerPageDefault($options['pp']);
         }
     }
 
@@ -50,20 +55,22 @@ class Listing {
         $data = $this->performQuery();
         $actions = [];
         $advancedSearchFields = [];
-        $columns = $this->fields;
+        $columns = $this->fields->getActiveFields();
         $pagination = $data;
+        $primaryKey = $this->primaryKey;
 
-        return view($viewFile, compact('data', 'actions', 'advancedSearchFields', 'columns', 'pagination'));
+        $allowedOrderbyColumns = $this->dataSource->getAllowedOrderbyColumns();
+        return view($viewFile, compact('data', 'actions', 'advancedSearchFields', 'columns', 'pagination', 'allowedOrderbyColumns', 'primaryKey'));
     }
 
     // consulta os dados no bd
-    public function performQuery()
+    public function performQuery(): LengthAwarePaginator
     {
         $activeColumns = $this->fields->getActiveFields(true);
         $queryString = request()->query();
         $orderby = $this->getOrderby();
 
-        // Add columns from where request to select
+        // Adicionar colunas da busca ao SELECT e JOIN para garantir que a coluna esteja acessível
         foreach ($this->fields->getFieldsName() as $fieldName) {
             $fieldNameQuerystring = str_replace('.', '_', $fieldName);
             if (isset($queryString[$fieldNameQuerystring]) && !empty($queryString[$fieldNameQuerystring])) {
@@ -71,7 +78,14 @@ class Listing {
             }
         }
 
-        return $this->dataSource->getData($activeColumns, $orderby, $this->perPagePagination, $queryString);
+        return $this->dataSource->getData($activeColumns, $orderby, $this->getPerPagePagination(), $queryString);
+    }
+
+    // Order by padrão (se não houver nenhuma setada)
+    public function setDefaultOrderby($order, $direction): void
+    {
+        $direction = (strtolower($direction) == 'desc' ? 'desc' : 'asc');
+        $this->defaultOrderby = [$order, $direction];
     }
 
     // Get orderby based on default set value or request()->get
@@ -81,13 +95,33 @@ class Listing {
         if (!$orderby) {
             return null;
         }
-        $direction = request()->get('dir') ? (strtoupper(request()->get('dir')) == 'DESC' ? 'DESC' : 'ASC') : $this->defaultOrderby[1];
+        $direction = request()->get('dir') ?? $this->defaultOrderby[1];
+        $direction = (strtolower($direction) == 'desc' ? 'desc' : 'asc');
 
         if (!$this->fields->exists($orderby)) {
             return null;
         }
 
         return [$orderby, $direction];
+    }
+
+    // Quantidade de registros por página
+    public function setPerPageDefault(int $perPage): void
+    {
+        if (!isset($this->perPagePagination)) {
+            $this->perPagePagination = $perPage;
+        }
+    }
+
+    // Pega a qtde por página padrão
+    public function getPerPagePagination(): int
+    {
+        $perPagePagination = request()->get('pp') ?? $this->perPagePagination;
+        if (!is_numeric($perPagePagination) || !($perPagePagination > 0)) {
+            $perPagePagination = config($this->configFile . '.defaultPerPage');
+        }
+
+        return $perPagePagination;
     }
 
 }
