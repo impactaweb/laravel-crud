@@ -51,17 +51,17 @@
         {{-- Cabeçalho com as columns --}}
         <thead>
             <tr>
-            @foreach($columns as $column => $params)
-                <th scope="col" class="border-top-0">{!! $params['column_link'] !!}</th>
+            @foreach($columns as $column)
+                <th scope="col" class="border-top-0">{!! $column->getLabel() !!}</th>
             @endforeach
             </tr>
         </thead>
 
         {{-- Registros --}}
-        @forelse ($data as $item)
+        @forelse ($data->items() as $item)
             <tr>
-            @foreach ($columns as $column => $params)
-                <td>{!! $item->$column !!}</td>
+            @foreach ($columns as $column)
+                <td>{!! $item->{$column->getIndexName()} !!}</td>
             @endforeach
             </tr>
         @empty
