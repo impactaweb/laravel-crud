@@ -48,6 +48,7 @@
 
     @if($data && $columns)
     <table class="table table-striped table-hover table-sm" id="listagemTable" data-redir="{{ url()->full() }}">
+
         {{-- Cabeçalho com as columns --}}
         <thead>
             <tr>
@@ -73,11 +74,14 @@
 
                 @if($loop->first && $column->getName() == $primaryKey)
                 <td>
-                    <input type="checkbox" name="checkbox-listing" />
+                    <input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->{$column->getIndexName()} }}" />
                 </td>
                 @endif
 
-                <td>{!! $item->{$column->getIndexName()} !!}</td>
+                <td>
+                    {!! $item->{$column->getIndexName()} !!}
+                </td>
+
             @endforeach
             </tr>
         @empty
