@@ -6,34 +6,23 @@
     <div class="header row">
         @if($actions)
             <div class="col">
-                @foreach ($actions as $action => $params)
-                    <?php
-                        $fullUrl = request()->url();
-                        $url = $fullUrl.$params['url'];
-                        $method = $params['method'];
-                    ?>
+                @foreach ($actions as $action)
                     <button
                         type="button"
-                        class="btn btn-lg btn-default tooltips"
-                        btn-action-field="{{ $action }}"
-                        btn-method="{{ $method }}"
-                        btn-url="{{ $url }}"
-                        title="{{ $action }}"
+                        class="btn btn-lg btn-default tooltips actionButton"
+                        data-name="{{ $action->getName() }}"
+                        data-url="{{ $action->getUrl() }}"
+                        data-method="{{ $action->getMethod() }}"
+                        title="{{ $action->getLabel() }}"
                         data-toggle="tooltip" data-placement="top" 
                     >
-                        @switch($action)
-                            @case('editar')
-                                <i class="far fa-edit"></i>
-                                @break
-                            @case('inserir')
-                                <i class="far fa-plus-square"></i>
-                                @break
-                            @case('excluir')
-                                <i class="far fa-trash-alt"></i>
-                                @break
-                            @default
-                                {!! $action !!}
-                        @endswitch
+                        @if($action->getIcon())
+                            <i class="{{ $action->getIcon() }}"></i>
+                        @endif
+
+                        <span class="sr-only">
+                            {{ $action->getLabel() }}
+                        </span>
                     </button>
                 @endforeach
             </div>
@@ -43,8 +32,11 @@
         </div>
     </div>
 
-    <form id="meuForm" action="" method="POST" >
+    <form id="listingForm" action="" method="POST" style="display:none">
         {{ csrf_field() }}
+        <input type="hidden" name="_method" value=""></button>
+        <button type="submit"></button>
+    </form>
 
     @if($data && $columns)
     <table class="table table-striped table-hover table-sm" id="listagemTable" data-redir="{{ url()->full() }}">
@@ -71,17 +63,10 @@
         @forelse ($data->items() as $item)
             <tr>
             @foreach ($columns as $column)
-
                 @if($loop->first && $column->getName() == $primaryKey)
-                <td>
-                    <input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->{$column->getIndexName()} }}" />
-                </td>
+                    <td><input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->{$column->getIndexName()} }}" /></td>
                 @endif
-
-                <td>
-                    {!! $item->{$column->getIndexName()} !!}
-                </td>
-
+                <td>{!! $item->{$column->getIndexName()} !!}</td>
             @endforeach
             </tr>
         @empty
@@ -92,7 +77,6 @@
     </table>
     @endif
 
-    </form>
     @include('listing::pagination')
 </div>
 

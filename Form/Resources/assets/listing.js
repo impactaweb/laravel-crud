@@ -1,5 +1,43 @@
 (function($, axios) {
-    const $form = $('#meuForm')
+    const $form = $('#listingForm')
+
+    $('.actionButton').click(function() {
+
+        var url = $(this).data('url')
+        var _method = $(this).data('method')
+        var method = ($(this).data('method') == 'GET' ? 'GET' : 'POST')
+        if (! $.inArray(method, ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']) == -1) {
+            method = 'GET'
+        }
+
+        $checkboxes = $('.listing-checkboxes:checked')
+        if (url.indexOf('{id}') >= 0 && !($checkboxes.length > 0)) {
+            alert('Selecione no minimo 1 item da listagem')
+            return
+        }
+
+        var ids = []
+        $checkboxes.each(function(){
+            ids.push($(this).val())
+        })
+        var id = ids[0]
+        idsFormatado = ids.join(',')
+
+        url = url.replace('{id}', id).replace('{ids}', idsFormatado)
+
+        if (method == 'get') {
+            window.location.href = url
+            return
+        }
+
+        $form.prop('action', url)
+        $form.prop('method', method)
+        $form.find('input[name="_method"]').val(_method)
+        $form.submit()
+
+    });
+
+
     const $inputMethod = document.querySelector('[data-listing="methods"]')
     const $checkboxs = $form.find('input.listing-checkboxes')
 

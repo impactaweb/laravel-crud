@@ -6,12 +6,13 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Impactaweb\Crud\Listing\DataSource;
 use Impactaweb\Crud\Listing\Field;
 use Impactaweb\Crud\Listing\FieldCollection;
+use Impactaweb\Crud\Listing\Action;
 
 class Listing {
 
     protected $primaryKey;
     protected $dataSource;
-    protected $actions = ['new', 'edit', 'destroy'];
+    protected $actions = [];
     protected $perPagePagination = 20;
     protected $fields;
     protected $defaultOrderby;
@@ -24,16 +25,29 @@ class Listing {
         $this->fields = new FieldCollection();
         $this->fields->add(new Field($primaryKey, "ID"));
 
-        if (isset($options['actions']) && is_array($options['actions'])) {
-            $this->actions = $options['actions'];
-        }
-
         if (isset($options['orderby']) && is_array($options['orderby']) && count($options['orderby']) == 2) {
             $this->defaultOrderby = $this->setDefaultOrderby($options['orderby'][0], $options['orderby'][1]);
         }
 
         if (isset($options['pp']) && is_numeric($options['pp'])) {
             $this->setPerPageDefault($options['pp']);
+        }
+
+        $this->setDefaultActions();
+    }
+
+    /**
+     * Define as actions padrão (new, edit, destroy)
+     */
+    public function setDefaultActions(): void
+    {
+        $defaultActions = config($this->configFile . '.defaultActions');
+        if (!is_array($defaultActions)) {
+            return;
+        }
+
+        foreach ($defaultActions as $action) {
+            $this->actions[$action['name']] = new Action($action['name'], $action['label'], $action['method'] ?? 'GET', $action['url'] ?? null, $action['icon'] ?? null);
         }
     }
 
@@ -53,7 +67,7 @@ class Listing {
     {
         $viewFile = config($this->configFile . '.view');
         $data = $this->performQuery();
-        $actions = [];
+        $actions = $this->actions;
         $advancedSearchFields = [];
         $columns = $this->fields->getActiveFields();
         $pagination = $data;

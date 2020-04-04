@@ -3,7 +3,7 @@
 namespace Impactaweb\Crud\Listing;
 require_once __DIR__ . '/../Helpers/Helpers.php';
 
-class Listing {
+class Listing2 {
     /**
      * Colunas a serem listadas na tabela.
      * @var Array
@@ -137,7 +137,7 @@ class Listing {
         $this->setDefaultValues();
 
         if ($actions === false) {
-            $this->setActions([]);
+            $this->setDefaultActions([]);
         }
 
         if (empty($this->view)) {
@@ -448,13 +448,13 @@ class Listing {
                                         }
                                         $class = ($this->data[$key]->$field > 0)  ? 'listing_on' : 'listing_off';
                                         $this->data[$key]->$field = '<a href="javascript:void(0)" 
-                                                                    class="listing_flag '.$class.'" 
-                                                                    data-id="'.$this->data[$key]->{$this->index}.'" 
-                                                                    data-field="'.$field.'"
-                                                                    data-flag-text-on="'.$this->flagTexts[1].'"
-                                                                    data-flag-text-off="'.$this->flagTexts[0].'"
-                                                                    data-current-flag="'.$this->data[$key]->$field.'"
-                                                                    >'.$this->flagTexts[$this->data[$key]->$field].'</a>';
+                                            class="listing_flag '.$class.'" 
+                                            data-id="'.$this->data[$key]->{$this->index}.'" 
+                                            data-field="'.$field.'"
+                                            data-flag-text-on="'.$this->flagTexts[1].'"
+                                            data-flag-text-off="'.$this->flagTexts[0].'"
+                                            data-current-flag="'.$this->data[$key]->$field.'"
+                                            >'.$this->flagTexts[$this->data[$key]->$field].'</a>';
                                     break;
                                 }
                             break;
