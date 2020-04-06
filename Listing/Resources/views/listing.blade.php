@@ -73,7 +73,7 @@
             </tr>
         @empty
             <tr class="empty">
-                <td colspan="{{ count($columns) }}">Nenhum item encontrado</td>
+                <td colspan="100%">Nenhum item encontrado</td>
             </tr>
         @endforelse
     </table>

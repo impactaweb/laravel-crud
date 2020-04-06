@@ -149,15 +149,17 @@ class DataSource {
 
         // Basic search
         if (isset($queryString['q'])) {
-            $searchText = $queryString['q'];
-            $whereRaw .= " AND (";
-            $i = 0;
-            foreach ($this->columnsSelect as $column) {
-                $i++;
-                $whereRaw .= ($i == 1 ? '' : ' OR ') . $column . ' like ? ';
-                $whereRawValues[] = is_numeric($searchText) ? $searchText : '%' . $searchText . '%';
+            $searchTextParts = $this->getSearchTextParts(trim($queryString['q']));
+            foreach ($searchTextParts as $searchText) {
+                $whereRaw .= " AND (";
+                $i = 0;
+                foreach ($this->columnsSelect as $column) {
+                    $i++;
+                    $whereRaw .= ($i == 1 ? '' : ' OR ') . $column . ' like ? ';
+                    $whereRawValues[] = is_numeric($searchText) ? $searchText : '%' . $searchText . '%';
+                }
+                $whereRaw .= ")";
             }
-            $whereRaw .= ")";
         }
 
         // Advanced search
@@ -167,49 +169,42 @@ class DataSource {
                 continue;
             }
             
-            $searchText = $queryString[$columnQueryString];
+            $searchText = trim($queryString[$columnQueryString]);
             if (empty($searchText)) {
                 continue;
             }
 
-            $prefix = $suffix = $operator = "";
-            $mountWhereRaw = true;
-
-            $op = (isset($queryString['op']) && isset($queryString['op'][$column]) ? $queryString['op'][$column] : "like");
-            switch  ($op) {
+            $operator = (isset($queryString['op']) && isset($queryString['op'][$column]) ? $queryString['op'][$column] : "like");
+            switch  ($operator) {
                 case '=':
                 case '!=':
                 case '<':
                 case '<=':
                 case '>':
                 case '>=':
-                    $operator = $op;
-                    break;
-                
-                case 'not like':
-                    $prefix = $suffix = '%';
-                    $operator = 'not like';
+                    $whereRaw .= " AND " . $this->columnsSelect[$column] . " $operator ? ";
+                    $whereRawValues[] = $searchText;
                     break;
                 
                 case 'in':
-                    $prefix = '';
-                    $suffix = '';
                     $operator = 'in';
                     $values = explode(',', $searchText);
                     $inFields = substr(str_repeat('?,', count($values)), 0, -1);
                     $whereRaw .= " AND " . $this->columnsSelect[$column] . " IN ( $inFields )";
                     $whereRawValues = array_merge($whereRawValues, $values);
-                    $mountWhereRaw = false;
                     break;
                 
-                default:
-                    $prefix = $suffix = '%';
-                    $operator = 'like';
+                case 'like':
+                case 'not like':
+                    $searchTextParts = $this->getSearchTextParts($searchText);
+                    foreach ($searchTextParts as $part) {
+                        $whereRaw .= " AND " . $this->columnsSelect[$column] . " $operator ? ";
+                        $whereRawValues[] = '%' . $part . '%';
+                    }
                     break;
-            }
-            if ($mountWhereRaw) {
-                $whereRaw .= " AND " . $this->columnsSelect[$column] . " $operator ? ";
-                $whereRawValues[] = $prefix . $searchText . $suffix;
+
+                default:
+                    break;
             }
         }
 
@@ -270,6 +265,15 @@ class DataSource {
             '>='       => 'greater or equal than',
             'in'       => 'in',
         ];
+    }
+
+    // Remove caracteres desnecessários, espaços duplos, etc,
+    // e retorna um vetor com todas as partes da string para busca
+    public function getSearchTextParts(string $text): array
+    {
+        $text = preg_replace('/\s+/', ' ', trim($text));
+        $textParts = explode(" ", $text);
+        return $textParts;
     }
 
 }

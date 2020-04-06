@@ -45,7 +45,7 @@ class Field {
         return $this->activeByDefault;
     }
 
-    public function getFieldOrderbyLink($currentOrderBy = [])
+    public function getFieldOrderbyLink(array $currentOrderBy = []): string
     {
         $request = request();
         $fieldName = $this->getName();
