@@ -26,14 +26,13 @@ class Listing {
         $this->fields = new FieldCollection();
         $this->fields->add(new Field($primaryKey, "ID"));
 
-        if (isset($options['orderby']) && is_array($options['orderby']) && count($options['orderby']) == 2) {
-            $this->defaultOrderby = $this->setDefaultOrderby($options['orderby'][0], $options['orderby'][1]);
-        }
+        $this->setDefaultOrderby($primaryKey, 'DESC');
 
+        // Quantidade por página
         if (isset($options['pp']) && is_numeric($options['pp'])) {
             $this->setPerPageDefault($options['pp']);
         }
-        $this->isSearching = (request()->has('q') && !empty(request()->get('q')));
+
         $this->setDefaultActions();
     }
 
@@ -74,9 +73,10 @@ class Listing {
         $advancedSearchFields = $this->fields->getAllFields();
         $isSearching = $this->isSearching;
         $advancedSearchOperators = DataSource::getAdvancedSearchOperators();
+        $currentOrderby = $this->getOrderby();
 
         $allowedOrderbyColumns = $this->dataSource->getAllowedOrderbyColumns();
-        return view($viewFile, compact('data', 'actions', 'isSearching', 'advancedSearchFields', 'advancedSearchOperators', 'columns', 'allowedOrderbyColumns', 'primaryKey'));
+        return view($viewFile, compact('data', 'currentOrderby', 'actions', 'isSearching', 'advancedSearchFields', 'advancedSearchOperators', 'columns', 'allowedOrderbyColumns', 'primaryKey'));
     }
 
     // consulta os dados no bd
@@ -85,6 +85,8 @@ class Listing {
         $activeColumns = $this->fields->getActiveFields(true);
         $queryString = request()->query();
         $orderby = $this->getOrderby();
+
+        $this->isSearching = (request()->has('q') && !empty(request()->get('q')));
 
         // Adicionar colunas da busca ao SELECT e JOIN para garantir que a coluna esteja acessível
         foreach ($this->fields->getFieldsName() as $fieldName) {

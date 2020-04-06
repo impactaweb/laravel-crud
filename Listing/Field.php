@@ -45,21 +45,21 @@ class Field {
         return $this->activeByDefault;
     }
 
-    public function getFieldOrderbyLink()
+    public function getFieldOrderbyLink($currentOrderBy = [])
     {
         $request = request();
         $fieldName = $this->getName();
         $className = '';
         if ($this->flagOrderby) {
 
-            if (($request->get('ord') ?? $fieldName) != $fieldName) {
+            if (($request->get('ord') ?? $currentOrderBy[0] ?? $fieldName) != $fieldName) {
                 $direction = 'asc';
             } else {
                 // Aqui, deve inverter o valor (desc vira asc, asc vira desc)
-                $direction = strtolower($request->get('dir') ?? 'asc') == 'desc' ? 'asc' : 'desc';
+                $direction = strtolower($request->get('dir') ?? $currentOrderBy[1] ?? 'asc') == 'desc' ? 'asc' : 'desc';
             }
 
-            if ($request->get('ord') == $fieldName) {
+            if (($request->get('ord') ?? $currentOrderBy[0]) == $fieldName) {
                 $className = ' class="order-' . $direction . '"';
             }
 

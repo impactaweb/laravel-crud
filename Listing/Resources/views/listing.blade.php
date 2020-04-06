@@ -55,7 +55,7 @@
                 @endif
 
                 <th scope="col" class="border-top-0">
-                    {!! $column->getFieldOrderbyLink() !!}
+                    {!! $column->getFieldOrderbyLink($currentOrderby) !!}
                 </th>
             @endforeach
             </tr>
