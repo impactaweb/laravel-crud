@@ -66,17 +66,20 @@ class Listing {
     public function render()
     {
         $viewFile = config($this->configFile . '.view');
-        $data = $this->performQuery();
-        $actions = $this->actions;
-        $columns = $this->fields->getActiveFields();
-        $primaryKey = $this->primaryKey;
-        $advancedSearchFields = $this->fields->getAllFields();
-        $isSearching = $this->isSearching;
-        $advancedSearchOperators = DataSource::getAdvancedSearchOperators();
-        $currentOrderby = $this->getOrderby();
 
-        $allowedOrderbyColumns = $this->dataSource->getAllowedOrderbyColumns();
-        return view($viewFile, compact('data', 'currentOrderby', 'actions', 'isSearching', 'advancedSearchFields', 'advancedSearchOperators', 'columns', 'allowedOrderbyColumns', 'primaryKey'));
+        $data = [
+            'data' => $this->performQuery(),
+            'actions' => $this->actions,
+            'columns' => $this->fields->getActiveFields(),
+            'primaryKey' => $this->primaryKey,
+            'advancedSearchFields' => $this->fields->getAllFields(),
+            'isSearching' => $this->isSearching,
+            'advancedSearchOperators' => DataSource::getAdvancedSearchOperators(),
+            'currentOrderby' => $this->getOrderby(),
+            'allowedOrderbyColumns' => $this->dataSource->getAllowedOrderbyColumns()
+        ];
+
+        return view($viewFile, $data);
     }
 
     // consulta os dados no bd
