@@ -17,6 +17,7 @@ class Listing {
     protected $fields;
     protected $defaultOrderby;
     protected $configFile = 'listing';
+    protected $isSearching = false;
 
     public function __construct(string $primaryKey, object $dataSource, array $options = [])
     {
@@ -32,7 +33,7 @@ class Listing {
         if (isset($options['pp']) && is_numeric($options['pp'])) {
             $this->setPerPageDefault($options['pp']);
         }
-
+        $this->isSearching = (request()->has('q') && !empty(request()->get('q')));
         $this->setDefaultActions();
     }
 
@@ -68,13 +69,14 @@ class Listing {
         $viewFile = config($this->configFile . '.view');
         $data = $this->performQuery();
         $actions = $this->actions;
-        $advancedSearchFields = [];
         $columns = $this->fields->getActiveFields();
-        $pagination = $data;
         $primaryKey = $this->primaryKey;
+        $advancedSearchFields = $this->fields->getAllFields();
+        $isSearching = $this->isSearching;
+        $advancedSearchOperators = DataSource::getAdvancedSearchOperators();
 
         $allowedOrderbyColumns = $this->dataSource->getAllowedOrderbyColumns();
-        return view($viewFile, compact('data', 'actions', 'advancedSearchFields', 'columns', 'pagination', 'allowedOrderbyColumns', 'primaryKey'));
+        return view($viewFile, compact('data', 'actions', 'isSearching', 'advancedSearchFields', 'advancedSearchOperators', 'columns', 'allowedOrderbyColumns', 'primaryKey'));
     }
 
     // consulta os dados no bd
@@ -88,7 +90,10 @@ class Listing {
         foreach ($this->fields->getFieldsName() as $fieldName) {
             $fieldNameQuerystring = str_replace('.', '_', $fieldName);
             if (isset($queryString[$fieldNameQuerystring]) && !empty($queryString[$fieldNameQuerystring])) {
-                $activeColumns[] = $fieldName;
+                $this->isSearching = true;
+                if (!in_array($fieldName, $activeColumns)) {
+                    $activeColumns[] = $fieldName;
+                }
             }
         }
 

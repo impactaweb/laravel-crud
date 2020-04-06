@@ -24,6 +24,11 @@ class Field {
         return $this->name;
     }
 
+    public function getNameConverted()
+    {
+        return str_replace('.', '_', $this->name);
+    }
+
     public function getIndexName()
     {
         $nameFull = explode('.', $this->getName());
@@ -44,6 +49,7 @@ class Field {
     {
         $request = request();
         $fieldName = $this->getName();
+        $className = '';
         if ($this->flagOrderby) {
 
             if (($request->get('ord') ?? $fieldName) != $fieldName) {
@@ -53,8 +59,12 @@ class Field {
                 $direction = strtolower($request->get('dir') ?? 'asc') == 'desc' ? 'asc' : 'desc';
             }
 
+            if ($request->get('ord') == $fieldName) {
+                $className = ' class="order-' . $direction . '"';
+            }
+
             $fullUrl = $request->fullUrlWithQuery(['ord' => $fieldName, 'dir' => $direction]);
-            return '<a href="' . $fullUrl . '" class="order-' . $direction . '">' . $this->getLabel() . '</a>';
+            return '<a href="' . $fullUrl . '"'.$className.'>' . $this->getLabel() . '</a>';
         }
 
         return $this->getLabel();

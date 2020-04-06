@@ -1,7 +1,7 @@
 <div data-container="loading"></div>
 <div class="corpo-listing" id="psListing">
 
-    @include('listing::remove-modal')
+    @include('listing::confirmation-modal')
 
     <div class="header row">
         @if($actions)
@@ -12,8 +12,10 @@
                         class="btn btn-lg btn-default tooltips actionButton"
                         data-name="{{ $action->getName() }}"
                         data-url="{{ $action->getUrl() }}"
+                        data-verb="{{ $action->getVerb() }}"
                         data-method="{{ $action->getMethod() }}"
                         title="{{ $action->getLabel() }}"
+                        data-confirmation="{{ $action->getConfirmationText() }}"
                         data-toggle="tooltip" data-placement="top" 
                     >
                         @if($action->getIcon())

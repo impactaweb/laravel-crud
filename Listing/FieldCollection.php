@@ -50,4 +50,9 @@ class FieldCollection implements Countable, IteratorAggregate {
         return $this->fieldsName;
     }
 
+    public function getAllFields(): array
+    {
+        return $this->fields;
+    }
+
 }

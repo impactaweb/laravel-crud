@@ -5,6 +5,7 @@
 
         var url = $(this).data('url')
         var _method = $(this).data('method')
+        var confirmationText = $(this).data('confirmation')
         var method = ($(this).data('method') == 'GET' ? 'GET' : 'POST')
         if (! $.inArray(method, ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']) == -1) {
             method = 'GET'
@@ -25,78 +26,36 @@
 
         url = url.replace('{id}', id).replace('{ids}', idsFormatado)
 
-        if (method == 'get') {
-            window.location.href = url
-            return
+        if (method == 'GET') {
+            var continueFunction = function() {
+                listagemLoading()
+                window.location.href = url
+            }
+        } else {
+            $form.prop('action', url)
+            $form.prop('method', method)
+            $form.find('input[name="_method"]').val(_method)
+            var continueFunction = function() {
+                listagemLoading()
+                $form.submit()
+            }
         }
 
-        $form.prop('action', url)
-        $form.prop('method', method)
-        $form.find('input[name="_method"]').val(_method)
-        $form.submit()
+        if (confirmationText.length > 0) {
+            $('#confirmationModal').data('executar', continueFunction).modal('show')
+            $('#confirmationModal .modal-body').html(confirmationText);
+            $('#confirmationModal .btnConfirm').click(function() {
+                var func = $('#confirmationModal').data('executar')
+                func()
+                e.preventDefault()
+            })
+        } else {
+            continueFunction()
+        }
 
     });
 
-
-    const $inputMethod = document.querySelector('[data-listing="methods"]')
-    const $checkboxs = $form.find('input.listing-checkboxes')
-
-    function handleActionClick(e) {
-        e.preventDefault()
-
-        const btnAction = this.getAttribute('btn-action-field')
-        const btnMethod = this.getAttribute('btn-method')
-        let ids = ''
-        
-        // Pega o path e remove todos "/" do final da string
-        let pathname = window.location.pathname.replace(/\/+$/,'')
-
-        const selecteds = getCheckeds()
-
-        if (btnAction === 'inserir') {
-            window.location.href = `${pathname}/criar?redir=${encodeURIComponent(pathname + window.location.search)}`
-            return
-        }
-
-        if (!selecteds.length) {
-            alert('Selecione no minimo 1 item da listagem')
-            return
-        }
-
-        if (selecteds.length > 1) {
-            ids = `ids=${selecteds.join(',')}&`
-        }
-
-        if (btnAction === 'editar') {
-            window.location.href = `${pathname}/${selecteds[0]}/editar?${ids}&redir=${encodeURIComponent(pathname + window.location.search)}`
-            return
-        }
-
-        if (btnAction === 'excluir') {
-            modalExcluir(selecteds)
-            return
-        }
-
-        $form.action = this.getAttribute('btn-url')
-        $form.method = btnMethod
-        $form.submit()
-    }
-
-    function modalExcluir() {
-        $('[data-excluir="abrirModal"]').click()
-    }
-
-    function handleConfirm() {
-        const btnExcluir = $('[btn-action-field="excluir"]')
-        $('[data-excluir="cancel"]').click()
-
-        const selecteds = getCheckeds()
-
-        if(!selecteds) {
-            alert('Selecione no minimo 1 item da listagem')
-            return
-        }
-
+    function listagemLoading() {
         $('[data-container="loading"]').html(`
             <div class="loading-container fixed">
                 <div class="lds-roller">
@@ -107,44 +66,20 @@
                 </div>
             </div>
         `)
-
-        axios.post(btnExcluir.attr('btn-url'), {
-            _token: $('[name="_token"]').val(),
-            _method: 'DELETE',
-            item: getCheckeds()
-        })
-        .then(function(res) {
-            const data = res.data
-            $('[data-container="loading"]').html('')
-
-            if(data.errors.length) {
-                alert('Não foi possivel excluir todos os items selecionados')
-                window.location.reload()
-                return
-            }
-            data.success.forEach(function(id) {
-                window.location.reload()
-                // document.querySelector(`input[value="${id}"]`).parentNode.parentNode.remove()
-            })
-            window.location.reload()
-        })
-        .catch(function(err) {
-            $('[data-container="loading"]').html('')
-            alert('Falha ao excluir os items, entre em contato com suporte')
-        })
     }
+
+    const $checkboxs = $form.find('input.listing-checkboxes')
 
     function handleCheckboxChange(e) {
         if(this.checked) {
             $(this.parentNode.parentNode).addClass('active')
             return
         }
-
         $(this.parentNode.parentNode).removeClass('active')
     }
 
     function handleBuscaAvancada() {
-        $('#formBuscaAvaçada').submit()
+        $('#formBuscaAvacada').submit()
     }
 
     function handleTdClick() {
@@ -176,26 +111,12 @@
             .find('.listing-checkboxes')
             .prop('checked', 'checked')
 
-        if ($('#psListing [btn-action-field="visualizar"]').length > 0){
-            $('#psListing [btn-action-field="visualizar"]').click();
-        } else if ($('#psListing [btn-action-field="editar"]').length > 0){
-            $('#psListing [btn-action-field="editar"]').click();
+        if ($('.actionButton[data-verb="edit"]').length > 0){
+            $('.actionButton[data-verb="edit"]').trigger('click');
         }
     }
 
-    function getCheckeds() {
-        if(!$checkboxs) return
-
-        const ids = Array.from($checkboxs).filter(function($item) {
-            return $item.checked
-        }).map(function($item) {
-            return $item.value
-        })
-
-        return ids.length > 0 ? ids : false
-    }
-
-    // Função para atualizar a flag de um registro:
+    // Funcão para atualizar a flag de um registro:
     function handleListingFlag() {
         
         let id          = $(this).data('id');
@@ -265,21 +186,7 @@
 
     }
 
-    /*
-    const search = new URLSearchParams(window.location.search)
-    Array.from(document.querySelectorAll('[data-paginate]'))
-        .forEach(function($pag) {
-            const query = new URLSearchParams($pag.href)
-            search.set('pp', search.get('pp') || query.get('pp') || '')
-            search.set('page', query.get('page') || '1')
-            $pag.href = '?' + search.toString()
-        })
-    */
-
-
-    $('[btn-action-field]').click(handleActionClick)
     $('input.listing-checkboxes').change(handleCheckboxChange)
-    $('[data-excluir="confirm"]').click(handleConfirm)
     $('#listagemTable').checkboxes('range', true)
     $('[data-avancada="buscar"]').click(handleBuscaAvancada)
     $('#listagemTable tbody tr:not(.empty) td').click(handleTdClick)
@@ -295,6 +202,9 @@
     if (!($('[data-toggle="tooltip"]:first').data && $('[data-toggle="tooltip"]:first').data('bs.tooltip'))) {
         $('[data-toggle="tooltip"]').tooltip()
     }
+
+    $('#listingForm th order-asc').addClass('fas fa-sort-up');
+    $('#listingForm th order-desc').addClass('fas fa-sort-down');
     
     
 })(jQuery, axios)

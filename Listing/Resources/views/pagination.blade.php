@@ -1,13 +1,21 @@
-@if($pagination && $data && $data->total() > 0)
+@if($data && $data->total() > 0)
 
     <form class="" action="{{ request()->url() }}" method="get"/>
 
         {{-- para manter as querystrings ao submeter o form: --}}
         @foreach(request()->query() as $item => $valor)
-            @if(!in_array($item, ['page', 'pp']) && !is_array($valor))
+            @if(!in_array($item, ['page', 'pp']) && !is_array($valor) && !empty($valor))
                 <input type="hidden" name="{{ $item }}" value="{{ $valor }}" />
             @endif
         @endforeach
+        @if(request()->has('op') && is_array(request()->get('op')))
+            @foreach(request()->get('op') as $item => $valor)
+                @if(!empty($valor))
+                    <input type="hidden" name="op[{{ $item }}]" value="{{ $valor }}" />
+                @endif
+            @endforeach
+        @endif
+        
     
         <div class="form-row float-md-left align-items-center">
 
@@ -26,7 +34,7 @@
             </div>
 
             <div class="col-auto data-listagem" >
-                <strong>{{ $data->firstItem() }} - {{ $data->lastItem() }}</strong> de <strong>{{ $data->lastItem() }}</strong>
+                <strong>{{ $data->firstItem() }} - {{ $data->lastItem() }}</strong> de <strong>{{ $data->total() }}</strong>
                 (<strong>{{ $data->lastPage() }}</strong> página{{ $data->lastPage() > 1 ? 's' : '' }})
             </div>
 

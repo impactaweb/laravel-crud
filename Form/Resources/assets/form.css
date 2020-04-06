@@ -163,3 +163,25 @@ button.btn.btn-multiselect {
 #listagemTable tr.empty td {
   padding:10px;
 }
+
+#listagemTable th .order-asc:after {
+  content: '\f0d7';
+  font-family: "Font Awesome 5 Free";
+  font-style: normal;
+  font-weight: bold;
+  text-decoration: inherit;
+  margin-left:5px;
+  font-size:15px;
+  color:#333;
+}
+
+#listagemTable th .order-desc:after {
+  content: '\f0d8';
+  font-family: "Font Awesome 5 Free";
+  font-style: normal;
+  font-weight: bold;
+  text-decoration: inherit;
+  margin-left:5px;
+  font-size:15px;
+  color:#333;
+}

@@ -256,4 +256,20 @@ class DataSource {
     {
         return $this->allowedOrderbyColumns;
     }
+
+    public static function getAdvancedSearchOperators()
+    {
+        return [
+            'like'     => 'is like',
+            'not like' => 'not like',
+            '='        => 'equal',
+            '!='       => 'different',
+            '<'        => 'less than',
+            '<='       => 'less or equal than',
+            '>'        => 'greater than',
+            '>='       => 'greater or equal than',
+            'in'       => 'in',
+        ];
+    }
+
 }

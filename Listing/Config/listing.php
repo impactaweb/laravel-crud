@@ -22,7 +22,7 @@ return [
      */
     'defaultActions' => [
         [
-            'name' => 'novo',
+            'name' => 'criar',
             'label' => 'Novo',
             'method' => 'GET',
             'icon' => 'far fa-plus-square'
