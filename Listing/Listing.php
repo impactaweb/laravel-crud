@@ -686,7 +686,7 @@ class Listing {
 
         if (empty($this->advancedSearchFields)) {
             // if its empty, we put all the source fields as default:
-            if ( is_object($this->data) ) {
+            if ( is_object($this->data) && (!$this->data->isEmpty()) ) {
                 $arr = [];
                 foreach ($this->data->first() as $index => $value) {
                     # remove the reserved fields:
