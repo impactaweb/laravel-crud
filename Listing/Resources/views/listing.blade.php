@@ -14,17 +14,18 @@
                         data-url="{{ $action->getUrl() }}"
                         data-verb="{{ $action->getVerb() }}"
                         data-method="{{ $action->getMethod() }}"
-                        title="{{ $action->getLabel() }}"
+                        title="{{ strip_tags($action->getLabel()) }}"
                         data-confirmation="{{ $action->getConfirmationText() }}"
                         data-toggle="tooltip" data-placement="top" 
                     >
                         @if($action->getIcon())
                             <i class="{{ $action->getIcon() }}"></i>
+                            <span class="sr-only">
+                                {{ $action->getLabel() }}
+                            </span>
+                        @else
+                            {!! $action->getLabel() !!}
                         @endif
-
-                        <span class="sr-only">
-                            {{ $action->getLabel() }}
-                        </span>
                     </button>
                 @endforeach
             </div>
@@ -46,16 +47,14 @@
         {{-- Cabeçalho com as columns --}}
         <thead>
             <tr>
-            @foreach($columns as $column)
-
-                @if($loop->first && $column->getName() == $primaryKey)
-                    <th scope="col" class="border-top-0">
-                        <input type="checkbox" name="checkbox-listing" />
-                    </th>
-                @endif
-
+            @if($showCheckbox)
                 <th scope="col" class="border-top-0">
-                    {!! $column->getFieldOrderbyLink($currentOrderby) !!}
+                    <input type="checkbox" name="checkbox-listing" />
+                </th>
+            @endif
+            @foreach($columns as $column)
+                <th scope="col" class="border-top-0">
+                    {!! $column->getOrderbyLink($currentOrderby, $allowedOrderbyColumns) !!}
                 </th>
             @endforeach
             </tr>
@@ -64,11 +63,11 @@
         {{-- Registros --}}
         @forelse ($data->items() as $item)
             <tr>
+            @if($showCheckbox)
+                <td><input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->$primaryKey }}" /></td>
+            @endif
             @foreach ($columns as $column)
-                @if($loop->first && $column->getName() == $primaryKey)
-                    <td><input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->{$column->getIndexName()} }}" /></td>
-                @endif
-                <td>{!! $item->{$column->getIndexName()} !!}</td>
+                <td>{!! $column->formatData($item) !!}</td>
             @endforeach
             </tr>
         @empty

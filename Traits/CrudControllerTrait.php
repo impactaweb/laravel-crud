@@ -7,7 +7,6 @@ use Impactaweb\Crud\Helpers\Msg;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 use Impactaweb\Crud\Form\FormUrls;
 
@@ -138,8 +137,19 @@ trait CrudControllerTrait
      * @param Request $request
      * @return JsonResponse
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
+        // Update one field (flags)
+        if ($request->has('listingFlagField') && $request->has('newFlag')) {
+            $model = new $this->model();
+            $params = $request->route()->parameters();
+            $id = end($params);
+            $field = $request->get('listingFlagField');
+            $flag = $request->get('newFlag');
+            $model->updateFlag($id, $field, $flag);
+            return ['id' => $id, 'field' => $field, 'flag' => $flag];
+        }
+
         $belongsToManyRelations = isset($this->belongsToManyRelations) ? $this->belongsToManyRelations : [];
         $this->applyValidation($request);
         return $this->salvarRedirecionar($request->all(), $belongsToManyRelations);

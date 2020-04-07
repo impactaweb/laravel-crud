@@ -2,12 +2,15 @@
 
 namespace Impactaweb\Crud\Listing;
 
+use Illuminate\Database\Eloquent\Model;
+
 class Field {
 
     public $name;
     public $label;
     public $activeByDefault = true;
-    public $flagOrderby = true;
+    protected $callbackFunction;
+    protected $mask;
 
     public function __construct(string $name, string $label, array $options = [])
     {
@@ -16,6 +19,14 @@ class Field {
         
         if (isset($options['default']) && $options['default'] == false) {
             $this->activeByDefault = false;
+        }
+
+        if (isset($options['callback']) && is_callable($options['callback'])) {
+            $this->callbackFunction = $options['callback'];
+        }
+
+        if (isset($options['mask']) && !empty($options['mask'])) {
+            $this->mask = $options['mask'];
         }
     }
 
@@ -45,12 +56,12 @@ class Field {
         return $this->activeByDefault;
     }
 
-    public function getFieldOrderbyLink(array $currentOrderBy = []): string
+    public function getOrderbyLink(?array $currentOrderBy = [], array $allowedOrderbyColumns = []): string
     {
         $request = request();
         $fieldName = $this->getName();
         $className = '';
-        if ($this->flagOrderby) {
+        if (in_array($fieldName, $allowedOrderbyColumns)) {
 
             if (($request->get('ord') ?? $currentOrderBy[0] ?? $fieldName) != $fieldName) {
                 $direction = 'asc';
@@ -68,6 +79,29 @@ class Field {
         }
 
         return $this->getLabel();
+    }
+
+    // Formata o dado conforme parâmetros do campo (executa o callback, etc)
+    public function formatData(Model $data): ?string
+    {
+        $columnName = $this->getIndexName();
+
+        // Executando callbacks
+        if (is_callable($this->callbackFunction)) {
+            $functionToExecute = $this->callbackFunction;
+            return $functionToExecute($data);
+        }
+
+        // Aplicando máscaras
+        if ($this->mask) {
+            $masks = config('listing.masks');
+            if (is_array($masks) && array_key_exists($this->mask, $masks) && is_callable($masks[$this->mask])) {
+                $func = $masks[$this->mask];
+                return $func('2020-01-02 03:04:05');
+            }
+        }
+
+        return $data->$columnName;
     }
 
 }

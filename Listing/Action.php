@@ -18,10 +18,11 @@ class Action {
     {
         $this->name = $name;
         $this->label = $label;
-        $this->method = strtoupper($method);
-        $this->url = $url;
+        $this->method = in_array(strtoupper($method), ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']) ? strtoupper($method) : 'GET';
         $this->icon = $icon;
         $this->message = $message;
+        
+        $this->setUrl($url);
 
         // load Resource Verbs
         $this->resourceCustomVerbs = Route::resourceVerbs();
@@ -44,17 +45,22 @@ class Action {
 
     public function getUrl(): string
     {
+        return $this->url;
+    }
+
+    public function setUrl(?string $url): void
+    {
+        // Usar o fillUrlParameters somente para URL's definidas pelo dev
+        if (!empty($url)) {
+            $this->url = Listing::fillUrlParameters($url);
+            return;
+        }
+
         $request = request();
         $actionName = $this->getName();
-
-        if (!empty($this->url)) {
-            return $this->url;
-        }
-        
         $root = $request->root();
         $fullUrl = $request->fullUrl();
         $redir = urlencode(substr($fullUrl, strlen($root), strlen($fullUrl)));
-
         $url = '/' . request()->path();
 
         // Custom verbs
@@ -76,7 +82,7 @@ class Action {
         }
 
         $url .= '&redir=' . $redir;
-        return $url;
+        $this->url = $url;
     }
 
     public function getIcon()

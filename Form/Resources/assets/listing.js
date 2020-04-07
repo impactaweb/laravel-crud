@@ -12,7 +12,7 @@
         }
 
         $checkboxes = $('.listing-checkboxes:checked')
-        if (url.indexOf('{id}') >= 0 && !($checkboxes.length > 0)) {
+        if ((url.indexOf('{id}') >= 0 || url.indexOf('{ids}') >= 0 || method != 'GET') && !($checkboxes.length > 0)) {
             alert('Selecione no minimo 1 item da listagem')
             return
         }
@@ -55,20 +55,16 @@
 
     });
 
-    function listagemLoading() {
-        $('[data-container="loading"]').html(`
-            <div class="loading-container fixed">
-                <div class="lds-roller">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-            </div>
-        `)
+    function listagemLoading(open = true) {
+        if (!open) {
+            $('[data-container="loading"]').html('')
+            return
+        }
+        $('[data-container="loading"]').html('<div class="loading-container fixed"><div class="lds-roller">'
+            + '<div></div><div></div><div></div><div></div></div></div>')
     }
 
-    const $checkboxs = $form.find('input.listing-checkboxes')
+    const $checkboxs = $('input.listing-checkboxes')
 
     function handleCheckboxChange(e) {
         if(this.checked) {
@@ -82,10 +78,13 @@
         $('#formBuscaAvacada').submit()
     }
 
-    function handleTdClick() {
-        if ($('input.listing-checkboxes',this).length) {
-            e.preventDefault()
-            return 
+    function handleTdClick(e) {
+        if ($(e.target).is("a") 
+                || $(e.target).is("img") 
+                || $(e.target).is("input") 
+                || $(e.target).is("button")
+                || $('input.listing-checkboxes',this).length) {
+            return;
         }
 
         const $checkbox = $(this).parents('tr').find('.listing-checkboxes:first')
@@ -99,7 +98,15 @@
     }
 
 
-    function handleDblClick() {
+    function handleDblClick(e) {
+
+        if ($(e.target).is("a") 
+                || $(e.target).is("img") 
+                || $(e.target).is("input") 
+                || $(e.target).is("button")) {
+            return;
+        }
+
         const $item = $(this)
 
         $('.listing-checkboxes').prop('checked', false)
@@ -112,63 +119,44 @@
             .prop('checked', 'checked')
 
         if ($('.actionButton[data-verb="edit"]').length > 0){
-            $('.actionButton[data-verb="edit"]').trigger('click');
+            $('.actionButton[data-verb="edit"]').trigger('click')
         }
     }
 
     // Funcão para atualizar a flag de um registro:
     function handleListingFlag() {
-        
-        let id          = $(this).data('id');
-        let field       = $(this).data('field');
-        let currentFlag = $(this).data('current-flag');
-        let flagTextOn  = $(this).data('flag-text-on');
-        let flagTextOff = $(this).data('flag-text-off');
 
-        // loading class :
-        $(this).addClass('listing_loading');
-        
-        $.ajax({
-            type: "GET",
-            url: window.location.href,
-            context: this,
-            data: {
-                'listingAction': 'flag', 
-                'id': id, 
-                'field': field, 
-                'currentFlag': currentFlag
-            },
-            success: function(data, textStatus, xhr) {
-                if(xhr.status == 200) {
-                    // stamos a nova flag
-                    if (currentFlag == '0') {
-                        currentFlag = '1';
-                        $(this).removeClass('listing_off');
-                        $(this).addClass('listing_on');
-                    } else {
-                        currentFlag = '0';
-                        $(this).removeClass('listing_on');
-                        $(this).addClass('listing_off');
-                    }
-                    // alteramos o valor no atributo:
-                    $(this).data('current-flag', '' + currentFlag);
+        var primaryKeyValue = $(this).parents('tr').find('.listing-checkboxes').val()
+        var newFlag = $(this).hasClass('flag-on') ? 0 : 1;
+        var fieldName = $(this).data('field');
 
-                    // alteramos o texto
-                    let text = flagTextOff;
-                    // se a flag originalmente era 0, então voltou como 1:
-                    if (currentFlag == '1') { 
-                        text = flagTextOn;
-                    }
-                    $(this).html(text);
-                }
-            },
-            error: function(err) {
-                console.log(err);
-            },
-            complete: function() {
-                $(this).removeClass('listing_loading');
-            }
-        });
+        listagemLoading()
+
+        var postUrl = window.location.pathname.replace(/\/+$/,'') + '/' + primaryKeyValue;
+        var postData = {
+            '_method': 'PUT', 
+            'responseFormat': 'json',
+            'listingFlagField': fieldName,
+            'newFlag': newFlag
+        }
+
+        $.post(postUrl, postData, function(jsonData) {
+
+            $('.listing-checkboxes[value="' + jsonData.id + '"]')
+                .parents('tr')
+                .find('a[data-field="' + jsonData.field + '"]')
+                .html(jsonData.flag)
+                .removeClass('flag-on').removeClass('flag-off')
+                .addClass(jsonData.flag == '1' ? 'flag-on' : 'flag-off')
+
+        }, "json")
+        .fail(function() {
+            alert("error");
+        })
+        .always(function() {
+            listagemLoading(false)
+        })
+
     }
 
     function handleAllChecked() {
@@ -186,12 +174,14 @@
 
     }
 
+    if ($checkboxs.length > 0) {
+        $('#listagemTable tbody tr:not(.empty) td').click(handleTdClick)
+        $('#listagemTable tbody tr:not(.empty)').dblclick(handleDblClick)
+    }
     $('input.listing-checkboxes').change(handleCheckboxChange)
     $('#listagemTable').checkboxes('range', true)
     $('[data-avancada="buscar"]').click(handleBuscaAvancada)
-    $('#listagemTable tbody tr:not(.empty) td').click(handleTdClick)
-    $('#listagemTable tbody tr:not(.empty)').dblclick(handleDblClick)
-    $('.listing_flag').click(handleListingFlag)    
+    $('.flagItem').click(handleListingFlag)    
     $('input[name="checkbox-listing"]').click(handleAllChecked)
 
     $checkboxs.each(function(idx, $item) {
@@ -203,8 +193,8 @@
         $('[data-toggle="tooltip"]').tooltip()
     }
 
-    $('#listingForm th order-asc').addClass('fas fa-sort-up');
-    $('#listingForm th order-desc').addClass('fas fa-sort-down');
+    $('#listingForm th order-asc').addClass('fas fa-sort-up')
+    $('#listingForm th order-desc').addClass('fas fa-sort-down')
     
     
 })(jQuery, axios)

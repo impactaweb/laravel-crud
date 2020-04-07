@@ -1,8 +1,5 @@
 <?php
 
-/**
- * Configurações do ProSeleta - Listagem
- */
 return [
 
     /**
@@ -41,50 +38,15 @@ return [
         ],
     ],
 
-
-
-
-
-
-
-
-
     /**
-     * Paginação: quantidade padrão de itens por página:
-     * <Boolean>
+     * Available Mask's
      */
-    'pagination' => true,
-    
-    
-    /**
-     * Paginação: quantidade máxima de itens por página: 
-     * <Int>
-     */
-    'defaultPerPageMaximum' => 500,
+    'masks' => [
+        'dm' => '\Impactaweb\Crud\Listing\Mask\Dates::dm',
+        'dmY' => '\Impactaweb\Crud\Listing\Mask\Dates::dmY',
+        'dmYHi' => '\Impactaweb\Crud\Listing\Mask\Dates::dmYHi',
+        'dmYHis' => '\Impactaweb\Crud\Listing\Mask\Dates::dmYHis',
+    ],
 
-    /**
-     * Ações padrão da listagem:
-     */
-    'defaultActionInsert' => [ 'url' => '/create/', 'method' => 'get'],
-    'defaultActionEdit'   => [ 'url' => '/edit/', 'method' => 'post'],
-    'defaultActionDelete' => [ 'url' => '/destroy/', 'method' => 'post'],
-
-    /**
-     * Busca avançada
-     * campos que serão ignorados por padrão na hora da busca:
-     */
-    'defaultFieldsRemovedFromAdvancedSearch' => [
-        'flag_excluido',
-    ],    
-    
-    /**
-     * Textos para a flag:
-     */
-    'defaultFlagTexts' => ['off', 'on'],
-
-    /**
-     * Texto padrão para relacionamentos vazios:
-     */
-    'defaultEmptyRelationValue' => '-',
 ];
 

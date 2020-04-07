@@ -7,8 +7,13 @@ use Impactaweb\Crud\Listing\DataSource;
 use Impactaweb\Crud\Listing\Field;
 use Impactaweb\Crud\Listing\FieldCollection;
 use Impactaweb\Crud\Listing\Action;
+use Impactaweb\Crud\Listing\Traits\FieldTypes;
+use Impactaweb\Crud\Listing\Traits\Util;
 
 class Listing {
+    
+    use FieldTypes;
+    use Util;
 
     protected $primaryKey;
     protected $dataSource;
@@ -24,7 +29,8 @@ class Listing {
         $this->primaryKey = $primaryKey;
         $this->dataSource = new DataSource($dataSource);
         $this->fields = new FieldCollection();
-        $this->fields->add(new Field($primaryKey, "ID"));
+
+        $this->fields->add(new Field($primaryKey, "ID", ['default' => $options['showID'] ?? true]));
 
         $this->setDefaultOrderby($primaryKey, 'DESC');
 
@@ -41,7 +47,7 @@ class Listing {
      */
     public function setDefaultActions(): void
     {
-        $defaultActions = config($this->configFile . '.defaultActions');
+        $defaultActions = config('listing.defaultActions');
         if (!is_array($defaultActions)) {
             return;
         }
@@ -65,11 +71,12 @@ class Listing {
      */
     public function render()
     {
-        $viewFile = config($this->configFile . '.view');
+        $viewFile = config('listing.view');
 
         $data = [
             'data' => $this->performQuery(),
             'actions' => $this->actions,
+            'showCheckbox' => $this->isCheckboxNeeded(),
             'columns' => $this->fields->getActiveFields(),
             'primaryKey' => $this->primaryKey,
             'advancedSearchFields' => $this->fields->getAllFields(),
@@ -142,10 +149,58 @@ class Listing {
     {
         $perPagePagination = request()->get('pp') ?? $this->perPagePagination;
         if (!is_numeric($perPagePagination) || !($perPagePagination > 0)) {
-            $perPagePagination = config($this->configFile . '.defaultPerPage');
+            $perPagePagination = config('listing.defaultPerPage');
         }
 
         return $perPagePagination;
     }
+
+    // Retorna true se alguma das actions necessitar do checkbox.
+    // Assume que qualquer action diferente de GET necessita do checkbox
+    public function isCheckboxNeeded(): bool
+    {
+        foreach ($this->actions as $action) {
+            $url = $action->getUrl();
+            if ($action->getMethod() != 'GET' 
+                || strpos($url, '{id}') !== false 
+                || strpos($url, '{ids}') !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Remove todas as actions
+    public function clearActions($actionsToClear = []): void
+    {
+        if (!empty($actionsToClear)) {
+            foreach ((array)$actionsToClear as $actionName) {
+                unset($this->actions[$actionName]);
+            }
+        } else {
+            $this->actions = [];
+        }
+    }
+
+    // Adiciona uma action à lista
+    public function action(string $name, string $label, ?string $method = null, ?string $url = null, ?string $icon = null, ?string $message = null): void
+    {
+        $this->actions[$name] = new Action($name, $label, $method ?? 'GET', $url, $icon, $message);
+    }
+
+    // Custom fields
+    public function customField(string $label, callable $callbackFunction, ?string $fieldName = null)
+    {
+        if (!$fieldName) {
+            // Criando um nome aleatório para o campo
+            $fieldName = 'customfield.' 
+                . substr(strtolower(preg_replace("/[^A-Za-z0-9?!]/",'', $label)), 0, 20) 
+                . '_' 
+                . substr(md5(uniqid()),0,10);
+        }
+
+        $this->field($fieldName, $label, ['callback' => $callbackFunction]);
+    }
+
 
 }

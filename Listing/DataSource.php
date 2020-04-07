@@ -109,7 +109,21 @@ class DataSource {
                     continue;
                 }
 
-                $joinList[] = [$tableName, $qualifiedFK, '=', $qualifiedPK];
+                if (method_exists($join->getRelated(), 'joinScopes')) {
+                    $scopes = $join->getRelated()->joinScopes();
+                    if (is_array($scopes) && count($scopes)) {
+                        $qualifiedPK = [$qualifiedPK];
+                        $qualifiedFK = [$qualifiedFK];
+                        foreach ($scopes as $scope) {
+                            $qualifiedPK[] = $scope[0];
+                            $qualifiedFK[] = $scope[1];
+                        }
+                    }
+                    #dd($scopes, $table, $tableName);
+                    #dd("existe");
+
+                }
+                $joinList[] = [$tableName, $qualifiedPK, '=', $qualifiedFK];
                 $joinTables[] = $fullTableName;
             }
             
@@ -123,7 +137,16 @@ class DataSource {
 
         // Performing joins to data source
         foreach ($joinList as $join) {
+            if (is_array($join[1])) {
+                $source = $source->leftJoin($join[0], function($joinBuilder) use ($join) {
+                    foreach ($join[1] as $i => $index1) {
+                        $joinBuilder = $joinBuilder->on($index1, $join[2], $join[3][$i]);
+                    }
+                    return $joinBuilder;
+                });
+            } else {
             $source = $source->leftJoin($join[0], $join[1], $join[2], $join[3]);
+            }
         }
 
         // Returning Model object
@@ -136,6 +159,13 @@ class DataSource {
      */
     public function buildSelect()
     {
+        // Se a chave primária não estiver no objeto, inserí-la
+        $model = $this->dataSource->getModel();
+        $primaryKey = $model->getKeyName();
+        if (!array_key_exists($primaryKey, $this->columnsSelect)) {
+            $this->columnsSelect[$primaryKey] = $model->getTable() . '.' . $primaryKey;
+        }
+
         $this->dataSource = $this->dataSource->select($this->columnsSelect);
     }
 
