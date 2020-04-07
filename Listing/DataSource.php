@@ -24,7 +24,10 @@ class DataSource {
     public function __construct($dataSource)
     {
         // Validate Data Source Type
-        if (!$dataSource instanceof QueryBuilder && !$dataSource instanceof Model) {
+        # TODO - Implementar listagem com fonte QueryBuilder
+        # if (!$dataSource instanceof QueryBuilder && !$dataSource instanceof Model) {
+
+        if (!$dataSource instanceof Model) {
             throw new Exception("Invalid source type");
         }
 
