@@ -303,8 +303,20 @@ class DataSource {
     public function getSearchTextParts(string $text): array
     {
         $text = preg_replace('/\s+/', ' ', trim($text));
-        $textParts = explode(" ", $text);
+        preg_match_all('~(?:[^\'"\s]+|\'[^\']*\'|"[^"]*")+~', $text, $parts);
+        $textParts = [];
+        if (!$parts[0]) {
+            return "";
+        }
+
+        foreach ($parts[0] as $part) {
+            $part = trim($part, ' "');
+            if ($part !== '') {
+                $textParts[] = $part;
+            }
+        }
         return $textParts;
+
     }
 
 }
