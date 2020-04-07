@@ -173,9 +173,8 @@ button.btn.btn-multiselect {
   font-family: "Font Awesome 5 Free";
   font-style: normal;
   font-weight: bold;
-  text-decoration: inherit;
+  text-decoration: none;
   margin-left:5px;
-  font-size:15px;
   color:#333;
 }
 
@@ -184,10 +183,14 @@ button.btn.btn-multiselect {
   font-family: "Font Awesome 5 Free";
   font-style: normal;
   font-weight: bold;
-  text-decoration: inherit;
+  text-decoration: none;
   margin-left:5px;
-  font-size:15px;
   color:#333;
+}
+
+#listagemTable th a {
+  color: inherit;
+  text-decoration: none;
 }
 
 .flagItem {
