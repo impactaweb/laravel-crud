@@ -6,14 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Field {
 
+    public $type;
     public $name;
     public $label;
     public $activeByDefault = true;
     protected $callbackFunction;
     protected $mask;
 
-    public function __construct(string $name, string $label, array $options = [])
+    public function __construct(string $type, string $name, string $label, array $options = [])
     {
+        $this->type = $type;
         $this->name = $name;
         $this->label = $label;
         
@@ -28,6 +30,11 @@ class Field {
         if (isset($options['mask']) && !empty($options['mask'])) {
             $this->mask = $options['mask'];
         }
+    }
+
+    public function getType()
+    {
+        return $this->type;
     }
 
     public function getName()

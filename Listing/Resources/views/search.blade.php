@@ -38,6 +38,6 @@
 
 @if( count($advancedSearchFields) > 0)
 
-    @include('listing::advancedsearch')
+    @include('listing::advancedsearch.form')
 
 @endif

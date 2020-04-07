@@ -30,8 +30,7 @@ class Listing {
         $this->dataSource = new DataSource($dataSource);
         $this->fields = new FieldCollection();
 
-        $this->fields->add(new Field($primaryKey, "ID", ['default' => $options['showID'] ?? true]));
-
+        $this->field($primaryKey, "ID", ['default' => $options['showID'] ?? true]);
         $this->setDefaultOrderby($primaryKey, 'DESC');
 
         // Quantidade por página
@@ -60,9 +59,9 @@ class Listing {
     /**
      * Configura novo campo 
      */
-    public function field(string $name, string $label, array $options = [])
+    public function field(string $name, string $label, array $options = [], string $type = 'text')
     {
-        $this->fields->add(new Field($name, $label, $options));
+        $this->fields->add(new Field($type, $name, $label, $options));
         return $this;
     }
 
@@ -189,18 +188,18 @@ class Listing {
     }
 
     // Custom fields
-    public function customField(string $label, callable $callbackFunction, ?string $fieldName = null)
+    public function customField(string $label, callable $callbackFunction, array $options = [], ?string $name = null, string $type = 'text')
     {
-        if (!$fieldName) {
+        if (!$name) {
             // Criando um nome aleatório para o campo
-            $fieldName = 'customfield.' 
+            $name = 'customfield.' 
                 . substr(strtolower(preg_replace("/[^A-Za-z0-9?!]/",'', $label)), 0, 20) 
                 . '_' 
                 . substr(md5(uniqid()),0,10);
         }
 
-        $this->field($fieldName, $label, ['callback' => $callbackFunction]);
+        $options['callback'] = $callbackFunction;
+        $this->field($name, $label, $options, $type);
     }
-
 
 }

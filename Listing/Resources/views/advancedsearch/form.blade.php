@@ -10,23 +10,20 @@
     </div>
     <div class="modal-body" style="max-height: 450px; overflow-y: scroll;">
 
-    @foreach ($advancedSearchFields as $position => $field)
+    @foreach ($advancedSearchFields as $position => $field) 
         <div class="form-group row">
-            <div class="col">
+            <div class="col-md-4">
                 <label class="col-auto col-form-label font-weight-bold" style="text-transform: capitalize;">{{ $field->getLabel() }}:</label>
             </div>
-            <div class="col">
-                <select name="op[{{ $field->getName() }}]" class="form-control">
-                    @foreach ($advancedSearchOperators as $key => $name)
-                        <option value="{{ $key }}" {{ request()->get('op')[$field->getName()] == $key ? 'selected' : '' }}>
-                            {{ __('listing::listing.operators.'.$name) }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col">
-                <input type="text" class="form-control" value="{{ request()->get($field->getNameConverted()) }}" name="{{ $field->getName() }}">
-            </div>
+    
+            @switch($field->getType())
+
+                @case('flag')
+                    @include('listing::advancedsearch.flag')
+                    @break
+                @default
+                    @include('listing::advancedsearch.text')
+            @endswitch
         </div>
     @endforeach
             

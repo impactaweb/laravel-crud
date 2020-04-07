@@ -44,20 +44,20 @@ trait FieldTypes {
         return $this->customField($label, $callback);
     }
 
-    public function flagField(string $fieldName, string $label)
+    public function flagField(string $name, string $label)
     {
-        $callback = function($data) use ($fieldName) {
-            if (!isset($data->$fieldName)) {
+        $callback = function($data) use ($name) {
+            if (!isset($data->$name)) {
                 return 'ERRO';
             }
             return '<a href="javascript:;" class="flagItem '
-                    . ($data->$fieldName == 1 ? 'flag-on' : 'flag-off')
-                    .' " data-field="' . $fieldName . '">'
-                    . $data->$fieldName
+                    . ($data->$name == 1 ? 'flag-on' : 'flag-off')
+                    .' " data-field="' . $name . '">'
+                    . $data->$name
                     . '</a>';
         };
 
-        return $this->customField($label, $callback, $fieldName);
+        return $this->customField($label, $callback, [], $name, 'flag');
     }
 
 
