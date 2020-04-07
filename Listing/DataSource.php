@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Facades\DB;
 
 class DataSource {
 
@@ -140,7 +141,7 @@ class DataSource {
             if (is_array($join[1])) {
                 $source = $source->leftJoin($join[0], function($joinBuilder) use ($join) {
                     foreach ($join[1] as $i => $index1) {
-                        $joinBuilder = $joinBuilder->on($index1, $join[2], $join[3][$i]);
+                        $joinBuilder = $joinBuilder->on($index1, $join[2], is_numeric($join[3][$i]) ? DB::raw($join[3][$i]) : $join[3][$i]);
                     }
                     return $joinBuilder;
                 });
