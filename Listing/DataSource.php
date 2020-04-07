@@ -201,7 +201,7 @@ class DataSource {
             }
             
             $searchText = trim($queryString[$columnQueryString]);
-            if (empty($searchText)) {
+            if ($searchText === '') {
                 continue;
             }
 
