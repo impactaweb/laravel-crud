@@ -52,7 +52,15 @@ class FieldCollection implements Countable, IteratorAggregate {
 
     public function getAllFields(): array
     {
-        return $this->fields;
+        $fields = [];
+        foreach ($this->fields as $field) {
+            $prefixName = explode(".", $field->getName())[0];
+            if ($prefixName == 'customfield') {
+                continue;
+            }
+            $fields[] = $field;
+        }
+        return $fields;
     }
 
 }
