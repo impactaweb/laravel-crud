@@ -97,7 +97,7 @@ class Field {
             $masks = config('listing.masks');
             if (is_array($masks) && array_key_exists($this->mask, $masks) && is_callable($masks[$this->mask])) {
                 $func = $masks[$this->mask];
-                return $func('2020-01-02 03:04:05');
+                return $func($data->$columnName);
             }
         }
 
