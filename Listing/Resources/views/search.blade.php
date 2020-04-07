@@ -27,7 +27,7 @@
                         </div>
                     @endif
                 </div>
-                @if(request()->get('q') !== null || request()->get('terms') !== null)
+                @if($isSearching)
                     <a href="{{ request()->url() }}" class="btn close" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </a>
@@ -38,36 +38,8 @@
     </div>
 </form>
 
-<div
-    class="modal fade show"
-    id="modalBuscaAvançada"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="modalBuscaAvançadaLabel"
-    aria-modal="true"
->
-    <div
-        class="modal-dialog"
-        role="document"
-    >
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title" id="modalBuscaAvançadaLabel">Busca avançada</h2>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-        </div>
-        <div class="modal-body" style="max-height: 450px; overflow-y: scroll;">
-            @include('listing::advancedsearch')
-        </div>
-        <div class="modal-footer">
-            <a
-                href="{{ request()->url() }}"
-                title="limpar busca"
-                class="btn btn-default"
-            >Limpar</a>
-            <button type="button" class="btn btn-primary" data-avancada="buscar">Buscar</button>
-        </div>
-        </div>
-  </div>
-</div>
+@if( count($advancedSearchFields) > 0)
+
+    @include('listing::advancedsearch.form')
+
+@endif

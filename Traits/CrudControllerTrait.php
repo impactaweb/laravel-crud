@@ -7,7 +7,6 @@ use Impactaweb\Crud\Helpers\Msg;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 use Impactaweb\Crud\Form\FormUrls;
 
@@ -138,8 +137,19 @@ trait CrudControllerTrait
      * @param Request $request
      * @return JsonResponse
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
+        // Update one field (flags)
+        if ($request->has('listingFlagField') && $request->has('newFlag')) {
+            $model = new $this->model();
+            $params = $request->route()->parameters();
+            $id = end($params);
+            $field = $request->get('listingFlagField');
+            $flag = $request->get('newFlag');
+            $model->updateFlag($id, $field, $flag);
+            return ['id' => $id, 'field' => $field, 'flag' => $flag];
+        }
+
         $belongsToManyRelations = isset($this->belongsToManyRelations) ? $this->belongsToManyRelations : [];
         $this->applyValidation($request);
         return $this->salvarRedirecionar($request->all(), $belongsToManyRelations);
@@ -158,9 +168,29 @@ trait CrudControllerTrait
         }
         return response()->json(['success' => false], 422);
     }
-    public function destroy(Request $request)
+    public function destroy(Request $request, $id)
     {
-        # Delete Model
+        // Multiplos itens para excluir (da listagem)
+        if ($request->has('multiple')) {
+
+            $items = explode(',', $request->get('multiple'));
+
+            foreach ($items as $item) {
+                if (!is_numeric($item)) {
+                    continue;
+                }
+                
+                try {
+                    $this->model::find($item)->delete();
+                } catch (Exception $e) {
+                    abort('Erro ao excluir item: '.$item, 422);
+                }   
+            }
+
+            return $request->has('redir') ? redirect($request->get('redir')) : back();
+        }
+
+        # Delete Model (antigo)
         if ($request->post('item')) {
             $success = [];
             $errors  = [];
@@ -182,6 +212,18 @@ trait CrudControllerTrait
                 return response()->json(['success' => $sucess, 'errors' => $errors], 200);
             }
         }
+
+        // Single delete
+        if (is_numeric($id)) {
+            try {
+                $this->model::find($id)->delete();
+            } catch (Exception $e) {
+                abort('Erro ao excluir item: '.$id, 422);
+            }   
+            return $request->has('redir') ? redirect($request->get('redir')) : back();
+        }
+
+        abort('Método não encontrado.', 422);
     }
 
     /**

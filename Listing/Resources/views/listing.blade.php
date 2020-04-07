@@ -1,39 +1,31 @@
 <div data-container="loading"></div>
 <div class="corpo-listing" id="psListing">
 
-    @include('listing::remove-modal')
+    @include('listing::confirmation-modal')
 
     <div class="header row">
         @if($actions)
             <div class="col">
-                @foreach ($actions as $action => $params)
-                    <?php
-                        $fullUrl = request()->url();
-                        $url = $fullUrl.$params['url'];
-                        $method = $params['method'];
-                    ?>
+                @foreach ($actions as $action)
                     <button
                         type="button"
-                        class="btn btn-lg btn-default tooltips"
-                        btn-action-field="{{ $action }}"
-                        btn-method="{{ $method }}"
-                        btn-url="{{ $url }}"
-                        title="{{ $action }}"
+                        class="btn btn-lg btn-default tooltips actionButton"
+                        data-name="{{ $action->getName() }}"
+                        data-url="{{ $action->getUrl() }}"
+                        data-verb="{{ $action->getVerb() }}"
+                        data-method="{{ $action->getMethod() }}"
+                        title="{{ strip_tags($action->getLabel()) }}"
+                        data-confirmation="{{ $action->getConfirmationText() }}"
                         data-toggle="tooltip" data-placement="top" 
                     >
-                        @switch($action)
-                            @case('editar')
-                                <i class="far fa-edit"></i>
-                                @break
-                            @case('inserir')
-                                <i class="far fa-plus-square"></i>
-                                @break
-                            @case('excluir')
-                                <i class="far fa-trash-alt"></i>
-                                @break
-                            @default
-                                {!! $action !!}
-                        @endswitch
+                        @if($action->getIcon())
+                            <i class="{{ $action->getIcon() }}"></i>
+                            <span class="sr-only">
+                                {{ $action->getLabel() }}
+                            </span>
+                        @else
+                            {!! $action->getLabel() !!}
+                        @endif
                     </button>
                 @endforeach
             </div>
@@ -43,36 +35,49 @@
         </div>
     </div>
 
-    <form id="meuForm" action="" method="POST" >
+    <form id="listingForm" action="" method="POST" style="display:none">
         {{ csrf_field() }}
+        <input type="hidden" name="_method" value=""></button>
+        <button type="submit"></button>
+    </form>
 
     @if($data && $columns)
     <table class="table table-striped table-hover table-sm" id="listagemTable" data-redir="{{ url()->full() }}">
+
         {{-- Cabeçalho com as columns --}}
         <thead>
             <tr>
-            @foreach($columns as $column => $params)
-                <th scope="col" class="border-top-0">{!! $params['column_link'] !!}</th>
+            @if($showCheckbox)
+                <th scope="col" class="border-top-0">
+                    <input type="checkbox" name="checkbox-listing" />
+                </th>
+            @endif
+            @foreach($columns as $column)
+                <th scope="col" class="border-top-0">
+                    {!! $column->getOrderbyLink($currentOrderby, $allowedOrderbyColumns) !!}
+                </th>
             @endforeach
             </tr>
         </thead>
 
         {{-- Registros --}}
-        @forelse ($data as $item)
+        @forelse ($data->items() as $item)
             <tr>
-            @foreach ($columns as $column => $params)
-                <td>{!! $item->$column !!}</td>
+            @if($showCheckbox)
+                <td><input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->$primaryKey }}" /></td>
+            @endif
+            @foreach ($columns as $column)
+                <td>{!! $column->formatData($item) !!}</td>
             @endforeach
             </tr>
         @empty
             <tr class="empty">
-                <td colspan="{{ count($columns) }}">Nenhum item encontrado</td>
+                <td colspan="100%">Nenhum item encontrado</td>
             </tr>
         @endforelse
     </table>
     @endif
 
-    </form>
     @include('listing::pagination')
 </div>
 

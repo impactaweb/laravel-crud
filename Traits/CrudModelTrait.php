@@ -129,4 +129,13 @@ trait CrudModelTrait
         $entity->save();
     }
 
+    static public function updateFlag(int $id, $field, string $flag) {
+        $entity = self::find($id);
+        if (!in_array($entity->{$field}, ['0', '1', null])) {
+            return;
+        }
+        $entity->$field = ($flag == 1 ? '1' : '0');
+        $entity->save();
+    }
+
 }

@@ -163,3 +163,60 @@ button.btn.btn-multiselect {
 #listagemTable tr.empty td {
   padding:10px;
 }
+
+#listagemTable td {
+  vertical-align: middle
+}
+
+#listagemTable th .order-asc:after {
+  content: '\f0d7';
+  font-family: "Font Awesome 5 Free";
+  font-style: normal;
+  font-weight: bold;
+  text-decoration: none;
+  margin-left:5px;
+  color:#333;
+}
+
+#listagemTable th .order-desc:after {
+  content: '\f0d8';
+  font-family: "Font Awesome 5 Free";
+  font-style: normal;
+  font-weight: bold;
+  text-decoration: none;
+  margin-left:5px;
+  color:#333;
+}
+
+#listagemTable th a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.flagItem {
+  display: inline-block;
+  overflow: hidden;
+  text-indent: -9999px;
+  text-decoration:none;
+  font-family: "Font Awesome 5 Free";
+  font-style: normal;
+  font-size: 18px;
+  line-height: 18px;
+  margin: 0;
+}
+
+.flag-on:before { 
+  content: '\f058';
+  font-weight: bold;
+  color:#093;
+  float: left;
+  text-indent: 0;
+
+}
+.flag-off:before { 
+  content: '\f058';
+  font-weight: normal;
+  color:#999;
+  float: left;
+  text-indent: 0;
+}
