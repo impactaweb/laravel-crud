@@ -17,9 +17,9 @@
             </div>
     
             @switch($field->getType())
-
                 @case('flag')
-                    @include('listing::advancedsearch.flag')
+                @case('select')
+                    @include('listing::advancedsearch.' . $field->getType())
                     @break
                 @default
                     @include('listing::advancedsearch.text')

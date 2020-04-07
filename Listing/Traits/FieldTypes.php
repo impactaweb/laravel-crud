@@ -60,5 +60,12 @@ trait FieldTypes {
         return $this->customField($label, $callback, [], $name, 'flag');
     }
 
+    public function selectField(string $name, string $label, array $searchOptions, array $options = [])
+    {
+        $options['searchOptions'] = $searchOptions;
+        return $this->field($name, $label, $options, 'select');
+
+    }
+
 
 }

@@ -79,11 +79,11 @@
     }
 
     function handleTdClick(e) {
+        
         if ($(e.target).is("a") 
                 || $(e.target).is("img") 
                 || $(e.target).is("input") 
-                || $(e.target).is("button")
-                || $('input.listing-checkboxes',this).length) {
+                || $(e.target).is("button")) {
             return;
         }
 

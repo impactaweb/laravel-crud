@@ -12,6 +12,7 @@ class Field {
     public $activeByDefault = true;
     protected $callbackFunction;
     protected $mask;
+    protected $searchOptions = [];
 
     public function __construct(string $type, string $name, string $label, array $options = [])
     {
@@ -30,6 +31,10 @@ class Field {
         if (isset($options['mask']) && !empty($options['mask'])) {
             $this->mask = $options['mask'];
         }
+
+        if (isset($options['searchOptions']) && !empty($options['searchOptions'])) {
+            $this->searchOptions = $options['searchOptions'];
+        }
     }
 
     public function getType()
@@ -42,6 +47,11 @@ class Field {
         return $this->name;
     }
 
+    public function getSearchOptions()
+    {
+        return $this->searchOptions;
+    }
+    
     public function getNameConverted()
     {
         return str_replace('.', '_', $this->name);
