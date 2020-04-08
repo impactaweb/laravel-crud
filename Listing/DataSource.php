@@ -3,12 +3,13 @@
 namespace Impactaweb\Crud\Listing;
 
 use Exception;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
-class DataSource {
+class DataSource
+{
 
     public $dataSource;
     public $columns;
@@ -23,14 +24,21 @@ class DataSource {
      */
     public function __construct($dataSource)
     {
-        // Validate Data Source Type
-        # TODO - Implementar listagem com fonte QueryBuilder
-        # if (!$dataSource instanceof QueryBuilder && !$dataSource instanceof Model) {
-
-        if (!$dataSource instanceof Model) {
+        if (!$dataSource instanceof Model && !$dataSource instanceof Builder) {
             throw new Exception("Invalid source type");
         }
 
+        # Caso o datasource for model, converte ele para Builder
+        if ($dataSource instanceof Model) {
+            $this->model = $dataSource;
+            $this->table = $this->model->getTable();
+            $this->dataSource = $dataSource::whereRaw('1');
+            return;
+        }
+
+        # Caso o datasource for Builder, pega a model apartir dele
+        $this->model = $dataSource->getModel();
+        $this->table = $this->model->getTable();
         $this->dataSource = $dataSource;
     }
 
@@ -40,17 +48,14 @@ class DataSource {
     public function getData(array $columns, ?array $orderby = [], int $perPagePagination = 20, ?array $queryString = [])
     {
         $this->columns = $columns;
-
         $this->buildJoins();
         $this->buildWhere($queryString);
         $this->buildSelect();
-
         $this->orderbyList = [$orderby];
         $this->buildOrderby();
-
         return $this->dataSource->paginate($perPagePagination);
     }
-    
+
     /**
      * Constroi os joins manualmente, visto que a classe Model realiza Eager Loading
      * Caso o sourceData seja um objeto QueryBuilder
@@ -59,11 +64,6 @@ class DataSource {
     {
         $source = $this->dataSource;
         $columns = $this->columns;
-
-        // If it's not a Model instance, exit
-        if (! $source instanceof Model) {
-            return;
-        }
 
         $joinList = [];
         $joinTables = [];
@@ -75,7 +75,7 @@ class DataSource {
             $orderbyAllowed = true;
             if (strpos($column, ".") === false) {
                 $allowedOrderbyColumns[] = $column;
-                $this->columnsSelect[$column] = $source->getTable() . "." . $column;
+                $this->columnsSelect[$column] = $this->table . "." . $column;
                 continue;
             }
 
@@ -91,19 +91,19 @@ class DataSource {
                 if ($i > 0 && $join instanceof BelongsTo) {
                     $join = $join->getRelated();
                 }
-                
-                
+
+
                 if (!method_exists($join, $table)) {
                     $orderbyAllowed = false;
                     continue 2;
                 }
 
                 $join = $join->$table();
-                if (! $join instanceof BelongsTo) {
+                if (!$join instanceof BelongsTo) {
                     $orderbyAllowed = false;
                     continue 2;
                 }
-                
+
                 $tableName = $join->getRelated()->getTable();
                 $qualifiedFK = $join->getQualifiedForeignKeyName();
                 $qualifiedPK = $join->getQualifiedOwnerKeyName();
@@ -130,10 +130,10 @@ class DataSource {
                 $joinList[] = [$tableName, $qualifiedPK, '=', $qualifiedFK];
                 $joinTables[] = $fullTableName;
             }
-            
+
             if ($orderbyAllowed) {
                 $allowedOrderbyColumns[] = $column;
-                $qualifiedColumn = ($join ? $join->getRelated() : $source)->getTable() . "." . end($columnParts);
+                $qualifiedColumn = ($join ? $join->getRelated() : $this->table . "." . end($columnParts));
                 $this->columnsSelect[$column] = $qualifiedColumn;
             }
 
@@ -142,14 +142,14 @@ class DataSource {
         // Performing joins to data source
         foreach ($joinList as $join) {
             if (is_array($join[1])) {
-                $source = $source->leftJoin($join[0], function($joinBuilder) use ($join) {
+                $source = $source->leftJoin($join[0], function ($joinBuilder) use ($join) {
                     foreach ($join[1] as $i => $index1) {
                         $joinBuilder = $joinBuilder->on($index1, $join[2], is_numeric($join[3][$i]) ? DB::raw($join[3][$i]) : $join[3][$i]);
                     }
                     return $joinBuilder;
                 });
             } else {
-            $source = $source->leftJoin($join[0], $join[1], $join[2], $join[3]);
+                $source = $source->leftJoin($join[0], $join[1], $join[2], $join[3]);
             }
         }
 
@@ -164,10 +164,10 @@ class DataSource {
     public function buildSelect()
     {
         // Se a chave primária não estiver no objeto, inserí-la
-        $model = $this->dataSource->getModel();
-        $primaryKey = $model->getKeyName();
+        $primaryKey = $this->model->getKeyName();
+
         if (!array_key_exists($primaryKey, $this->columnsSelect)) {
-            $this->columnsSelect[$primaryKey] = $model->getTable() . '.' . $primaryKey;
+            $this->columnsSelect[$primaryKey] = $this->table . '.' . $primaryKey;
         }
 
         $this->dataSource = $this->dataSource->select($this->columnsSelect);
@@ -202,14 +202,14 @@ class DataSource {
             if (!isset($queryString[$columnQueryString]) || !isset($this->columnsSelect[$column])) {
                 continue;
             }
-            
+
             $searchText = trim($queryString[$columnQueryString]);
             if ($searchText === '') {
                 continue;
             }
 
             $operator = (isset($queryString['op']) && isset($queryString['op'][$column]) ? $queryString['op'][$column] : "like");
-            switch  ($operator) {
+            switch ($operator) {
                 case '=':
                 case '!=':
                 case '<':
@@ -219,7 +219,7 @@ class DataSource {
                     $whereRaw .= " AND " . $this->columnsSelect[$column] . " $operator ? ";
                     $whereRawValues[] = $searchText;
                     break;
-                
+
                 case 'in':
                     $operator = 'in';
                     $values = explode(',', $searchText);
@@ -227,7 +227,7 @@ class DataSource {
                     $whereRaw .= " AND " . $this->columnsSelect[$column] . " IN ( $inFields )";
                     $whereRawValues = array_merge($whereRawValues, $values);
                     break;
-                
+
                 case 'like':
                 case 'not like':
                     $searchTextParts = $this->getSearchTextParts($searchText);
@@ -265,7 +265,7 @@ class DataSource {
             if (!$column) {
                 continue;
             }
-            
+
             // Verifica se a coluna pode ser usada para ordenação
             if (in_array($orderby[0], $this->allowedOrderbyColumns)) {
                 $this->dataSource = $this->dataSource->orderBy($column, $direction);
@@ -275,7 +275,7 @@ class DataSource {
         }
 
         // Insiro aqui a chave primária para não variar a ordem
-        $primaryKey = $this->dataSource->getModel()->getQualifiedKeyName();
+        $primaryKey = $this->model->getQualifiedKeyName();
         if (!in_array($primaryKey, $orderByColumns)) {
             $this->dataSource = $this->dataSource->orderBy($primaryKey, 'desc');
         }
@@ -289,15 +289,15 @@ class DataSource {
     public static function getAdvancedSearchOperators()
     {
         return [
-            'like'     => 'is like',
+            'like' => 'is like',
             'not like' => 'not like',
-            '='        => 'equal',
-            '!='       => 'different',
-            '<'        => 'less than',
-            '<='       => 'less or equal than',
-            '>'        => 'greater than',
-            '>='       => 'greater or equal than',
-            'in'       => 'in',
+            '=' => 'equal',
+            '!=' => 'different',
+            '<' => 'less than',
+            '<=' => 'less or equal than',
+            '>' => 'greater than',
+            '>=' => 'greater or equal than',
+            'in' => 'in',
         ];
     }
 
