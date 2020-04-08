@@ -32,7 +32,7 @@ class DataSource
         if ($dataSource instanceof Model) {
             $this->model = $dataSource;
             $this->table = $this->model->getTable();
-            $this->dataSource = $dataSource::whereRaw('1');
+            $this->dataSource = $dataSource::query();
             return;
         }
 
@@ -62,7 +62,7 @@ class DataSource
      */
     public function buildJoins(): void
     {
-        $source = $this->dataSource;
+        $source = $this->dataSource->getModel();
         $columns = $this->columns;
 
         $joinList = [];
@@ -133,7 +133,7 @@ class DataSource
 
             if ($orderbyAllowed) {
                 $allowedOrderbyColumns[] = $column;
-                $qualifiedColumn = ($join ? $join->getRelated() : $this->table . "." . end($columnParts));
+                $qualifiedColumn = ($join ? $join->getRelated()->getTable() : $this->table) . "." . end($columnParts);
                 $this->columnsSelect[$column] = $qualifiedColumn;
             }
 
