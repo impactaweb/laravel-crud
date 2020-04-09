@@ -153,10 +153,10 @@ class BaseField
             if ($item == 'required') {
                 $this->required = true;
             }
-            if (strpos($item, 'max') !== false) {
+            if (getType($item) == 'string' && strpos($item, 'max') !== false) {
                 $this->attrs['maxlength'] = str_replace('max:', '', $item);
             }
-            if (strpos($item, 'min') !== false) {
+            if (getType($item) == 'string' && strpos($item, 'min') !== false) {
                 $this->attrs['min'] = str_replace('min:', '', $item);
             }
         }
