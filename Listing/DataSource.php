@@ -58,7 +58,6 @@ class DataSource
 
     public function verifyOrderBy($column)
     {
-        $orderbyAllowed = true;
         if (strpos($column, ".") === false) {
             $allowedOrderbyColumns[] = $column;
             $this->columnsSelect[$column] = $this->table . "." . $column;
@@ -78,6 +77,7 @@ class DataSource
 
         // For each column, try to detect it's relations join
         foreach ($this->columns as $column) {
+            $orderbyAllowed = true;
             $this->verifyOrderBy($column);
             $columnParts = explode(".", $column);
             $join = $source;
