@@ -56,31 +56,30 @@ class DataSource
         return $this->dataSource->paginate($perPagePagination);
     }
 
+    public function verifyOrderBy($column)
+    {
+        $orderbyAllowed = true;
+        if (strpos($column, ".") === false) {
+            $allowedOrderbyColumns[] = $column;
+            $this->columnsSelect[$column] = $this->table . "." . $column;
+        }
+    }
+
     /**
      * Constroi os joins manualmente, visto que a classe Model realiza Eager Loading
      * Caso o sourceData seja um objeto QueryBuilder
      */
     public function buildJoins(): void
     {
-        $source = $this->dataSource->getModel();
-        $columns = $this->columns;
-
+        $source = $this->dataSource;
         $joinList = [];
         $joinTables = [];
         $allowedOrderbyColumns = [];
 
         // For each column, try to detect it's relations join
-        foreach ($columns as $column) {
-
-            $orderbyAllowed = true;
-            if (strpos($column, ".") === false) {
-                $allowedOrderbyColumns[] = $column;
-                $this->columnsSelect[$column] = $this->table . "." . $column;
-                continue;
-            }
-
+        foreach ($this->columns as $column) {
+            $this->verifyOrderBy($column);
             $columnParts = explode(".", $column);
-
             $join = $source;
             $fullTableName = "";
 
@@ -123,8 +122,6 @@ class DataSource
                             $qualifiedFK[] = $scope[1];
                         }
                     }
-                    #dd($scopes, $table, $tableName);
-                    #dd("existe");
 
                 }
                 $joinList[] = [$tableName, $qualifiedPK, '=', $qualifiedFK];
