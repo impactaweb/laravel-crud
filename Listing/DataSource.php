@@ -56,14 +56,6 @@ class DataSource
         return $this->dataSource->paginate($perPagePagination);
     }
 
-    public function verifyOrderBy($column)
-    {
-        if (strpos($column, ".") === false) {
-            $allowedOrderbyColumns[] = $column;
-            $this->columnsSelect[$column] = $this->table . "." . $column;
-        }
-    }
-
     /**
      * Constroi os joins manualmente, visto que a classe Model realiza Eager Loading
      * Caso o sourceData seja um objeto QueryBuilder
@@ -77,8 +69,14 @@ class DataSource
 
         // For each column, try to detect it's relations join
         foreach ($this->columns as $column) {
+
             $orderbyAllowed = true;
-            $this->verifyOrderBy($column);
+            if (strpos($column, ".") === false) {
+                $allowedOrderbyColumns[] = $column;
+                $this->columnsSelect[$column] = $this->table . "." . $column;
+                continue;
+            }
+
             $columnParts = explode(".", $column);
             $join = $source;
             $fullTableName = "";
