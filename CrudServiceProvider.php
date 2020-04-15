@@ -86,7 +86,7 @@ class CrudServiceProvider extends LaravelServiceProvider
         ], 'views');
 
         $this->publishes([
-            __DIR__.'/Listing/Resources/assets' => public_path('vendor/impactaweb/crud/form'),
+            __DIR__.'/Listing/Resources/assets' => public_path('vendor/impactaweb/crud/listing'),
         ], 'public');
     }
 
