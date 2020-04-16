@@ -1777,7 +1777,7 @@
 
                 $.ajax({
                     url: ACTION,
-                    type: $('[name="_method"]').val(),
+                    type: 'POST',
                     processData: false,
                     contentType: false,
                     data: new FormData(form),
