@@ -5,6 +5,7 @@ namespace Impactaweb\Crud\Form;
 use Impactaweb\Crud\Form\Fields\IdField;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\View\View;
+use Impactaweb\Crud\Traits\Fields;
 use Exception;
 
 /**
