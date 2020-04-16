@@ -12,7 +12,9 @@ use Exception;
  */
 class Form
 {
-
+	
+	use Fields;
+	
 	/**
 	 * @var array - Array com os fields disponíveis
 	 */
