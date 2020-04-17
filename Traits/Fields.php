@@ -20,7 +20,7 @@ trait Fields
         return $this->field('text', $name, $label, $options);
     }
 
-    public function file(string $name, string $label, $diretorio)
+    public function file(string $name, string $label, string $diretorio)
     {
 
         # Verifica se há coringas de rotas no diretório
@@ -33,14 +33,12 @@ trait Fields
         $storageDefault = config('filesystems.default');
         $disks = config('filesystems.disks');
 
-        $root = $disks[$storageDefault]['root'] ?? '';
-        $root = str_replace(storage_path(), '', $root);
-        $diretorio = str_replace("{storagePath}", $root, $diretorio);
+        $url = rtrim($disks[$storageDefault]['url'] ?? '', '/');
+        $diretorio = str_replace("{storagePath}", $url, $diretorio);
 
         foreach ($disks as $disk => $options) {
-            $root = $disk['root'] ?? '';
-            $root = str_replace(storage_path(), '', $root);
-            $diretorio = str_replace("{storage.$disk}", $root, $diretorio);
+            $url = rtrim($options['url'] ?? '', '/');
+            $diretorio = str_replace("{storage.$disk}", $url, $diretorio);
         }
 
         return $this->field('file', $name, $label, ['dir' => $diretorio]);
