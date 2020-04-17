@@ -2,12 +2,12 @@
 
 namespace Impactaweb\Crud\Form;
 
-use Impactaweb\Crud\Form\Fields\IdField;
+use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\View\View;
+use Impactaweb\Crud\Form\Fields\IdField;
 use Impactaweb\Crud\Form\Fields\ShowField;
 use Impactaweb\Crud\Traits\Fields;
-use Exception;
 
 /**
  * Class Form
@@ -15,50 +15,26 @@ use Exception;
 class Form
 {
 
-	use Fields;
-
-	/**
-	 * @var array - Array com os fields disponíveis
-	 */
-	protected $fields = FieldAlias::fields;
-
-	protected $panels = [];
-
-	public $initial = [];
-
-	protected $template;
-
-	protected $idPanel = 0;
-
-	protected $formId = 'form';
-
-	protected $action = '';
-
-	protected $method = 'POST';
-
-	protected $class;
-
-	protected $hidden = [];
-
-	protected $html = [];
-
-	protected $actions = [];
-
-	protected $autoComplete = false;
-
-	protected $targetBlank = false;
-
-	private $primaryKey = '';
-
-	private $primaryKeyValue = '';
-
-	private $cancelVisible = true;
-
-	private $cancelLinkUrl = '#';
-
-	private $displayId = true;
-
-	private $hideActions = false;
+    use Fields;
+    protected $fields = FieldAlias::fields;
+    protected $panels = [];
+    public $initial = [];
+    protected $template;
+    protected $idPanel = 0;
+    protected $formId = 'form';
+    protected $action = '';
+    protected $method = 'POST';
+    protected $class;
+    protected $hidden = [];
+    protected $html = [];
+    protected $actions = [];
+    protected $autoComplete = false;
+    protected $targetBlank = false;
+    private $primaryKey = '';
+    private $primaryKeyValue = '';
+    private $cancelVisible = true;
+    private $cancelLinkUrl = '#';
+    private $hideActions = false;
 
     /**
      * @return bool
@@ -77,348 +53,334 @@ class Form
         return $this;
     }
 
-	protected $request;
+    protected $request;
 
-	/**
-	 * Array com regras para serem utilizadas na
-	 * criação dos fields
-	 * @var array
-	 */
-	private $rules = [];
+    /**
+     * Array com regras para serem utilizadas na
+     * criação dos fields
+     * @var array
+     */
+    private $rules = [];
 
-	/**
-	 * Starts a new form with initial data
-	 * @param array $initial Initial form data
-	 */
-	public function __construct(array $initial = [], string $primaryKey = '')
-	{
-		$this->initial = $initial;
-		$this->request = request();
-		$this->setPrimaryKey($primaryKey);
+    /**
+     * Starts a new form with initial data
+     * @param array $initial Initial form data
+     */
+    public function __construct(array $initial = [], string $primaryKey = '', $showId = true)
+    {
+        $this->initial = $initial;
+        $this->request = request();
+        $this->setPrimaryKey($primaryKey);
 
-		# Build form method based on current URL
-		try {
-			$this->setMethod(FormUrls::actionMethod());
-		} catch (Exception $e){
-			$this->setMethod('');
-		}
+        # Build form method based on current URL
+        try {
+            $this->setMethod(FormUrls::actionMethod());
+        } catch (Exception $e) {
+            $this->setMethod('');
+        }
 
-		# Build form action based on current URL
-		try {
-			$this->setAction(FormUrls::action());
-		} catch (Exception $e){
-			$this->setAction('');
-		}
+        # Build form action based on current URL
+        try {
+            $this->setAction(FormUrls::action());
+        } catch (Exception $e) {
+            $this->setAction('');
+        }
 
-		# Build form cancel link based on current Url
-		try {
-			$this->setCancelLinkUrl(FormUrls::redir('cancel'));
-		} catch (Exception $e){
-			$this->setAction('');
-		}
+        # Build form cancel link based on current Url
+        try {
+            $this->setCancelLinkUrl(FormUrls::redir('cancel'));
+        } catch (Exception $e) {
+            $this->setAction('');
+        }
 
-		# Build a hidden input from form ID
-		if (isset($initial[$primaryKey])) {
-			$this->primaryKeyValue = $initial[$primaryKey];
-		}
+        # Build a hidden input from form ID
+        if (isset($initial[$primaryKey])) {
+            $this->primaryKeyValue = $initial[$primaryKey];
+        }
 
-		return $this;
-	}
+        # Display field ID automatically
+        if ($showId && !empty($this->primaryKeyValue)) {
+            $this->show('ID', $this->primaryKeyValue);
+        }
 
-	/**
-	 * Create a new form panel
-	 * @param string $title Panel Title
-	 * @param string $class Panel class
-	 * @return Form
-	 */
-	public function panel(string $title = '', string $class = "")
-	{
-		if ($title == '') {
-			$title = __('form::form.panel_default');
-		}
+        return $this;
+    }
 
-		# Next Panel ID
-		if (empty($id)) {
-			$id = $this->idPanel++;
-		}
-		$this->panels[] = new Panel($title, $id, $class);
-		return $this;
-	}
+    /**
+     * Create a new form panel
+     * @param string $title Panel Title
+     * @param string $class Panel class
+     * @return Form
+     */
+    public function panel(string $title = '', string $class = "")
+    {
+        if ($title == '') {
+            $title = __('form::form.panel_default');
+        }
 
-	/**
-	 * Add a new field
-	 * @param string $type    Field Type
-	 * @param string $name
-	 * @param string $label
-	 * @param array  $context Extra context
-	 * @return $this
-	 */
-	public function field(string $type, string $name, string $label, array $context = [])
-	{
-		try {
-			$fieldClass = $this->getField($type);
-		} catch (Exception $e){
-			return $this;
-		}
-		if (is_null($fieldClass)) {
-			return $this;
-		}
+        # Next Panel ID
+        if (empty($id)) {
+            $id = $this->idPanel++;
+        }
+        $this->panels[] = new Panel($title, $id, $class);
+        return $this;
+    }
 
-		# If the last element isn't a panel, a new panel is created
-		if (empty($this->panels)) {
-			$this->panel();
-		}
+    /**
+     * Add a new field
+     * @param string $type Field Type
+     * @param string $name
+     * @param string $label
+     * @param array $context Extra context
+     * @return $this
+     */
+    public function field(string $type, string $name, string $label, array $context = [])
+    {
+        try {
+            $fieldClass = $this->getField($type);
+        } catch (Exception $e) {
+            return $this;
+        }
+        if (is_null($fieldClass)) {
+            return $this;
+        }
 
-		$panel = end($this->panels);
-		$panel->fields[] = new $fieldClass($name, $label, $context, $type);
+        # If the last element isn't a panel, a new panel is created
+        if (empty($this->panels)) {
+            $this->panel();
+        }
 
-		return $this;
-	}
+        $panel = end($this->panels);
+        $panel->fields[] = new $fieldClass($name, $label, $context, $type);
 
-	/**
-	 * Get field class based on FieldAlias
-	 * @param string $field Field alias
-	 * @return object
-	 * @throws Exception
-	 */
-	protected function getField(string $field)
-	{
-		$fieldClass = isset($this->fields[$field]) ? $this->fields[$field] : null;
-		if (!$fieldClass) {
-			throw new Exception($field . " - Field doesn't exist.");
-		}
-		return $fieldClass;
-	}
+        return $this;
+    }
 
-	/**
-	 * Render entire form
-	 * @return Factory|View
-	 */
-	public function render()
-	{
-		# Build a new panel if variable panels is empty
-		if (empty($this->panels)) {
+    /**
+     * Get field class based on FieldAlias
+     * @param string $field Field alias
+     * @return object
+     * @throws Exception
+     */
+    protected function getField(string $field)
+    {
+        $fieldClass = isset($this->fields[$field]) ? $this->fields[$field] : null;
+        if (!$fieldClass) {
+            throw new Exception($field . " - Field doesn't exist.");
+        }
+        return $fieldClass;
+    }
+
+    /**
+     * Render entire form
+     * @return Factory|View
+     */
+    public function render()
+    {
+        # Build a new panel if variable panels is empty
+        if (empty($this->panels)) {
             $this->panels[] = $this->panel();
         }
 
-		# Display field ID automatically
-        if ($this->displayId && !empty($this->primaryKeyValue)) {
-
-            # Take the first panel and add the new element to the top of the list
-            $firstPanel = $this->panels[0];
-            $field = new ShowField('', 'ID', ['content' => $this->primaryKeyValue], 'show');
-            array_unshift($firstPanel->fields, $field);
+        # Build default actions
+        if (empty($this->actions)) {
+            $this->actions = [
+                ["save_close", __('form::form.save_close')],
+                ["save", __('form::form.save')],
+                ["save_create", __('form::form.save_create')],
+            ];
         }
 
+        # Build save_next option if 'ids' exist in querystring
+        if ($this->request->has('ids') && strpos(urldecode($this->request->get('ids')), ',') !== false) {
+            $this->actions = array_merge(
+                [['save_next', __('form::form.save_next')]],
+                $this->actions
+            );
+        }
 
-		# Build default actions
-		if (empty($this->actions)) {
-			$this->actions = [
-				["save_close", __('form::form.save_close')],
-				["save", __('form::form.save')],
-				["save_create", __('form::form.save_create')],
-			];
-		}
+        # Make a separation between primary and secondary actions
+        $primaryAction = $this->actions[0];
+        $secondaryActions = array_slice($this->actions, 1);
 
-		# Build save_next option if 'ids' exist in querystring
-		if ($this->request->has('ids') && strpos(urldecode($this->request->get('ids')), ',') !== false) {
-			$this->actions = array_merge(
-				[['save_next', __('form::form.save_next')]],
-				$this->actions
-			);
-		}
+        $formTemplate = $this->template ?? config("form.templates.form");
 
-		# Make a separation between primary and secondary actions
-		$primaryAction = $this->actions[0];
-		$secondaryActions = array_slice($this->actions, 1);
-
-		$formTemplate = $this->template ?? config("form.templates.form");
-
-		# Render form HTML
-		return view($formTemplate, [
-				"panels" => $this->panels,
-				"primaryAction" => $primaryAction,
-				"secondaryActions" => $secondaryActions,
-				"method" => $this->method,
-				"action" => $this->action,
-				"formId" => $this->formId,
-				"formClass" => $this->class,
-				"primaryKeyValue" => $this->primaryKeyValue,
-				"primaryKey" => $this->primaryKey,
-				"targetBlank" => $this->targetBlank,
-				"autoComplete" => $this->getAutoComplete(),
-				"panelTemplate" => config('form.templates.panel'),
-				"actionsTemplate" => config('form.templates.actions'),
-				"isCancelVisible" => $this->isCancelVisible(),
-				"cancelUrl" => $this->getCancelLinkUrl(),
-				"hideActions" => $this->isHideActions(),
-				"form" => $this,
-			]
-		);
-	}
-
-	/**
-	 * Add a new action button
-	 * @param string $action - Action name
-	 * @param string $label  - Action Label
-	 * @return self
-	 */
-	public function action(string $action, string $label): Form
-	{
-		$this->actions[] = [$action, $label];
-		return $this;
-	}
-
-	#########################
-	#   GETTER E SETTERS    #
-	#########################
-
-	/**
-	 * Set the value of template
-	 * @param string $template Form template
-	 * @return  self
-	 */
-	public function setTemplate($template): Form
-	{
-		$this->template = $template;
-		return $this;
-	}
-
-	/**
-	 * Set the value of action
-	 * @param $action
-	 * @return  self
-	 */
-	public function setAction(string $action)
-	{
-		$this->action = $action;
-		return $this;
-	}
-
-	/**
-	 * Get the value of autoComplete
-	 */
-	public function getAutoComplete()
-	{
-		return $this->autoComplete;
-	}
-
-
-	/**
-	 * Set the value of autoComplete
-	 * @return  self
-	 */
-	public function setAutoComplete($autoComplete)
-	{
-		$this->autoComplete = $autoComplete;
-		return $this;
-	}
-
-	/**
-	 * @param string $method
-	 * @return $this
-	 */
-	public function setMethod(string $method)
-	{
-		$this->method = $method;
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getMethod()
-	{
-		return $this->method;
-	}
-
-
-	/**
-	 * @return array
-	 */
-	public function getRules(): array
-	{
-		return $this->rules;
-	}
-
-	/**
-	 * Set rules array
-	 * @param Object $objRules
-	 */
-	public function setRules(Object $objRules): void
-	{
-		# O array com regras é uma estrutura de chave
-		# valor, sendo que o valor pode ser do tipo array ou string.
-		# Ex:
-		# 'title' => 'required|unique:posts|max:255',
-		# OU
-		# 'title' => ['required', 'unique:posts', 'max:255'],
-		# O padrão adotato será os valores separados com array
-		$rules = $objRules->rules();
-		foreach ($rules as $ind => $rule) {
-			if (getType($rule) == 'string') {
-				$rules[$ind] = explode('|', $rule);
-			}
-		}
-		$this->rules = $rules;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isCancelVisible(): bool
-	{
-		return $this->cancelVisible;
-	}
-
-	/**
-	 * @param bool $CancelVisible
-	 */
-	public function setCancelVisible(bool $CancelVisible): void
-	{
-		$this->cancelVisible = $CancelVisible;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getCancelLinkUrl(): string
-	{
-		return $this->cancelLinkUrl;
-	}
-
-	/**
-	 * @param string $cancelLinkUrl
-	 */
-	public function setCancelLinkUrl(string $cancelLinkUrl): void
-	{
-		$this->cancelLinkUrl = $cancelLinkUrl;
-	}
-
-
-	/**
-	 * @return string
-	 */
-	public function getPrimaryKey(): string
-	{
-		return $this->primaryKey;
-	}
-
-	/**
-	 * @param string $primaryKey
-	 */
-	public function setPrimaryKey(string $primaryKey): void
-	{
-		$this->primaryKey = $primaryKey;
-	}
-
-    /**
-     * @param bool $displayId
-     */
-    public function setDisplayId(bool $displayId): void
-    {
-        $this->displayId = $displayId;
+        # Render form HTML
+        return view($formTemplate, [
+                "panels" => $this->panels,
+                "primaryAction" => $primaryAction,
+                "secondaryActions" => $secondaryActions,
+                "method" => $this->method,
+                "action" => $this->action,
+                "formId" => $this->formId,
+                "formClass" => $this->class,
+                "primaryKeyValue" => $this->primaryKeyValue,
+                "primaryKey" => $this->primaryKey,
+                "targetBlank" => $this->targetBlank,
+                "autoComplete" => $this->getAutoComplete(),
+                "panelTemplate" => config('form.templates.panel'),
+                "actionsTemplate" => config('form.templates.actions'),
+                "isCancelVisible" => $this->isCancelVisible(),
+                "cancelUrl" => $this->getCancelLinkUrl(),
+                "hideActions" => $this->isHideActions(),
+                "form" => $this,
+            ]
+        );
     }
 
+    /**
+     * Add a new action button
+     * @param string $action - Action name
+     * @param string $label - Action Label
+     * @return self
+     */
+    public function action(string $action, string $label): Form
+    {
+        $this->actions[] = [$action, $label];
+        return $this;
+    }
+
+    #########################
+    #   GETTER E SETTERS    #
+    #########################
+
+    /**
+     * Set the value of template
+     * @param string $template Form template
+     * @return  self
+     */
+    public function setTemplate($template): Form
+    {
+        $this->template = $template;
+        return $this;
+    }
+
+    /**
+     * Set the value of action
+     * @param $action
+     * @return  self
+     */
+    public function setAction(string $action)
+    {
+        $this->action = $action;
+        return $this;
+    }
+
+    /**
+     * Get the value of autoComplete
+     */
+    public function getAutoComplete()
+    {
+        return $this->autoComplete;
+    }
+
+
+    /**
+     * Set the value of autoComplete
+     * @return  self
+     */
+    public function setAutoComplete($autoComplete)
+    {
+        $this->autoComplete = $autoComplete;
+        return $this;
+    }
+
+    /**
+     * @param string $method
+     * @return $this
+     */
+    public function setMethod(string $method)
+    {
+        $this->method = $method;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod()
+    {
+        return $this->method;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getRules(): array
+    {
+        return $this->rules;
+    }
+
+    /**
+     * Set rules array
+     * @param Object $objRules
+     */
+    public function setRules(object $objRules): void
+    {
+        # O array com regras é uma estrutura de chave
+        # valor, sendo que o valor pode ser do tipo array ou string.
+        # Ex:
+        # 'title' => 'required|unique:posts|max:255',
+        # OU
+        # 'title' => ['required', 'unique:posts', 'max:255'],
+        # O padrão adotato será os valores separados com array
+        $rules = $objRules->rules();
+        foreach ($rules as $ind => $rule) {
+            if (getType($rule) == 'string') {
+                $rules[$ind] = explode('|', $rule);
+            }
+        }
+        $this->rules = $rules;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCancelVisible(): bool
+    {
+        return $this->cancelVisible;
+    }
+
+    /**
+     * @param bool $CancelVisible
+     */
+    public function setCancelVisible(bool $CancelVisible): void
+    {
+        $this->cancelVisible = $CancelVisible;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCancelLinkUrl(): string
+    {
+        return $this->cancelLinkUrl;
+    }
+
+    /**
+     * @param string $cancelLinkUrl
+     */
+    public function setCancelLinkUrl(string $cancelLinkUrl): void
+    {
+        $this->cancelLinkUrl = $cancelLinkUrl;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getPrimaryKey(): string
+    {
+        return $this->primaryKey;
+    }
+
+    /**
+     * @param string $primaryKey
+     */
+    public function setPrimaryKey(string $primaryKey): void
+    {
+        $this->primaryKey = $primaryKey;
+    }
 
 }
