@@ -13,9 +13,9 @@ use Exception;
  */
 class Form
 {
-	
+
 	use Fields;
-	
+
 	/**
 	 * @var array - Array com os fields disponíveis
 	 */
@@ -83,11 +83,16 @@ class Form
 	 */
 	private $rules = [];
 
-	/**
-	 * Starts a new form with initial data
-	 * @param array $initial Initial form data
-	 */
-	public function __construct(array $initial = [], string $primaryKey = '')
+
+    /**
+     * 	/**
+     * Starts a new form
+     * Form constructor.
+     * @param array $initial
+     * @param string $primaryKey
+     * @param bool $showId
+     */
+    public function __construct(array $initial = [], string $primaryKey = '', bool $showId = true)
 	{
 		$this->initial = $initial;
 		$this->request = request();
@@ -118,6 +123,11 @@ class Form
 		if (isset($initial[$primaryKey])) {
 			$this->primaryKeyValue = $initial[$primaryKey];
 		}
+
+        # Display field ID automatically
+        if ($showId && !empty($this->primaryKeyValue)) {
+            $this->show('ID', $this->primaryKeyValue);
+        }
 
 		return $this;
 	}
