@@ -17,23 +17,41 @@ class Form
 
     use Fields;
     protected $fields = FieldAlias::fields;
+
     protected $panels = [];
+
     public $initial = [];
+
     protected $template;
+
     protected $idPanel = 0;
+
     protected $formId = 'form';
+
     protected $action = '';
+
     protected $method = 'POST';
+
     protected $class;
+
     protected $hidden = [];
+
     protected $html = [];
+
     protected $actions = [];
+
     protected $autoComplete = false;
+
     protected $targetBlank = false;
+
     private $primaryKey = '';
+
     private $primaryKeyValue = '';
+
     private $cancelVisible = true;
+
     private $cancelLinkUrl = '#';
+
     private $hideActions = false;
 
     /**
