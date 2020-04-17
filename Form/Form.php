@@ -5,6 +5,7 @@ namespace Impactaweb\Crud\Form;
 use Impactaweb\Crud\Form\Fields\IdField;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\View\View;
+use Impactaweb\Crud\Form\Fields\ShowField;
 use Impactaweb\Crud\Traits\Fields;
 use Exception;
 
@@ -13,9 +14,9 @@ use Exception;
  */
 class Form
 {
-	
+
 	use Fields;
-	
+
 	/**
 	 * @var array - Array com os fields disponíveis
 	 */
@@ -54,6 +55,8 @@ class Form
 	private $cancelVisible = true;
 
 	private $cancelLinkUrl = '#';
+
+	private $displayId = true;
 
 	private $hideActions = false;
 
@@ -195,11 +198,18 @@ class Form
 	{
 		# Build a new panel if variable panels is empty
 		if (empty($this->panels)) {
-			$panel = $this->panel();
-			$this->panels[] = $panel;
-		} else {
-			$panel = end($this->panels);
-		}
+            $this->panels[] = $this->panel();
+        }
+
+		# Display field ID automatically
+        if ($this->displayId && !empty($this->primaryKeyValue)) {
+
+            # Take the first panel and add the new element to the top of the list
+            $firstPanel = $this->panels[0];
+            $field = new ShowField('', 'ID', ['content' => $this->primaryKeyValue], 'show');
+            array_unshift($firstPanel->fields, $field);
+        }
+
 
 		# Build default actions
 		if (empty($this->actions)) {
@@ -401,5 +411,14 @@ class Form
 	{
 		$this->primaryKey = $primaryKey;
 	}
+
+    /**
+     * @param bool $displayId
+     */
+    public function setDisplayId(bool $displayId): void
+    {
+        $this->displayId = $displayId;
+    }
+
 
 }
