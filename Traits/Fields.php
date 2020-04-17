@@ -3,9 +3,6 @@
 
 namespace Impactaweb\Crud\Traits;
 
-
-use Illuminate\Support\Str;
-
 trait Fields
 {
     /**
@@ -122,7 +119,7 @@ trait Fields
      */
     public function html($conteudo)
     {
-        return $this->field('html', '', '', ['content'=> $conteudo]);
+        return $this->field('html', '', '', ['content' => $conteudo]);
     }
 
     /**
@@ -137,7 +134,7 @@ trait Fields
         if ($hideEmpty && empty($conteudo)) {
             return $this;
         }
-        return $this->field('show', '', $label, ['content'=> $conteudo]);
+        return $this->field('show', '', $label, ['content' => $conteudo]);
     }
 
     /**
@@ -149,7 +146,7 @@ trait Fields
      */
     public function hidden($name, $label, $conteudo = '')
     {
-        return $this->field('hidden', $name, $label, ['content'=> $conteudo]);
+        return $this->field('hidden', $name, $label, ['content' => $conteudo]);
     }
 
     /**
