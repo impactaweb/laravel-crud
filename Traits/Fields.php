@@ -4,6 +4,8 @@
 namespace Impactaweb\Crud\Traits;
 
 
+use Illuminate\Support\Str;
+
 trait Fields
 {
     /**
@@ -17,12 +19,33 @@ trait Fields
     {
         return $this->field('text', $name, $label, $options);
     }
-    
+
     public function file(string $name, string $label, $diretorio)
     {
+
+        # Verifica se há coringas de rotas no diretório
+        $parametros = request()->route()->originalParameters();
+        foreach ($parametros as $nome => $valor) {
+            $diretorio = str_replace("{url.$nome}", $valor, $diretorio);
+        }
+
+        # Verifica se há coringas de storage no diretório
+        $storageDefault = config('filesystems.default');
+        $disks = config('filesystems.disks');
+
+        $root = $disks[$storageDefault]['root'] ?? '';
+        $root = str_replace(storage_path(), '', $root);
+        $diretorio = str_replace("{storagePath}", $root, $diretorio);
+
+        foreach ($disks as $disk => $options) {
+            $root = $disk['root'] ?? '';
+            $root = str_replace(storage_path(), '', $root);
+            $diretorio = str_replace("{storage.$disk}", $root, $diretorio);
+        }
+
         return $this->field('file', $name, $label, ['dir' => $diretorio]);
     }
-    
+
     /**
      * Campo de números
      * @param string $name
