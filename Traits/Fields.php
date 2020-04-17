@@ -17,12 +17,13 @@ trait Fields
     {
         return $this->field('text', $name, $label, $options);
     }
-    
+
     public function file(string $name, string $label, $diretorio)
     {
+
         return $this->field('file', $name, $label, ['dir' => $diretorio]);
     }
-    
+
     /**
      * Campo de números
      * @param string $name

@@ -92,7 +92,7 @@ class Form
      * @param string $primaryKey
      * @param bool $showId
      */
-    public function __construct(array $initial = [], string $primaryKey = '', bool $showId = true)
+    public function __construct(array $initial = [], string $primaryKey = '', array $options = [])
 	{
 		$this->initial = $initial;
 		$this->request = request();
@@ -125,7 +125,7 @@ class Form
 		}
 
         # Display field ID automatically
-        if ($showId && !empty($this->primaryKeyValue)) {
+        if (isset($options['showId']) && $options['showId'] && !empty($this->primaryKeyValue)) {
             $this->show('ID', $this->primaryKeyValue);
         }
 
