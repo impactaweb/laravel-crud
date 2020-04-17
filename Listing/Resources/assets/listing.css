@@ -81,7 +81,7 @@
   text-decoration: none;
 }
 
-.flagItem {
+.flagItem, .flag-on, .flag-off {
   display: inline-block;
   overflow: hidden;
   text-indent: -9999px;
@@ -91,6 +91,8 @@
   font-size: 18px;
   line-height: 18px;
   margin: 0;
+  height: 18px;
+  width: 18px;
 }
 
 .flag-on:before { 
