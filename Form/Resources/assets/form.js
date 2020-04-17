@@ -1784,7 +1784,11 @@
                 }).done(handleSuccess)
                     .fail(handleFailure)
 
-            }
+            },
+            errorElement: "li",
+            errorPlacement: function(error, element) {
+                error.appendTo(element.parent().children().last())
+            },
         })
 
         function handleSuccess(res) {
@@ -1831,7 +1835,6 @@
 
             let hasScroll = false
 
-
             Object.keys(camposInvalidos).forEach(function (name) {
 
                 let input;
@@ -1846,7 +1849,6 @@
 
                 $input.hasClass('is-invalid') ? null : $input.toggleClass('is-invalid')
                 $input.next('.invalid-feedback').html(erros)
-                $input.next('.invalid-feedback').show()
 
                 if (hasScroll) return
 
@@ -2012,5 +2014,3 @@
         asyncFileUpload()
     })($)
 })(jQuery)
-
-

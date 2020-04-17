@@ -141,6 +141,10 @@ button.btn.btn-multiselect {
   background-image: linear-gradient(to bottom,#fff 0,#e0e0e0 100%);
 }
 
+.invalid-feedback {
+  display: block;
+}
+
 .corpo-listing .data-listagem a:hover {
       background-color: #e0e0e0;
       background-position: 0 -15px;
