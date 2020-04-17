@@ -17,12 +17,13 @@ trait Fields
     {
         return $this->field('text', $name, $label, $options);
     }
-    
-    public function file(string $name, string $label, $diretorio)
+
+    public function file(string $name, string $label, $diretorio, array $options = [])
     {
-        return $this->field('file', $name, $label, ['dir' => $diretorio]);
+        $options['dir'] = $diretorio;
+        return $this->field('file', $name, $label, $options);
     }
-    
+
     /**
      * Campo de números
      * @param string $name
@@ -126,9 +127,10 @@ trait Fields
      * @param $conteudo
      * @return mixed
      */
-    public function hidden($name, $label, $conteudo = '')
+    public function hidden($name, $label, $conteudo = '', array $options = [])
     {
-        return $this->field('hidden', $name, $label, ['content'=> $conteudo]);
+        $options['content'] = $conteudo;
+        return $this->field('hidden', $name, $label, $options);
     }
 
     /**
