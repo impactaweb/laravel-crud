@@ -9,9 +9,10 @@ use Impactaweb\Crud\Listing\FieldCollection;
 use Impactaweb\Crud\Listing\Action;
 use Impactaweb\Crud\Listing\Traits\FieldTypes;
 use Impactaweb\Crud\Listing\Traits\Util;
+use Psy\Util\Str;
 
 class Listing {
-    
+
     use FieldTypes;
     use Util;
 
@@ -23,8 +24,16 @@ class Listing {
     protected $defaultOrderby;
     protected $configFile = 'listing';
     protected $isSearching = false;
+    protected $aditionalSelectFields = [];
 
-    public function __construct(string $primaryKey, object $dataSource, array $options = [])
+    /**
+     * Construtor da classe
+     *
+     * @param string $primaryKey
+     * @param mixed $dataSource
+     * @param array $options
+     */
+    public function __construct(string $primaryKey, $dataSource, array $options = [])
     {
         $this->primaryKey = $primaryKey;
         $this->dataSource = new DataSource($dataSource);
@@ -43,6 +52,8 @@ class Listing {
 
     /**
      * Define as actions padrão (new, edit, destroy)
+     *
+     * @return void
      */
     public function setDefaultActions(): void
     {
@@ -57,7 +68,13 @@ class Listing {
     }
 
     /**
-     * Configura novo campo 
+     * Configura novo campo
+     *
+     * @param string $name
+     * @param string $label
+     * @param array $options
+     * @param string $type
+     * @return void
      */
     public function field(string $name, string $label, array $options = [], string $type = 'text')
     {
@@ -66,7 +83,9 @@ class Listing {
     }
 
     /**
-     * Renderiza a página
+     * Renderiza a página da listagem, de acordo com a view configurada (Blade View)
+     *
+     * @return void
      */
     public function render()
     {
@@ -88,7 +107,11 @@ class Listing {
         return view($viewFile, $data);
     }
 
-    // consulta os dados no bd
+    /**
+     * Consulta os dados no banco de dados
+     *
+     * @return LengthAwarePaginator
+     */
     public function performQuery(): LengthAwarePaginator
     {
         $activeColumns = $this->fields->getActiveFields(true);
@@ -96,7 +119,7 @@ class Listing {
         $orderby = $this->getOrderby();
 
         $this->isSearching = (request()->has('q') && trim(request()->get('q')) !== '');
-
+        
         // Adicionar colunas da busca ao SELECT e JOIN para garantir que a coluna esteja acessível
         foreach ($this->fields->getFieldsName() as $fieldName) {
             $fieldNameQuerystring = str_replace('.', '_', $fieldName);
@@ -107,18 +130,32 @@ class Listing {
                 }
             }
         }
+        
+        // Campos adicionais para o select
+        $activeColumns = array_merge($activeColumns, $this->aditionalSelectFields);
 
+        // Consulta os dados
         return $this->dataSource->getData($activeColumns, $orderby, $this->getPerPagePagination(), $queryString);
     }
 
-    // Order by padrão (se não houver nenhuma setada)
-    public function setDefaultOrderby($order, $direction): void
+    /**
+     * Order by padrão (se não houver nenhuma setada)
+     *
+     * @param string $order
+     * @param string $direction
+     * @return void
+     */
+    public function setDefaultOrderby(string $order, string $direction): void
     {
         $direction = (strtolower($direction) == 'desc' ? 'desc' : 'asc');
         $this->defaultOrderby = [$order, $direction];
     }
 
-    // Get orderby based on default set value or request()->get
+    /**
+     * Get orderby based on default set value or request()->get
+     *
+     * @return array|null
+     */
     public function getOrderby(): ?array
     {
         $orderby = request()->get('ord') ?? $this->defaultOrderby[0];
@@ -135,7 +172,12 @@ class Listing {
         return [$orderby, $direction];
     }
 
-    // Quantidade de registros por página
+    /**
+     * Define a quantidade de registros por página
+     *
+     * @param integer $perPage
+     * @return void
+     */
     public function setPerPageDefault(int $perPage): void
     {
         if (!isset($this->perPagePagination)) {
@@ -143,7 +185,11 @@ class Listing {
         }
     }
 
-    // Pega a qtde por página padrão
+    /**
+     * Pega a qtde por página para a paginação
+     *
+     * @return integer
+     */
     public function getPerPagePagination(): int
     {
         $perPagePagination = request()->get('pp') ?? $this->perPagePagination;
@@ -154,8 +200,12 @@ class Listing {
         return $perPagePagination;
     }
 
-    // Retorna true se alguma das actions necessitar do checkbox.
-    // Assume que qualquer action diferente de GET necessita do checkbox
+    /**
+     * Retorna true se alguma das actions necessitar do checkbox.
+     * Assume que qualquer action diferente de GET necessita do checkbox
+     *
+     * @return boolean
+     */
     public function isCheckboxNeeded(): bool
     {
         foreach ($this->actions as $action) {
@@ -169,7 +219,12 @@ class Listing {
         return false;
     }
 
-    // Remove todas as actions
+    /**
+     * Remove todas as actions
+     *
+     * @param array $actionsToClear
+     * @return void
+     */
     public function clearActions($actionsToClear = []): void
     {
         if (!empty($actionsToClear)) {
@@ -181,25 +236,31 @@ class Listing {
         }
     }
 
-    // Adiciona uma action à lista
-    public function action(string $name, string $label, ?string $method = null, ?string $url = null, ?string $icon = null, ?string $message = null): void
+    /**
+     * Adiciona uma action à lista
+     *
+     * @param string $label
+     * @param string|null $url
+     * @param string|null $icon
+     * @param string|null $method
+     * @param string|null $message
+     * @return void
+     */
+    public function action(string $label, ?string $url = null, ?string $icon = null, ?string $method = null, ?string $message = null): void
     {
+        $name = preg_replace("/[^a-z]/",'',strtolower($label));
         $this->actions[$name] = new Action($name, $label, $method ?? 'GET', $url, $icon, $message);
     }
 
-    // Custom fields
-    public function customField(string $label, callable $callbackFunction, array $options = [], ?string $name = null, string $type = 'text')
+    /**
+     * Adiciona campos adicionais para o select da query
+     *
+     * @param array $fields
+     * @return void
+     */
+    public function aditionalSelectFields(array $fields)
     {
-        if (!$name) {
-            // Criando um nome aleatório para o campo
-            $name = 'customfield.' 
-                . substr(strtolower(preg_replace("/[^A-Za-z0-9?!]/",'', $label)), 0, 20) 
-                . '_' 
-                . substr(md5(uniqid()),0,10);
-        }
-
-        $options['callback'] = $callbackFunction;
-        $this->field($name, $label, $options, $type);
+        $this->aditionalSelectFields = $fields;
     }
 
 }
