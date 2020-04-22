@@ -2,12 +2,6 @@
 
 return [
 
-    'upload' => [
-        'temp_folder' => 'tmp',
-        'storage_folder' => 'storage',
-        'public_folder' => 'app/public'
-    ],
-
     'templates' => [
 
         'form' => 'form::form',
@@ -29,11 +23,25 @@ return [
             'hidden' => 'form::fields.hidden',
             'id' => 'form::fields.hidden',
             'datetime' => 'form::fields.datetime',
+            'date' => 'form::fields.date',
             'time' => 'form::fields.time',
             'rtf' => 'form::fields.rtf',
             'multiselectgroup' => 'form::fields.multiselectgroup'
         ],
 
+    ],
+
+    'fields' => [
+        'dateTime' => [
+            'formatDates' => true,
+            'formatClient' => 'd/m/Y H:i:s',
+            'formatServer' => 'Y-m-d H:i:s',
+        ],
+        'date' => [
+            'formatDates' => true,
+            'formatClient' => 'd/m/Y',
+            'formatServer' => 'Y-m-d',
+        ]
     ],
 
 ];
