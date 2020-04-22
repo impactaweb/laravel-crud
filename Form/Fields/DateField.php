@@ -27,7 +27,7 @@ class DateField extends BaseField
     protected function buildInitialValue(array $initial)
     {
         parent::buildInitialValue($initial);
-        if ($this->formatDates && !empty($this->value != '')) {
+        if ($this->formatDates && !empty($this->value)) {
             $this->value = $this->formatDate($this->value);
         }
     }
