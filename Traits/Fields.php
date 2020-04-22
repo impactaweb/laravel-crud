@@ -17,6 +17,7 @@ trait Fields
         return $this->field('text', $name, $label, $options);
     }
 
+
     public function file(string $name, string $label, string $diretorio)
     {
 
@@ -37,7 +38,6 @@ trait Fields
             $url = rtrim($options['url'] ?? '', '/');
             $diretorio = str_replace("{storage.$disk}", $url, $diretorio);
         }
-
         return $this->field('file', $name, $label, ['dir' => $diretorio]);
     }
 
