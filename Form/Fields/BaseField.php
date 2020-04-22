@@ -86,12 +86,14 @@ class BaseField
      */
     protected function buildInitialValue(array $initial)
     {
-        if (isset($initial[$this->id])) {
-            $this->value = $initial[$this->id];
-            if (getType($this->value) != 'string' && !is_numeric($this->value)) {
-                throw new Exception("Field " . $this->id .
-                    ' requires string or numeric, ' . getType($this->value) . ' given');
-            }
+        if (!isset($initial[$this->id])) {
+            return;
+        }
+
+        $this->value = $initial[$this->id];
+        if (getType($this->value) != 'string' && !is_numeric($this->value)) {
+            throw new Exception("Field " . $this->id .
+                ' requires string or numeric, ' . getType($this->value) . ' given');
         }
     }
 

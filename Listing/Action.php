@@ -22,10 +22,10 @@ class Action {
         $this->icon = $icon;
         $this->message = $message;
         
-        $this->setUrl($url);
-
         // load Resource Verbs
         $this->resourceCustomVerbs = Route::resourceVerbs();
+
+        $this->setUrl($url);
     }
 
     public function getName()
@@ -64,9 +64,7 @@ class Action {
         $url = '/' . request()->path();
 
         // Custom verbs
-        // $editVerb = $this->resourceCustomVerbs['edit'] ?? 'edit';
         $createVerb = $this->resourceCustomVerbs['create'] ?? 'create';
-
         switch ($actionName) {
             case $createVerb:
                 $url .= '/' . $createVerb . '?';

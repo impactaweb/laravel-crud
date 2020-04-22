@@ -3,7 +3,6 @@
 
 namespace Impactaweb\Crud\Traits;
 
-
 trait Fields
 {
     /**
@@ -18,10 +17,26 @@ trait Fields
         return $this->field('text', $name, $label, $options);
     }
 
-    public function file(string $name, string $label, $diretorio, array $options = [])
+    public function file(string $name, string $label, string $diretorio)
     {
-        $options['dir'] = $diretorio;
-        return $this->field('file', $name, $label, $options);
+        # Verifica se há coringas de rotas no diretório
+        $parametros = request()->route()->originalParameters();
+        foreach ($parametros as $nome => $valor) {
+            $diretorio = str_replace("{url.$nome}", $valor, $diretorio);
+        }
+
+        # Verifica se há coringas de storage no diretório
+        $storageDefault = config('filesystems.default');
+        $disks = config('filesystems.disks');
+
+        $url = rtrim($disks[$storageDefault]['url'] ?? '', '/');
+        $diretorio = str_replace("{storagePath}", $url, $diretorio);
+
+        foreach ($disks as $disk => $options) {
+            $url = rtrim($options['url'] ?? '', '/');
+            $diretorio = str_replace("{storage.$disk}", $url, $diretorio);
+        }
+        return $this->field('file', $name, $label, ['dir' => $diretorio]);
     }
 
     /**
@@ -102,7 +117,7 @@ trait Fields
      */
     public function html($conteudo)
     {
-        return $this->field('html', '', '', ['content'=> $conteudo]);
+        return $this->field('html', '', '', ['content' => $conteudo]);
     }
 
     /**
@@ -117,7 +132,7 @@ trait Fields
         if ($hideEmpty && empty($conteudo)) {
             return $this;
         }
-        return $this->field('show', '', $label, ['content'=> $conteudo]);
+        return $this->field('show', '', $label, ['content' => $conteudo]);
     }
 
     /**
@@ -129,8 +144,7 @@ trait Fields
      */
     public function hidden($name, $label, $conteudo = '', array $options = [])
     {
-        $options['content'] = $conteudo;
-        return $this->field('hidden', $name, $label, $options);
+        return $this->field('hidden', $name, $label, ['content' => $conteudo]);
     }
 
     /**

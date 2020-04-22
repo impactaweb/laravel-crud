@@ -89,6 +89,9 @@ class DataSource
                     $join = $join->getRelated();
                 }
 
+                if ($join instanceof Builder) {
+                    $join = $join->getModel();
+                }
 
                 if (!method_exists($join, $table)) {
                     $orderbyAllowed = false;
@@ -183,6 +186,9 @@ class DataSource
                 $whereRaw .= " AND (";
                 $i = 0;
                 foreach ($this->columnsSelect as $column) {
+                    if (strpos($column, "*") !== false) {
+                        continue;
+                    }
                     $i++;
                     $whereRaw .= ($i == 1 ? '' : ' OR ') . $column . ' like ? ';
                     $whereRawValues[] = is_numeric($searchText) ? $searchText : '%' . $searchText . '%';
