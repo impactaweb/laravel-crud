@@ -17,10 +17,8 @@ trait Fields
         return $this->field('text', $name, $label, $options);
     }
 
-
     public function file(string $name, string $label, string $diretorio)
     {
-
         # Verifica se há coringas de rotas no diretório
         $parametros = request()->route()->originalParameters();
         foreach ($parametros as $nome => $valor) {
@@ -144,7 +142,7 @@ trait Fields
      * @param $conteudo
      * @return mixed
      */
-    public function hidden($name, $label, $conteudo = '')
+    public function hidden($name, $label, $conteudo = '', array $options = [])
     {
         return $this->field('hidden', $name, $label, ['content' => $conteudo]);
     }

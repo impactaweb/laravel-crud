@@ -2,12 +2,6 @@
 
 return [
 
-    'upload' => [
-        'temp_folder' => 'tmp',
-        'storage_folder' => 'storage',
-        'public_folder' => 'app/public'
-    ],
-
     'templates' => [
 
         'form' => 'form::form',
@@ -29,11 +23,27 @@ return [
             'hidden' => 'form::fields.hidden',
             'id' => 'form::fields.hidden',
             'datetime' => 'form::fields.datetime',
+            'date' => 'form::fields.date',
             'time' => 'form::fields.time',
             'rtf' => 'form::fields.rtf',
             'multiselectgroup' => 'form::fields.multiselectgroup'
         ],
 
+    ],
+
+    // Important: Date formats in java.text.SimpleDateFormat
+    // Reference: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
+    'fields' => [
+        'dateTime' => [
+            'formatDates' => true,
+            'formatClient' => 'DD/MM/YYYY hh:mm:ss',
+            'formatServer' => 'YYYY-MM-DD hh:mm:ss',
+        ],
+        'date' => [
+            'formatDates' => true,
+            'formatClient' => 'DD/MM/YYYY',
+            'formatServer' => 'YYYY-MM-DD',
+        ]
     ],
 
 ];

@@ -26,6 +26,7 @@ class FieldAlias
         "show" => Fields\ShowField::class,
         "hidden" => Fields\HiddenField::class,
         "datetime" => Fields\DateTimeField::class,
+        "date" => Fields\DateField::class,
         "time" => Fields\TimeField::class,
         "rtf" => Fields\RtfField::class,
         'multiselectgroup' => Fields\MultiSelectGroupField::class
