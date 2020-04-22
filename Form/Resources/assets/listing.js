@@ -132,15 +132,20 @@
 
         listagemLoading()
 
-        var postUrl = window.location.pathname.replace(/\/+$/,'') + '/' + primaryKeyValue;
+        var postUrl = window.location.pathname.replace(/\/+$/,'') + '/' + primaryKeyValue + '/updateflag';
         var postData = {
-            '_method': 'PUT', 
+            //'_method': 'PUT', 
             'responseFormat': 'json',
             'listingFlagField': fieldName,
             'newFlag': newFlag
         }
 
         $.post(postUrl, postData, function(jsonData) {
+
+            if (jsonData.error) {
+                alert('ERRO: ' + jsonData.error)
+                return;
+            }
 
             $('.listing-checkboxes[value="' + jsonData.id + '"]')
                 .parents('tr')
@@ -181,7 +186,7 @@
     $('input.listing-checkboxes').change(handleCheckboxChange)
     $('#listagemTable').checkboxes('range', true)
     $('[data-avancada="buscar"]').click(handleBuscaAvancada)
-    $('.flagItem').click(handleListingFlag)    
+    $('a.flagItem').click(handleListingFlag)    
     $('input[name="checkbox-listing"]').click(handleAllChecked)
 
     $checkboxs.each(function(idx, $item) {
