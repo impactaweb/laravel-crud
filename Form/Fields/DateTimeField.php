@@ -38,7 +38,7 @@ class DateTimeField extends BaseField
      * @param string $format
      * @return string
      */
-    protected function formatDate(string $date) : string
+    protected function formatDate(string $date): string
     {
         return \Carbon\Carbon::createFromFormat($this->formatServer, $date)->format($this->formatClient);
     }
