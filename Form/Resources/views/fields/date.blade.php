@@ -8,7 +8,7 @@
             name="original-{{$id}}"
             class="form-control {{$class}}"
             id="c-original-{{$id}}"
-            data-input="date-time"
+            data-input="date"
             data-input-format-server="{{ $formatServer }}"
             data-input-format-client="{{ $formatClient }}"
             @if($required)
