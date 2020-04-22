@@ -9,8 +9,8 @@
             class="form-control {{$class}}"
             id="c-original-{{$id}}"
             data-input="date-time"
-            {{-- date-input-format="{{$formatServer}}" --}}
-            data-input-format="DD/MM/YYYY hh:mm:ss"
+            data-input-format-server="{{ $formatServer }}"
+            data-input-format-client="{{ $formatClient }}"
             @if($required)
                 required
             @endif

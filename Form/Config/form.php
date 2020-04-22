@@ -31,16 +31,18 @@ return [
 
     ],
 
+    // Important: Date formats in java.text.SimpleDateFormat
+    // Reference: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
     'fields' => [
         'dateTime' => [
             'formatDates' => true,
-            'formatClient' => 'd/m/Y H:i:s',
-            'formatServer' => 'Y-m-d H:i:s',
+            'formatClient' => 'DD/MM/YYYY hh:mm:ss',
+            'formatServer' => 'YYYY-MM-DD hh:mm:ss',
         ],
         'date' => [
             'formatDates' => true,
-            'formatClient' => 'd/m/Y',
-            'formatServer' => 'Y-m-d',
+            'formatClient' => 'DD/MM/YYYY',
+            'formatServer' => 'YYYY-MM-DD',
         ]
     ],
 

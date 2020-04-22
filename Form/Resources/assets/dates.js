@@ -5,15 +5,15 @@
         $(this).next('input:hidden').val(
             moment(
                 $(this).val(), 
-                $(this).data('input-format')
-            ).format("YYYY-MM-DD hh:mm:ss")
+                $(this).data('input-format-client')
+            ).format($(this).data('input-format-server'))
         )
     }).each(function() {
         $(this).val(
             moment(
                 $(this).next('input:hidden').val(), 
-                "YYYY-MM-DD hh:mm:ss"
-            ).format($(this).data('input-format'))
+                $(this).data('input-format-server')
+            ).format($(this).data('input-format-client'))
         )
     })
 
@@ -22,15 +22,15 @@
         $(this).next('input:hidden').val(
             moment(
                 $(this).val(), 
-                $(this).data('input-format')
-            ).format("YYYY-MM-DD")
+                $(this).data('input-format-client')
+            ).format($(this).data('input-format-server'))
         )
     }).each(function() {
         $(this).val(
             moment(
                 $(this).next('input:hidden').val(), 
-                "YYYY-MM-DD"
-            ).format($(this).data('input-format'))
+                $(this).data('input-format-server')
+            ).format($(this).data('input-format-client'))
         )
     })
 
