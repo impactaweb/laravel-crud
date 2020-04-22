@@ -5,6 +5,7 @@ namespace Impactaweb\Crud\Form\Fields;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
 
 /**
  * Class BaseField
@@ -59,6 +60,9 @@ class BaseField
     /** @var string|null */
     protected $format = null;
 
+    /** @var string|null */
+    protected $nullable = false;
+
 
     /**
      *
@@ -111,7 +115,7 @@ class BaseField
         $this->buildInitialValue($initial);
 
         # Constrói as regras
-        $this->buildRules($rules);
+        $this->buildRules($rules, $initial);
 
         # Caso o usuário tenha informado a classe no array ATTRS,
         # essa classe será adicionada na classe principal do elemento
@@ -146,19 +150,40 @@ class BaseField
      * Build field rules
      * @param array $rules
      */
-    private function buildRules(array $rules)
+    private function buildRules(array $rules, array $initial)
     {
         $rule = $rules[$this->id] ?? [];
+
         foreach ($rule as $item) {
             if ($item == 'required') {
                 $this->required = true;
             }
+
+            if ($item == 'nullable') {
+                $this->nullable = true;
+            }
+
             if (getType($item) == 'string' && strpos($item, 'max') !== false) {
                 $this->attrs['maxlength'] = str_replace('max:', '', $item);
             }
             if (getType($item) == 'string' && strpos($item, 'min') !== false) {
                 $this->attrs['min'] = str_replace('min:', '', $item);
             }
+
+            if (Str::startsWith($item, 'required_without')) {
+                $idRequired = Str::replaceFirst('required_without:', '', $item);
+                if (!isset($initial[$idRequired])) {
+                    $this->required = true;
+                }
+            };
+
+            if (Str::startsWith($item, 'required_if')) {
+                $idRequired = Str::replaceFirst('required_if:', '', $item);
+                if (isset($initial[$idRequired])) {
+                    $this->required = true;
+                }
+            };
+
         }
     }
 

@@ -19,7 +19,7 @@
                 {{ $value }}
             </a>
 
-            @if($required != true)
+            @if($nullable)
             &nbsp; ‹ &nbsp;
                 <a href="#" class="excluir" data-destroy="{{ $dir}}{{$value}}" data-file-field="{{ $id }}">
                     Excluir
