@@ -5,6 +5,7 @@ namespace Impactaweb\Crud\Form\Fields;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
 
 /**
  * Class BaseField
@@ -59,6 +60,9 @@ class BaseField
     /** @var string|null */
     protected $format = null;
 
+    /** @var string|null */
+    protected $nullable = false;
+
 
     /**
      *
@@ -89,12 +93,14 @@ class BaseField
      */
     protected function buildInitialValue(array $initial)
     {
-        if (isset($initial[$this->id])) {
-            $this->value = $initial[$this->id];
-            if (getType($this->value) != 'string' && !is_numeric($this->value)) {
-                throw new Exception("Field " . $this->id .
-                    ' requires string or numeric, ' . getType($this->value) . ' given');
-            }
+        if (!isset($initial[$this->id])) {
+            return;
+        }
+
+        $this->value = $initial[$this->id];
+        if (getType($this->value) != 'string' && !is_numeric($this->value)) {
+            throw new Exception("Field " . $this->id .
+                ' requires string or numeric, ' . getType($this->value) . ' given');
         }
     }
 
@@ -111,7 +117,7 @@ class BaseField
         $this->buildInitialValue($initial);
 
         # Constrói as regras
-        $this->buildRules($rules);
+        $this->buildRules($rules, $initial);
 
         # Caso o usuário tenha informado a classe no array ATTRS,
         # essa classe será adicionada na classe principal do elemento
@@ -121,9 +127,8 @@ class BaseField
             unset($this->attrs['class']);
         }
 
-        # Caso o usuário informe o ID no ATTRS
-        # O programa irá coloca-lo na variável ID se vazia
-        # depois vai remove-la para evitar conflito
+        # If user enters an ID in the ATTRS
+        # The id will be store in $this->id, then will be unset
         if (isset($this->attrs['id'])) {
             if (empty($this->id)) {
                 $this->id = $this->attrs['id'];
@@ -132,8 +137,7 @@ class BaseField
         }
 
         try {
-            # A função get_object_vars, irá jogar todas as variaveis da classe
-            # dentro do template do blade
+            # The function get_object_vars, will put all class local variables inside blade template
             $html = view($this->template_name, get_object_vars($this));
         } catch (Exception $e) {
             throw new Exception("Field template not found.", 1);
@@ -146,39 +150,41 @@ class BaseField
      * Build field rules
      * @param array $rules
      */
-    private function buildRules(array $rules)
+    private function buildRules(array $rules, array $initial)
     {
         $rule = $rules[$this->id] ?? [];
+
         foreach ($rule as $item) {
             if ($item == 'required') {
                 $this->required = true;
             }
+
+            if ($item == 'nullable') {
+                $this->nullable = true;
+            }
+
             if (getType($item) == 'string' && strpos($item, 'max') !== false) {
                 $this->attrs['maxlength'] = str_replace('max:', '', $item);
             }
             if (getType($item) == 'string' && strpos($item, 'min') !== false) {
                 $this->attrs['min'] = str_replace('min:', '', $item);
             }
+
+            if (Str::startsWith($item, 'required_without')) {
+                $idRequired = Str::replaceFirst('required_without:', '', $item);
+                if (!isset($initial[$idRequired])) {
+                    $this->required = true;
+                }
+            };
+
+            if (Str::startsWith($item, 'required_if')) {
+                $idRequired = Str::replaceFirst('required_if:', '', $item);
+                if (isset($initial[$idRequired])) {
+                    $this->required = true;
+                }
+            };
+
         }
     }
 
-
-    /**
-     * Format hour or date value
-     * @param string $date
-     * @param string $format
-     * @return string
-     */
-    protected function formatDate(string $date, string $format) : string
-    {
-        $haveTime = strpos($date, ':');
-        if($haveTime && mb_strlen($date) > 1 && mb_strlen($date) <= 8) {
-
-            $date = count(explode(':', $date)) === 3 ? $date : $date . ':00';
-            $date = date('H:i:s',strtotime($date));
-
-            return $date;
-        }
-        return date_format(date_create($date), $format);
-    }
 }

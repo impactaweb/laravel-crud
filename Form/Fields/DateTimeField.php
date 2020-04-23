@@ -5,22 +5,17 @@ use Exception;
 
 class DateTimeField extends BaseField
 {
-    protected $col = '3';
+    protected $col = '4';
 
     /**
-     * Override initial value for date with format
-     * @param array $initial
-     * @throws Exception
+     * @inheritDoc
      */
-    protected function buildInitialValue(array $initial)
+    public function __construct(string $id, string $label, array $contexto, string $type)
     {
-        parent::buildInitialValue($initial);
-        if (!is_null($this->format) && !empty($this->value != '')) {
-            $this->value = $this->formatDate($this->value, $this->format);
-        }
+        $this->formatDates = config('form.fields.dateTime.formatDates', true);
+        $this->formatClient = (string) config('form.fields.dateTime.formatClient', 'YYYY-MM-DD hh:mm:ss');
+        $this->formatServer = (string) config('form.fields.dateTime.formatServer', 'YYYY-MM-DD hh:mm:ss');
+        parent::__construct($id, $label, $contexto, $type);
     }
-
-
-
 
 }

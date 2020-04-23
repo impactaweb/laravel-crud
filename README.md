@@ -11,3 +11,8 @@ Laravel CRUD Tools
 * :link: - [08 - Callbacks e Notificações](https://github.com/impactaweb/laravel-crud/wiki/08.-Callbacks-do-Crud-e-Alertas---Notifica%C3%A7%C3%B5es)
 * :link: - [09 - Upload de Arquivos](https://github.com/impactaweb/laravel-crud/wiki/09.-Upload-de-arquivos-no-CRUD)
 * :link: - [10 - Listagem](https://github.com/impactaweb/laravel-crud/wiki/10.-Listagem)
+
+
+## Dependências:
+1. momentjs - momentjs.com
+2. jQuery - jquery.com
