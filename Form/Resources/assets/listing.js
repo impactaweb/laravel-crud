@@ -143,7 +143,7 @@
         $.post(postUrl, postData, function(jsonData) {
 
             if (jsonData.error) {
-                alert('ERRO: ' + jsonData.error)
+                alert(jsonData.error)
                 return;
             }
 
@@ -155,8 +155,8 @@
                 .addClass(jsonData.flag == '1' ? 'flag-on' : 'flag-off')
 
         }, "json")
-        .fail(function() {
-            alert("error");
+        .fail(function(jqXHR) {
+            alert(jqXHR.responseJSON.error ? jqXHR.responseJSON.error : 'Erro ao alterar.')
         })
         .always(function() {
             listagemLoading(false)

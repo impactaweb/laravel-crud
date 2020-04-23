@@ -1825,10 +1825,10 @@
 
             const alertMessage = `
             <div class="container alert mb-1 alert-danger alert-dismissible fade show" role="alert" data-expect >
-            <span data-content>Ops! Por favor corrija os campos do formulário</span>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times</span>
-            </button>
+                <span data-content>Ops! Por favor, verifique os campos abaixo.</span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times</span>
+                </button>
             </div>
             `
             const camposInvalidos = error.responseJSON.errors
@@ -1873,7 +1873,6 @@
         })
 
         $deleteFiles.each(function(idx, $link) {
-            console.log($link)
             $link.onclick = function(e) {
                 $('[data-container="loading"]').html(`
                     <div class="loading-container fixed">
@@ -1894,18 +1893,25 @@
 
                 if(!path || !fieldFile || !id) return;
 
-                axios.post(`${window.location.pathname.replace('/editar', '')}/destroyfile?model_id=${id}&file_delete=${fieldFile}`, {
+                $.post(`${window.location.pathname.replace('/editar', '')}/destroyfile?model_id=${id}&file_delete=${fieldFile}`, {
                     _token: $('[name="_token"]').val()
+                }, function(jsonData) {
+
+                    if (jsonData.error) {
+                        alert(jsonData.error)
+                        return;
+                    }
+        
+                    $('[data-container="loading"]').html('')
+                    $($link).parent('span').prev('input').val(null)
+                    $($link).parent('span').remove()
                 })
-                    .then(function(res) {
-                        $('[data-container="loading"]').html('')
-                        $($link).parent('span').prev('input').val(null)
-                        $($link).parent('span').remove()
-                    })
-                    .catch(function(err) {
-                        $('[data-container="loading"]').html('')
-                        alert('Falha ao excluir o arquivo')
-                    })
+                .fail(function(jqXHR) {
+                    alert(jqXHR.responseJSON.error ? jqXHR.responseJSON.error : 'Falha ao excluir o arquivo.')
+                })
+                .always(function() {
+                    $('[data-container="loading"]').html('')
+                })
             }
         })
 
