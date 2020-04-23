@@ -1,0 +1,20 @@
+{
+  "name": "laravel-crud",
+  "version": "1.0.0",
+  "description": "componentes javascript do pacote laravel-crud",
+  "main": "index.js",
+  "repository": "https://github.com/impactaweb/laravel-crud.git",
+  "author": "antunesgabriel <gabrielantunescontato@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.19.2",
+    "bootstrap4-notify": "^4.0.3",
+    "inputmask": "^5.0.3",
+    "jquery": "^3.5.0",
+    "jquery-ui": "^1.12.1",
+    "jquery-validation": "^1.19.1",
+    "popper.js": "^1.16.1",
+    "summernote": "^0.8.16"
+  }
+}
