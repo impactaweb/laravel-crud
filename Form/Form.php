@@ -125,7 +125,7 @@ class Form
 		}
 
         # Display field ID automatically
-        if (isset($options['showId']) && $options['showId'] && !empty($this->primaryKeyValue)) {
+        if (($options['showId'] ?? true) && !empty($this->primaryKeyValue)) {
             $this->show('ID', $this->primaryKeyValue);
         }
 
