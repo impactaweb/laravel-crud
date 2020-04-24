@@ -1,4 +1,4 @@
-module.exports = (function($){
+(function($){
     $(document).ready(function() {
         const hasInputWithMask = $('[data-input]')[0]
 

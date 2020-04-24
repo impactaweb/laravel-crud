@@ -1,4 +1,4 @@
-module.exports = (function($, axios) {
+(function($, axios) {
     const $form = $('#listingForm')
 
     $('.actionButton').click(function() {
@@ -44,7 +44,7 @@ module.exports = (function($, axios) {
         if (confirmationText.length > 0) {
             $('#confirmationModal').data('executar', continueFunction).modal('show')
             $('#confirmationModal .modal-body').html(confirmationText);
-            $('#confirmationModal .btnConfirm').click(function() {
+            $('#confirmationModal .btnConfirm').click(function(e) {
                 var func = $('#confirmationModal').data('executar')
                 func()
                 e.preventDefault()

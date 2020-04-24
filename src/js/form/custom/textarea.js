@@ -1,4 +1,4 @@
-module.exports = (function($) {
+(function($) {
     $(window.document).ready(function() {
         $('[data-textarea]').each(function () {
             this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;');

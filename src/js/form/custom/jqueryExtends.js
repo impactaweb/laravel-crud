@@ -1,4 +1,4 @@
-module.exports = (function($) {
+(function($) {
     $.extend(jQuery.validator.messages, {
         required: "Este campo é obrigatório.",
         remote: "Por favor, corrija este campo.",

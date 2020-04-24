@@ -1,4 +1,4 @@
-module.exports = (function($){
+(function($){
     if($('[data-target="content"]').length){
         const $loading = `
         <div class="loading-container">

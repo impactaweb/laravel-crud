@@ -1,10 +1,11 @@
-module.exports = (function($) {
+require('./custom/loadingData')
+require('./custom/mask')
+require('./custom/loadEditor')
+require('./custom/jqueryExtends')
+require('./custom/textarea')
+
+(function($) {
     // Import Customizations
-    require('./custom/loadingData')
-    require('./custom/mask')
-    require('./custom/loadEditor')
-    require('./custom/jqueryExtends')
-    require('./custom/textarea')
 
 
     // Start

@@ -1,4 +1,4 @@
-module.exports = (function($, axios){
+(function($, axios){
     $(document).ready(function(){
         $summernote = $('[data-type="summernote"]')
 
