@@ -2,35 +2,55 @@
 (function($, moment){
 
     $("[data-input='date-time']").change(function() {
+        var data = moment(
+            $(this).val(), 
+            $(this).data('input-format-client')
+        )
+        if (!data.isValid()) {
+            $(this).next('input:hidden').val('')
+            return;
+        }
         $(this).next('input:hidden').val(
-            moment(
-                $(this).val(), 
-                $(this).data('input-format-client')
-            ).format($(this).data('input-format-server'))
+            data.format($(this).data('input-format-server'))
         )
     }).each(function() {
+        var data = moment(
+            $(this).next('input:hidden').val(), 
+            $(this).data('input-format-server')
+        )
+        if (!data.isValid()) {
+            $(this).val('')
+            return;
+        }
         $(this).val(
-            moment(
-                $(this).next('input:hidden').val(), 
-                $(this).data('input-format-server')
-            ).format($(this).data('input-format-client'))
+            data.format($(this).data('input-format-client'))
         )
     })
 
 
     $("[data-input='date']").change(function() {
+        var data = moment(
+            $(this).val(), 
+            $(this).data('input-format-client')
+        )
+        if (!data.isValid()) {
+            $(this).next('input:hidden').val('')
+            return;
+        }
         $(this).next('input:hidden').val(
-            moment(
-                $(this).val(), 
-                $(this).data('input-format-client')
-            ).format($(this).data('input-format-server'))
+            data.format($(this).data('input-format-server'))
         )
     }).each(function() {
+        var data = moment(
+            $(this).next('input:hidden').val(), 
+            $(this).data('input-format-server')
+        )
+        if (!data.isValid()) {
+            $(this).val('')
+            return;
+        }
         $(this).val(
-            moment(
-                $(this).next('input:hidden').val(), 
-                $(this).data('input-format-server')
-            ).format($(this).data('input-format-client'))
+            data.format($(this).data('input-format-client'))
         )
     })
 
