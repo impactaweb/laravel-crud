@@ -1,3 +1,4 @@
+window.knockout = require('knockout')
 window.jQuery = require('jquery');
 require('bootstrap');
 window.Popper = require('popper.js').default;
