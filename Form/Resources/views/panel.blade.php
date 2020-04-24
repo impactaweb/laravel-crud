@@ -27,7 +27,17 @@
                 class="collapse show"
                 >
                 <div class="card-body">
-                    {!! $panel->render($form->initial, $form->getRules()) !!}
+
+                    @foreach ($panel->fields as $field)
+                        <div class="fieldBlock" data-field-name="{{ $field->id }}" 
+                            @if(isset($field->options['show_rules'])) data-show-rules='@json($field->options['show_rules'])' @endif
+                            >
+
+                            {!! $field->render($form->initial, $form->getRules()) !!}
+
+                        </div>
+                    @endforeach
+
                 </div>
             </div>
         </div>
