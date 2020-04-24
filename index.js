@@ -11,6 +11,9 @@ try {
     require('summernote/dist/summernote-bs4');
     require("inputmask/dist/jquery.inputmask");
     require("./src/js/form/lib/multicheckbox");
+
+    //
+    
 } catch (e) {
     console.error(e.message)
 }
