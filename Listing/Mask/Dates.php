@@ -7,7 +7,7 @@ use Carbon\Carbon;
 class Dates {
 
     public static function dm($s) {
-        return $s ? Carbon::parse($s)->format('d/m') : "s";
+        return $s ? Carbon::parse($s)->format('d/m') : "";
     }
 
     public static function dmY($s) {
