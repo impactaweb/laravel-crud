@@ -69,9 +69,9 @@ trait Fields
      * @param array $options
      * @return mixed
      */
-    public function select(string $name, string $label, array $options = [])
+    public function select(string $name, string $label, array $selectOptions = [], array $options = [])
     {
-        return $this->field('select', $name, $label, ['options' => $options]);
+        return $this->field('select', $name, $label, array_merge(['selectOptions' => $selectOptions], $options));
     }
 
     /**
@@ -83,7 +83,7 @@ trait Fields
      */
     public function textArea(string $name, string $label, array $options = [])
     {
-        return $this->field('textarea', $name, $label, ['options' => $options]);
+        return $this->field('textarea', $name, $label, $options);
     }
 
     /**
@@ -145,7 +145,7 @@ trait Fields
      */
     public function hidden($name, $label, $conteudo = '', array $options = [])
     {
-        return $this->field('hidden', $name, $label, ['content' => $conteudo]);
+        return $this->field('hidden', $name, $label, array_merge(['content' => $conteudo], $options));
     }
 
     /**

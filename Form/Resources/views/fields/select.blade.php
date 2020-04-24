@@ -19,7 +19,7 @@
       >
           <option></option>
           {{-- Construção das opções --}}
-          @foreach ($options as $id => $option)
+          @foreach ($selectOptions as $id => $option)
             @if(gettype($option) == 'string')
                 @if($id == $value )
                   <option selected="selected" value="{{$id}}">{{$option}}</option>
