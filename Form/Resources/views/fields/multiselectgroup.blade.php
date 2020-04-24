@@ -20,8 +20,8 @@
                 required
             @endif
         >
-            {{-- Build group options --}}
-            @foreach ($options as $groupParent => $childrens)
+            {{-- Build group selectOptions --}}
+            @foreach ($selectOptions as $groupParent => $childrens)
                 <optgroup label="{{ $groupParent }}">
                     @foreach ($childrens as $id => $textValue)
                         <option

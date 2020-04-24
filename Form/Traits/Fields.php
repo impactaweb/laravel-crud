@@ -90,12 +90,13 @@ trait Fields
      * Campo de multiSelect
      * @param string $name
      * @param string $label
+     * @param array $selectOptions
      * @param array $options
      * @return mixed
      */
-    public function multiSelect(string $name, string $label, array $options = [])
+    public function multiSelect(string $name, string $label, array $selectOptions = [], array $options = [])
     {
-        return $this->field('multiselect', $name, $label, ['options' => $options]);
+        return $this->field('multiselect', $name, $label, array_merge(['selectOptions' => $selectOptions], $options));
     }
 
     /**
@@ -186,12 +187,13 @@ trait Fields
      * MultiSelect com grupos
      * @param string $name
      * @param string $label
+     * @param array $selectOptions
      * @param array $options
      * @return mixed
      */
-    public function multiSelectGroup(string $name, string $label, array $options = [])
+    public function multiSelectGroup(string $name, string $label, array $selectOptions = [], array $options = [])
     {
-        return $this->field('multiselectgroup', $name, $label, ['options' => $options]);
+        return $this->field('multiselectgroup', $name, $label, array_merge(['selectOptions' => $selectOptions], $options));
     }
 
 

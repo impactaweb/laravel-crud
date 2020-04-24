@@ -6,7 +6,7 @@ class MultiSelectGroupField extends BaseField
 {
     protected $filter = false;
     protected $value = [];
-    protected $options;
+    protected $selectOptions;
 
     protected function buildInitialValue(array $initial)
     {
