@@ -20,8 +20,8 @@
                 required
             @endif
         >
-            {{-- Build options --}}
-            @foreach ($options as $id => $option)
+            {{-- Build selectOptions --}}
+            @foreach ($selectOptions as $id => $option)
                 <option
                     @if(in_array($id, $value))
                     selected

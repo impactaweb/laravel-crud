@@ -2021,6 +2021,7 @@
         
 
 
+
         /**
          * Configuração do show-rules
          */
@@ -2052,19 +2053,15 @@
                 if (setEventChange) {
                     inputToHandle.change(function(){
                         
-                        if ($(this).is(':radio:not(:checked)')) {
+                        if ($(this).is(":radio:not(:checked)")) {
                             return;
                         }
 
                         var inputValue = $(this).val()
-
-                        console.log(ruleField)
-                        console.log(inputValue)
-                        console.log($(this).is(':checked'))
                         var hideRules = $(this).data('hide-rules')
                         for (var field in hideRules) {
 
-                            var inputFieldToHide = $(":input[name='" + field + "']")
+                            var fieldBlockToHide = $("div[data-field-name='" + field + "']")
                             var valuesToCheck = hideRules[field]
 
                             if (!(typeof valuesToCheck == 'object')) {
@@ -2078,11 +2075,7 @@
                                 }
                             }
 
-                            if (eventShow) {
-                                inputFieldToHide.parents('.fieldBlock').show()
-                            } else {
-                                inputFieldToHide.parents('.fieldBlock').hide()
-                            }
+                            eventShow ? fieldBlockToHide.show() : fieldBlockToHide.hide()
                         }
                     })
                 }
@@ -2093,6 +2086,9 @@
         for (var field in inputsToBind) {
             $(":input[name='" + field + "']").trigger('change')
         }
+
+
+
 
 
     })($)
