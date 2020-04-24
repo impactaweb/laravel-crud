@@ -8,6 +8,13 @@ trait Util {
 
     public static function fillUrlParameters(string $url, $data = []): string
     {
+        if (getType($data) == "object") {
+            if (!method_exists($data, 'toArray')) {
+                $data = (array)$data;
+            }
+            $data = $data->toArray();
+        }
+
         preg_match_all("|{[^}]+}+|U", $url, $parameters);
         if (!($parameters[0] && count($parameters[0]) > 0)) {
             return $url;
@@ -33,8 +40,11 @@ trait Util {
                 $url = str_replace($parameter, $routeParams[$parameter2] ?? "", $url);
                 continue;
             }
+            
+            if (array_key_exists($parameter2, $data)) {
+                $url = str_replace($parameter, $data[$parameter2] ?? "", $url);
+            }
 
-            $url = str_replace($parameter, $data->$parameter2 ?? "", $url);
         }
 
         return $url;
