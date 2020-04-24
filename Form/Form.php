@@ -2,10 +2,9 @@
 
 namespace Impactaweb\Crud\Form;
 
-use Impactaweb\Crud\Form\Fields\IdField;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\View\View;
-use Impactaweb\Crud\Traits\Fields;
+use Impactaweb\Crud\Form\Traits\Fields;
 use Exception;
 
 /**
@@ -157,10 +156,10 @@ class Form
 	 * @param string $type    Field Type
 	 * @param string $name
 	 * @param string $label
-	 * @param array  $context Extra context
+	 * @param array  $options Extra options
 	 * @return $this
 	 */
-	public function field(string $type, string $name, string $label, array $context = [])
+	public function field(string $type, string $name, string $label, array $options = [])
 	{
 		try {
 			$fieldClass = $this->getField($type);
@@ -177,7 +176,7 @@ class Form
 		}
 
 		$panel = end($this->panels);
-		$panel->fields[] = new $fieldClass($name, $label, $context, $type);
+		$panel->fields[] = new $fieldClass($name, $label, $options, $type);
 
 		return $this;
 	}

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Impactaweb\Crud\Traits;
+namespace Impactaweb\Crud\Form\Traits;
 
 trait Fields
 {
@@ -17,7 +17,7 @@ trait Fields
         return $this->field('text', $name, $label, $options);
     }
 
-    public function file(string $name, string $label, string $diretorio)
+    public function file(string $name, string $label, string $diretorio, $options = [])
     {
         # Verifica se há coringas de rotas no diretório
         $parametros = request()->route()->originalParameters();
@@ -32,11 +32,11 @@ trait Fields
         $url = rtrim($disks[$storageDefault]['url'] ?? '', '/');
         $diretorio = str_replace("{storagePath}", $url, $diretorio);
 
-        foreach ($disks as $disk => $options) {
-            $url = rtrim($options['url'] ?? '', '/');
+        foreach ($disks as $disk => $diskConfigurations) {
+            $url = rtrim($diskConfigurations['url'] ?? '', '/');
             $diretorio = str_replace("{storage.$disk}", $url, $diretorio);
         }
-        return $this->field('file', $name, $label, ['dir' => $diretorio]);
+        return $this->field('file', $name, $label, array_merge(['dir' => $diretorio], $options));
     }
 
     /**

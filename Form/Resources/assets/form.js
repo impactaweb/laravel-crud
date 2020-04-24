@@ -388,7 +388,7 @@
                 nonSelectedText: 'Nenhum selecionado',
                 nSelectedText: 'selected',
                 allSelectedText: 'Todos selecionados',
-                numberDisplayed: 3,
+                numberDisplayed: 1,
                 disableIfEmpty: false,
                 disabledText: '',
                 delimiterText: ', ',
@@ -2018,5 +2018,83 @@
         }
 
         asyncFileUpload()
+        
+
+
+        /**
+         * Configuração do show-rules
+         */
+        var inputsToBind = {}
+
+        $('div[data-show-rules]').each(function() {
+            var rules = $(this).data('show-rules')
+            var hideField = $(this).data('field-name')
+
+            Object.keys(rules).forEach(function(ruleField){
+
+                inputsToBind[ruleField] = true
+                var inputToHandle = $(":input[name='" + ruleField + "']")
+                if (!inputToHandle.length) {
+                    return;
+                }
+
+                var setEventChange = false
+                if (inputToHandle.data('hide-rules')) {
+                    var fieldHideRules = inputToHandle.data('hide-rules')
+                } else {
+                    var fieldHideRules = {}
+                    setEventChange = true
+                }
+
+                fieldHideRules[hideField] = rules[ruleField]
+                inputToHandle.data('hide-rules', fieldHideRules)
+
+                if (setEventChange) {
+                    inputToHandle.change(function(){
+                        
+                        if ($(this).is(':radio:not(:checked)')) {
+                            return;
+                        }
+
+                        var inputValue = $(this).val()
+
+                        console.log(ruleField)
+                        console.log(inputValue)
+                        console.log($(this).is(':checked'))
+                        var hideRules = $(this).data('hide-rules')
+                        for (var field in hideRules) {
+
+                            var inputFieldToHide = $(":input[name='" + field + "']")
+                            var valuesToCheck = hideRules[field]
+
+                            if (!(typeof valuesToCheck == 'object')) {
+                                valuesToCheck = [valuesToCheck]
+                            }
+
+                            var eventShow = false;
+                            for (var index in valuesToCheck) {
+                                if (inputValue == valuesToCheck[index]) {
+                                    eventShow = true;
+                                }
+                            }
+
+                            if (eventShow) {
+                                inputFieldToHide.parents('.fieldBlock').show()
+                            } else {
+                                inputFieldToHide.parents('.fieldBlock').hide()
+                            }
+                        }
+                    })
+                }
+            })
+        })
+
+        // Aciona o evento change dos inputs que deverão ser monitorados
+        for (var field in inputsToBind) {
+            $(":input[name='" + field + "']").trigger('change')
+        }
+
+
     })($)
+
 })(jQuery)

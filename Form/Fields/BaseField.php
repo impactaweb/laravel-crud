@@ -15,7 +15,7 @@ class BaseField
     /**
      * @var string
      */
-    protected $id = "";
+    public $id = "";
     /**
      * @var string
      */
@@ -27,7 +27,7 @@ class BaseField
     /**
      * @var array
      */
-    protected $options = [];
+    public $options = [];
     /**
      * @var string
      */
@@ -69,10 +69,10 @@ class BaseField
      * BaseField constructor.
      * @param string $id
      * @param string $label
-     * @param array  $contexto
+     * @param array  $options
      * @throws Exception
      */
-    public function __construct(string $id, string $label, array $contexto, string $type)
+    public function __construct(string $id, string $label, array $options, string $type)
     {
         $this->template_name = config('form.templates.fields.' . $type);
         if (!View::exists($this->template_name)) {
@@ -81,7 +81,8 @@ class BaseField
         $this->id = $id;
         $this->label = $label;
 
-        foreach ($contexto as $atributo => $parametro) {
+        $this->options = $options;
+        foreach ($options as $atributo => $parametro) {
             $this->$atributo = $parametro;
         }
         return $this;
