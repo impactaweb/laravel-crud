@@ -1,7 +1,6 @@
 module.exports = (function($) {
     // Import Customizations
     require('./custom/loadingData')
-    require('./custom/sidebar')
     require('./custom/mask')
     require('./custom/loadEditor')
     require('./custom/jqueryExtends')
