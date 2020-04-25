@@ -156,6 +156,12 @@ class BaseField
         $rule = $rules[$this->id] ?? [];
 
         foreach ($rule as $item) {
+
+            // Se não for string, ignorar a regra
+            if (getType($item) != 'string') {
+                continue;
+            }
+
             if ($item == 'required') {
                 $this->required = true;
             }
