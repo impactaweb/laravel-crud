@@ -36,7 +36,7 @@ class Form
     public $cancelLinkUrl = '#';
 
 
-    +/**
+    /**
      * Starts a new form
      * Form constructor.
      * @param array $initial
@@ -100,19 +100,21 @@ class Form
         # Build default actions
         if (empty($this->actions)) {
             $this->actions = [
-                "save_close" => [__('form::form.save_close')],
-                "save" => [__('form::form.save')],
-                "save_create" => [__('form::form.save_create')],
+                ["save_close" , __('form::form.save_close'), $this->baseAction . '.index'],
+                ["save" , __('form::form.save'), $this->baseAction . '.edit'],
+                ["save_create" , __('form::form.save_create'), $this->baseAction . '.create'],
             ];
         }
 
         # Build save_next option if 'ids' exist in querystring
         if ($this->request->has('ids') && strpos(urldecode($this->request->get('ids')), ',') !== false) {
-            $this->actions = array_merge(['save_next' => [__('form::form.save_next')], $this->actions);
+            $saveNext = ['save_next' , __('form::form.save_next'), $this->baseAction . '.edit'];
+            $this->actions = array_merge($saveNext, $this->actions);
         }
     }
 
-    public function clearActions(array $actions) {
+    public function clearActions(array $actions)
+    {
         foreach ($actions as $action) {
             unset($action, $actions);
         }
@@ -240,7 +242,7 @@ class Form
      */
     public function action(string $action, string $label, string $routeName = ''): Form
     {
-        $this->actions = array_merge([$action => [$label, $routeName]], $this->actions);
+        $this->actions = array_merge([$action, $label, $routeName], $this->actions);
         return $this;
     }
 

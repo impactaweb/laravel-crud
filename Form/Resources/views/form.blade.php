@@ -5,15 +5,15 @@
         {{-- não apaga --}}
         data-its-form
         {{-- Actions--}}
-        @if($action)
-        action="{{ $action }}"
+        @if($form->formAction)
+        action="{{ $form->formAction }}"
         @endif
 
-        id="{{ $formId }}"
-        class="{{$formClass}}"
+        id="{{ $form->formId }}"
+        class="{{$form->class}}"
 
         {{-- Target Blank--}}
-        @if($targetBlank)
+        @if($form->targetBlank)
         target="__blank"
         @endif
 
@@ -21,19 +21,19 @@
         enctype="multipart/form-data"
 
         {{-- Autocomplete--}}
-        @if($autoComplete)
+        @if($form->autoComplete)
         autocomplete="off"
         @endif>
 
     {{ csrf_field() }}
-    {{ method_field($method) }}
+    {{ method_field($form->method) }}
 
-    @if(!empty($primaryKeyValue))
-        <input type="hidden" name="{{$primaryKey}}" value="{{$primaryKeyValue}}" data-id>
+    @if(!empty($form->primaryKeyValue))
+        <input type="hidden" name="{{$form->primaryKey}}" value="{{$form->primaryKeyValue}}" data-id>
     @endif
 
+    {{-- Render template for panels --}}
     <div class="panel-group" id="Abas" role="tablist" aria-multiselectable="true">
-        {{-- Render template for panels --}}
         @include($panelTemplate)
     </div>
 
