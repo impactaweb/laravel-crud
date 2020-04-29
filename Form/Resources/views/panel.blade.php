@@ -1,5 +1,5 @@
 <div class="accordion" id="abas-form-{{ $form->formId }}">
-    @foreach ($panels as $panel)
+    @foreach ($form->panels as $panel)
         <div class="card mb-4 border overflow-visible"
             @foreach ($panel->attrs as $atributo => $valorAtributo)
                 @if(gettype($valorAtributo) == 'string')
