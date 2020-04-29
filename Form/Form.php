@@ -18,7 +18,7 @@ class Form
     protected $fields = FieldAlias::fields;
     protected $request;
     protected $rules = [];
-    protected $actions = [];
+    public $actions = [];
     public $panels = [];
     public $idPanel = 0;
     public $primaryKeyValue = '';

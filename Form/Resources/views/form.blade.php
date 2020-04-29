@@ -2,28 +2,28 @@
 </div>
 <div data-expect-alert></div>
 <form
-        {{-- não apaga --}}
-        data-its-form
-        {{-- Actions--}}
-        @if($form->formAction)
-        action="{{ $form->formAction }}"
-        @endif
+    {{-- não apaga --}}
+    data-its-form
+    {{-- Actions--}}
+    @if($form->formAction)
+    action="{{ $form->formAction }}"
+    @endif
 
-        id="{{ $form->formId }}"
-        class="{{$form->class}}"
+    id="{{ $form->formId }}"
+    class="{{$form->class}}"
 
-        {{-- Target Blank--}}
-        @if($form->targetBlank)
-        target="__blank"
-        @endif
+    {{-- Target Blank--}}
+    @if($form->targetBlank)
+    target="__blank"
+    @endif
 
-        method="POST"
-        enctype="multipart/form-data"
+    method="POST"
+    enctype="multipart/form-data"
 
-        {{-- Autocomplete--}}
-        @if($form->autoComplete)
-        autocomplete="off"
-        @endif>
+    {{-- Autocomplete--}}
+    @if($form->autoComplete)
+    autocomplete="off"
+    @endif>
 
     {{ csrf_field() }}
     {{ method_field($form->method) }}
@@ -37,8 +37,5 @@
         @include($panelTemplate)
     </div>
 
-
-    @if($hideActions === false)
-        @include($actionsTemplate)
-    @endif
+    @include($actionsTemplate)
 </form>
