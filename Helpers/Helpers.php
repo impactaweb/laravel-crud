@@ -10,7 +10,6 @@
  */
 
 
-
 if (!function_exists('unbackSlash')) {
     /**
      * Remove / do inicio e do fim de uma string
@@ -20,48 +19,80 @@ if (!function_exists('unbackSlash')) {
     function unbackSlash(string $string): string
     {
         $string = ($string[0] === "/" ? mb_substr($string, 1) : $string);
-        $lastIndex = mb_strlen($string) - 1;        $string = mb_strrpos($string, '/') === $lastIndex
+        $lastIndex = mb_strlen($string) - 1;
+        $string = mb_strrpos($string, '/') === $lastIndex
             ? mb_strrchr($string, '/', true)
-            : $string;        return $string;
+            : $string;
+        return $string;
     }
 }
 
-if (!function_exists('startsWith')) {
+if (!function_exists('getQueryString')) {
     /**
-     * Verifica se a string começa com o padão informado
-     * @param $string
-     * @param $startString
-     * @return bool
+     * Search for specific parameter inside a querystring
+     * @param $request
+     * @param array $ignoreList
+     * @return string
      */
-    function startsWith($string, $startString)
+    function getQueryString($request, $ignoreList = [])
     {
-        $len = strlen($startString);
-        return (substr($string, 0, $len) === $startString);
-    }
-}
-
-if(!function_exists('endsWith')) {
-    /**
-     * Verifica se a string termina com o padão informado
-     * @param $string
-     * @param $endString
-     * @return bool
-     */
-    function endsWith($string, $endString)
-    {
-        $len = strlen($endString);
-        if ($len == 0) {
-            return true;
+        parse_str($request->getQueryString(), $queryArray);
+        foreach ($ignoreList as $ignoreItem) {
+            if (array_key_exists($ignoreItem, $queryArray)) {
+                unset($queryArray[$ignoreItem]);
+            }
         }
-        return (substr($string, -$len) === $endString);
+        return http_build_query($queryArray);
     }
 }
 
-if(!function_exists('listingRelationLabel')) {
+if (!function_exists('getParameterFromRequest')) {
     /**
-     * Trata a string do label de busca avançada em caso de relacionamentos, removendo os pontos e deixando apenas o útimo item
+     * Search defined parameter in request
+     * @param string $parameter
+     * @return bool|string
+     */
+    function getParameterFromRequest($request, string $parameter)
+    {
+        // Search 'parameter' in request
+        if ($request->has($parameter)) {
+            return urldecode($request->get($parameter));
+        }
+
+        // Search 'parameter' in json
+        if ($request->json()->has($parameter)) {
+            return urldecode($request->json()->get($parameter));
+        }
+
+        return false;
+    }
+
+}
+
+
+if (!function_exists('clearUrl')) {
+    /**
+     * Clear querystring form URL
+     * @param $url
+     * @return string
+     */
+    function clearUrl($url)
+    {
+
+        if (strpos($url, "?") !== false) {
+            return substr($url, 0, strpos($url, "?"));
+        }
+        return $url;
+    }
+
+}
+
+if (!function_exists('listingRelationLabel')) {
+    /**
+     * Trata a string do label de busca avançada em caso de relacionamentos,
+     * removendo os pontos e deixando apenas o útimo item
      * @param $label
-     * @return $string
+     * @return mixed|string $string
      */
     function listingRelationLabel($label)
     {
