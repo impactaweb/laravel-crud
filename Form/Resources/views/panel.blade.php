@@ -1,4 +1,4 @@
-<div class="accordion" id="abas-form-{{ $formId }}">
+<div class="accordion" id="abas-form-{{ form->formId }}">
     @foreach ($panels as $panel)
         <div class="card mb-4 border overflow-visible"
             @foreach ($panel->attrs as $atributo => $valorAtributo)
@@ -23,7 +23,7 @@
             <div
                 id="collapse-{{$panel->getPanelId()}}"
                 aria-labelledby="aba-{{$panel->getPanelId()}}"
-                data-parent="#abas-form-{{ $formId }}"
+                data-parent="#abas-form-{{ $form->formId }}"
                 class="collapse show"
                 >
                 <div class="card-body">
