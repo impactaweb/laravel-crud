@@ -16,13 +16,13 @@ class Form
     use Fields;
 
     protected $fields = FieldAlias::fields;
-    protected $panels = [];
-    protected $idPanel = 0;
-    protected $actions = [];
-    protected $primaryKeyValue = '';
     protected $request;
     protected $rules = [];
-    protected $baseAction;
+    protected $actions = [];
+    public $panels = [];
+    public $idPanel = 0;
+    public $primaryKeyValue = '';
+    public $baseAction;
     public $formId = 'form';
     public $initial = [];
     public $template;
