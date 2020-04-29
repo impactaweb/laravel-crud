@@ -18,12 +18,12 @@ class Form
     protected $fields = FieldAlias::fields;
     protected $panels = [];
     protected $idPanel = 0;
-    protected $formId = 'form';
     protected $actions = [];
     protected $primaryKeyValue = '';
     protected $request;
     protected $rules = [];
     protected $baseAction;
+    public $formId = 'form';
     public $initial = [];
     public $template;
     public $formAction = '';
