@@ -100,31 +100,37 @@ class Form
         # Build default actions
         if (empty($this->actions)) {
             $this->actions = [
-                ["save_close" , __('form::form.save_close'), $this->baseAction . '.index'],
-                ["save" , __('form::form.save'), $this->baseAction . '.edit'],
-                ["save_create" , __('form::form.save_create'), $this->baseAction . '.create'],
+                "save_close"  => [__('form::form.save_close'), $this->baseAction . '.index'],
+                "save" => [__('form::form.save'), $this->baseAction . '.edit'],
+                "save_create" => [__('form::form.save_create'), $this->baseAction . '.create'],
             ];
         }
 
         # Build save_next option if 'ids' exist in querystring
         if ($this->request->has('ids') && strpos(urldecode($this->request->get('ids')), ',') !== false) {
-            $saveNext = ['save_next' , __('form::form.save_next'), $this->baseAction . '.edit'];
+            $saveNext = ['save_next' => [__('form::form.save_next'), $this->baseAction . '.edit']];
             $this->actions = array_merge($saveNext, $this->actions);
         }
     }
 
-    public function clearActions(array $actions)
+    public function clearActions($actions = [])
     {
-        foreach ($actions as $action) {
-            unset($action, $actions);
+        if (!empty($actions)) {
+            foreach ((array) $actions as $actionName) {
+                unset($this->actions[$actionName]);
+            }
+        } else {
+            $this->actions = [];
         }
+        return $this;
     }
 
     public function buildCancelLinkUrl()
     {
         # Build form cancel link based on current Url
         $this->cancelLinkUrl = getParameterFromRequest($this->request, 'redir');
-        if ($this->cancelLinkUrl !== false) {
+
+        if ($this->cancelLinkUrl == false) {
             $parameters = $this->request->route()->parameters();
             $this->cancelLinkUrl = clearUrl(route($this->baseAction . '.index', $parameters));
         }
@@ -228,6 +234,7 @@ class Form
         return view($formTemplate, [
                 "panelTemplate" => config('form.templates.panel'),
                 "actionsTemplate" => config('form.templates.actions'),
+                'firstAction' => array_key_first($this->actions),
                 "form" => $this,
             ]
         );
@@ -242,7 +249,7 @@ class Form
      */
     public function action(string $action, string $label, string $routeName = ''): Form
     {
-        $this->actions = array_merge([$action, $label, $routeName], $this->actions);
+        $this->actions = array_merge([$action => [$label, $routeName]], $this->actions);
         return $this;
     }
 
