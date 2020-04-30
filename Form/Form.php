@@ -42,7 +42,6 @@ class Form
      * @param array $initial
      * @param string $primaryKey
      * @param array $options
-     * @throws Exception
      */
     public function __construct(array $initial = [], string $primaryKey = '', array $options = [])
     {
