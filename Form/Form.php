@@ -14,12 +14,6 @@ class Form
 {
 
 	use Fields;
-
-	/**
-	 * @var array - Array com os fields disponíveis
-	 */
-	protected $fields = FieldAlias::fields;
-
 	protected $panels = [];
 
 	public $initial = [];
@@ -181,20 +175,20 @@ class Form
 		return $this;
 	}
 
-	/**
-	 * Get field class based on FieldAlias
-	 * @param string $field Field alias
-	 * @return object
-	 * @throws Exception
-	 */
-	protected function getField(string $field)
-	{
-		$fieldClass = isset($this->fields[$field]) ? $this->fields[$field] : null;
-		if (!$fieldClass) {
-			throw new Exception($field . " - Field doesn't exist.");
-		}
-		return $fieldClass;
-	}
+    /**
+     * Get field class based on FieldAlias
+     * @param string $field Field alias
+     * @return object
+     * @throws Exception
+     */
+    protected function getField(string $field)
+    {
+        $fieldClass = config('form.field_class.' . $field, null);
+        if (!$fieldClass) {
+            throw new Exception($field . " - Field doesn't exist.");
+        }
+        return $fieldClass;
+    }
 
 	/**
 	 * Render entire form

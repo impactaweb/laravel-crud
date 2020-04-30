@@ -2,6 +2,26 @@
 
 return [
 
+    'field_class' => [
+        "text" => Impactaweb\Crud\Form\Fields\TextField::class,
+        "password" => Impactaweb\Crud\Form\Fields\PasswordField::class,
+        "number" => Impactaweb\Crud\Form\Fields\NumberField::class,
+        "select" => Impactaweb\Crud\Form\Fields\SelectField::class,
+        "textarea" => Impactaweb\Crud\Form\Fields\TextAreaField::class,
+        "file" => Impactaweb\Crud\Form\Fields\FileField::class,
+        "file_async" => Impactaweb\Crud\Form\Fields\FileAsyncField::class,
+        "multiselect" => Impactaweb\Crud\Form\Fields\MultiSelectField::class,
+        "flag" => Impactaweb\Crud\Form\Fields\FlagField::class,
+        "html" => Impactaweb\Crud\Form\Fields\HtmlField::class,
+        "show" => Impactaweb\Crud\Form\Fields\ShowField::class,
+        "hidden" => Impactaweb\Crud\Form\Fields\HiddenField::class,
+        "datetime" => Impactaweb\Crud\Form\Fields\DateTimeField::class,
+        "date" => Impactaweb\Crud\Form\Fields\DateField::class,
+        "time" => Impactaweb\Crud\Form\Fields\TimeField::class,
+        "rtf" => Impactaweb\Crud\Form\Fields\RtfField::class,
+        'multiselectgroup' => Impactaweb\Crud\Form\Fields\MultiSelectGroupField::class
+    ],
+
     'templates' => [
 
         'form' => 'form::form',
