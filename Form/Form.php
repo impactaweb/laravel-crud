@@ -16,8 +16,8 @@ class Form
     use Fields;
 
     protected $fields = FieldAlias::fields;
-    protected $request;
     protected $rules = [];
+    public $request;
     public $actions = [];
     public $panels = [];
     public $idPanel = 0;
@@ -50,7 +50,6 @@ class Form
         $this->request = request();
         $this->primaryKey = $primaryKey;
 
-        # Build form method based on current URL
         $this->buildBaseAction();
         $this->buildFormMethod();
         $this->buildFormAction();
@@ -92,19 +91,17 @@ class Form
         }
 
         $route = route($this->baseAction . '.' . $methodActions[$method], $this->request->route()->parameters());
-        $this->formAction = $route . '?' . getQueryString($this->request);
+        $this->formAction = $route . '?' . $this->getQueryString($this->request);
     }
 
     public function buildDefaultActions()
     {
         # Build default actions
-        if (empty($this->actions)) {
-            $this->actions = [
-                "save_close"  => [__('form::form.save_close'), $this->baseAction . '.index'],
-                "save" => [__('form::form.save'), $this->baseAction . '.edit'],
-                "save_create" => [__('form::form.save_create'), $this->baseAction . '.create'],
-            ];
-        }
+        $this->actions = [
+            "save_close"  => [__('form::form.save_close'), $this->baseAction . '.index'],
+            "save" => [__('form::form.save'), $this->baseAction . '.edit'],
+            "save_create" => [__('form::form.save_create'), $this->baseAction . '.create'],
+        ];
 
         # Build save_next option if 'ids' exist in querystring
         if ($this->request->has('ids') && strpos(urldecode($this->request->get('ids')), ',') !== false) {
@@ -113,6 +110,10 @@ class Form
         }
     }
 
+    /**
+     * @param array $actions
+     * @return $this
+     */
     public function clearActions($actions = [])
     {
         if (!empty($actions)) {
@@ -128,11 +129,11 @@ class Form
     public function buildCancelLinkUrl()
     {
         # Build form cancel link based on current Url
-        $this->cancelLinkUrl = getParameterFromRequest($this->request, 'redir');
+        $this->cancelLinkUrl = urldecode($this->request->get('redir'));
 
         if ($this->cancelLinkUrl == false) {
             $parameters = $this->request->route()->parameters();
-            $this->cancelLinkUrl = clearUrl(route($this->baseAction . '.index', $parameters));
+            $this->cancelLinkUrl = $this->clearUrl(route($this->baseAction . '.index', $parameters));
         }
 
     }
@@ -141,7 +142,6 @@ class Form
     {
         # Build a hidden input from form ID
         $this->primaryKeyValue = $this->initial[$this->primaryKey] ?? '';
-
     }
 
     public function buildIdField()
@@ -283,6 +283,32 @@ class Form
             }
         }
         $this->rules = $rules;
+    }
+
+    private function clearUrl($url)
+    {
+
+        if (strpos($url, "?") !== false) {
+            return substr($url, 0, strpos($url, "?"));
+        }
+        return $url;
+    }
+
+    /**
+     * Search for specific parameter inside a querystring
+     * @param $request
+     * @param array $ignoreList
+     * @return string
+     */
+    private function getQueryString($request, $ignoreList = [])
+    {
+        parse_str($request->getQueryString(), $queryArray);
+        foreach ($ignoreList as $ignoreItem) {
+            if (array_key_exists($ignoreItem, $queryArray)) {
+                unset($queryArray[$ignoreItem]);
+            }
+        }
+        return http_build_query($queryArray);
     }
 
 }
