@@ -57,11 +57,10 @@
 
     function listagemLoading(open = true) {
         if (!open) {
-            $('[data-container="loading"]').html('')
+            $.fn.finishLoading()
             return
         }
-        $('[data-container="loading"]').html('<div class="loading-container fixed"><div class="lds-roller">'
-            + '<div></div><div></div><div></div><div></div></div></div>')
+        $.fn.initLoading()
     }
 
     const $checkboxs = $('input.listing-checkboxes')

@@ -1762,16 +1762,7 @@
                     return false
                 })
 
-                $('[data-container="loading"]').html(`
-                    <div class="loading-container fixed">
-                        <div class="lds-roller">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                    </div>
-                `)
+                $.fn.initLoading()
 
                 const ACTION = form.getAttribute('action')
 
@@ -1794,7 +1785,7 @@
         function handleSuccess(res) {
             if (!res.url) {
                 alert('Ops, pedimos desculpas pelo erro, entre em contato com o suporte para que possamos fazer os ajustes.')
-                $('[data-container="loading"]').html('')
+                $.fn.finishLoading()
                 return
             }
 
@@ -1804,7 +1795,7 @@
         }
 
         function handleFailure(error) {
-            $('[data-container="loading"]').html('')
+            $.fn.finishLoading()
             if (error.status >= 500) {
                 const alertError = `
                 <div class="container alert mb-1 alert-danger alert-dismissible fade show" role="alert" data-expect >
@@ -1874,16 +1865,7 @@
 
         $deleteFiles.each(function(idx, $link) {
             $link.onclick = function(e) {
-                $('[data-container="loading"]').html(`
-                    <div class="loading-container fixed">
-                        <div class="lds-roller">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                    </div>
-                `)
+                $.fn.initLoading()
                 e.preventDefault()
                 e.stopPropagation()
                 const path = $link.getAttribute('data-destroy');
@@ -1902,7 +1884,7 @@
                         return;
                     }
         
-                    $('[data-container="loading"]').html('')
+                    $.fn.finishLoading()
                     $($link).parent('span').prev('input').val(null)
                     $($link).parent('span').remove()
                 })
@@ -1910,7 +1892,7 @@
                     alert(jqXHR.responseJSON.error ? jqXHR.responseJSON.error : 'Falha ao excluir o arquivo.')
                 })
                 .always(function() {
-                    $('[data-container="loading"]').html('')
+                    $.fn.finishLoading()
                 })
             }
         })
