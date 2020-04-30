@@ -32,6 +32,8 @@
         <input type="hidden" name="{{$form->primaryKey}}" value="{{$form->primaryKeyValue}}" data-id>
     @endif
 
+    <input type="hidden" name="form-submit-route" value="" id="c-form-submit-route">
+
     {{-- Render template for panels --}}
     <div class="panel-group" id="Abas" role="tablist" aria-multiselectable="true">
         @include($panelTemplate)

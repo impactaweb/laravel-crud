@@ -1753,7 +1753,9 @@
 
         const $alert = document.querySelector('[data-expect-alert]')
         const $deleteFiles = $('[data-destroy]')
-
+        $('[data-route]').click(function () {
+            $('#c-form-submit-route').val($(this).attr('data-route'))
+        })
         $('#form').validate({
             submitHandler: function (form) {
                 $(form).submit(function (e) {
@@ -1901,7 +1903,7 @@
                         alert(jsonData.error)
                         return;
                     }
-        
+
                     $('[data-container="loading"]').html('')
                     $($link).parent('span').prev('input').val(null)
                     $($link).parent('span').remove()
@@ -2018,7 +2020,7 @@
         }
 
         asyncFileUpload()
-        
+
 
 
 
@@ -2052,7 +2054,7 @@
 
                 if (setEventChange) {
                     inputToHandle.change(function(){
-                        
+
                         if ($(this).is(":radio:not(:checked)")) {
                             return;
                         }
@@ -2097,6 +2099,6 @@
 
 window.onpageshow = function(event) {
     if (event.persisted) {
-        window.location.reload() 
+        window.location.reload()
     }
 };
