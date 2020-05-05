@@ -225,7 +225,6 @@ class BaseField
             $this->attrs['data-ajax-event'] = $options['ajax']['event'] ?? 'change';
             $this->attrs['data-ajax-post-data'] = json_encode($options['ajax']['postData'] ?? []);
             $this->attrs['data-ajax-post-fields'] = json_encode($options['ajax']['postFields'] ?? []);
-            $this->attrs['data-ajax-html'] = json_encode($options['ajax']['html'] ?? []);
         }
     }
 
