@@ -218,14 +218,17 @@ class BaseField
      */
     public function buildAjax(array $options)
     {
-        if (isset($options['ajax'])) {
-            $this->attrs['data-ajax-url'] = $options['ajax']['url'] ?? '';
-            $this->attrs['data-ajax-fields'] = json_encode($options['ajax']['fields'] ?? []);
-            $this->attrs['data-ajax-method'] = $options['ajax']['method'] ?? 'GET';
-            $this->attrs['data-ajax-event'] = $options['ajax']['event'] ?? 'change';
-            $this->attrs['data-ajax-data'] = json_encode($options['ajax']['data'] ?? []);
-            $this->attrs['data-ajax-data-fields'] = json_encode($options['ajax']['dataFields'] ?? []);
+        if (!isset($options['ajax'])) {
+            return;
         }
+
+        $this->attrs['data-ajax-url'] = $options['ajax']['url'] ?? '';
+        $this->attrs['data-ajax-fields'] = json_encode($options['ajax']['fields'] ?? []);
+        $this->attrs['data-ajax-fields-options'] = json_encode($options['ajax']['fieldsOptions'] ?? []);
+        $this->attrs['data-ajax-method'] = $options['ajax']['method'] ?? 'GET';
+        $this->attrs['data-ajax-event'] = $options['ajax']['event'] ?? 'change';
+        $this->attrs['data-ajax-data'] = json_encode($options['ajax']['data'] ?? []);
+        $this->attrs['data-ajax-data-fields'] = json_encode($options['ajax']['dataFields'] ?? []);
     }
 
 }

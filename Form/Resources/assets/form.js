@@ -2130,36 +2130,35 @@
                 context: $element
             })
             .done(function(json) {
+
+                let $fieldsOptions = $(this).data('ajax-fields-options')
+                Object.keys($fieldsOptions).forEach(function(key){
+                    
+                    const $field = $('[name="' + key + '"]')
+                    if (!$field.length) return;
+
+                    // Perfil de dado esperado
+                    //[{ value: 1, label: 'UF'}, ...]
+                    if (Array.isArray(json[$fieldsOptions[key]])) {
+                        const template = json[$fieldsOptions[key]].reduce( (prev, cur) => prev + `<option value="${cur.value}">${cur.label}</option>`, '')
+                        $field.html(template)
+                    }
+                })
                 
                 // Para cada campo configurado em fields, alimenta o :input correspondente
                 let $fields = $(this).data('ajax-fields')
                 Object.keys($fields).forEach(function(key){
                     
-                    const $field = $('[name="' + $fields[key] + '"]')
-
-                    if (!$field.length) return
-        
-                    if ($field.is('input')) {
-                        $field.val(json[key])
-                        return
-                    }
+                    const $field = $('[name="' + key + '"]')
+                    if (!$field.length) return;
         
                     if ($field.is('div')) {
-                        $field.replaceWith(json[key])
+                        $field.replaceWith(json[$fields[key]])
                         return
                     }
         
-                    if ($field.is('select')) {
-
-                        // Perfil de dado esperado
-                        //[{ value: 1, label: 'UF'}, ...]
-                        if (Array.isArray(json[key + "_options"])) {
-                            const template = json[key + "_options"].reduce( (prev, cur) => prev + `<option value="${cur.value}">${cur.label}</option>`, '')
-                            $field.html(template)
-                        }
-
-                        $field.val(json[key])
-
+                    if ($field.is('select') || $field.is('input')) {
+                        $field.val(json[$fields[key]])
                     }
         
                 });
