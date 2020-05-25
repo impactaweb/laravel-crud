@@ -16,3 +16,33 @@ Laravel CRUD Tools
 ## Dependências:
 1. momentjs - momentjs.com
 2. jQuery - jquery.com
+
+
+## Novidades
+
+### 25/05/2020 - Input Ajax
+
+```php
+$form->text('cep', 'CEP', [
+    'ajax' => [
+        'url' => '/url/{parametro}',
+        'fields' => [
+            'endereco_rua' => 'logradouro',
+            'endereco_bairro' => 'bairro',
+            'cidade' => 'localidade',
+            'uf' => 'uf'
+        ],
+        'method' => 'POST',
+        'fieldsOptions' =>  [
+            'uf' => 'uf_options'
+        ]
+        'data' => [
+            'a' => 'b',
+            'c' => 'd',
+        ],
+        'dataFields' => [
+            'cep' => 'endereco_cep',
+        ]
+    ]
+);
+```
