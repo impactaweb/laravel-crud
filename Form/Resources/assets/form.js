@@ -2091,6 +2091,103 @@
 
 
 
+
+
+
+
+        /**
+         * -----------------------------------------------------------------------------------------------
+         * Ajax para preenchimento de campos 
+         * -----------------------------------------------------------------------------------------------
+         */
+
+        function ajaxEventHandler(element){
+            
+            var $element = $(this)
+            var $url = $element.data('ajax-url')
+            var $method = $element.data('ajax-method').toUpperCase() == 'POST' ? 'POST' : 'GET';
+            var $data = $element.data('ajax-data')
+            var $dataFields = $element.data('ajax-data-fields')
+
+            // Preenche parâmetros da URL. Exemplo: /url/{chave}
+            $element.parents('form').find(':input').each(function() {
+                if (!$(this).attr('name')) return;
+                $url = $url.replace('{' + $(this).attr('name') + '}', $(this).val())
+            })
+
+            // Pega os parametros do dataFields e cada elemento vira um parametro para
+            // submeter ao formulário, sendo seu valor representando o nome de um :input do form.
+            Object.keys($dataFields).forEach(function(key){
+                $data[key] = $('[name="' + $dataFields[key] + '"]').val()
+            })
+
+            // Inicia a requisição, com o contexto do elemento principal (input que chama o ajax)
+            $.ajax({
+                method: $method,
+                url: $url,
+                data: $data,
+                dataType: 'json',
+                context: $element
+            })
+            .done(function(json) {
+                
+                // Para cada campo configurado em fields, alimenta o :input correspondente
+                let $fields = $(this).data('ajax-fields')
+                Object.keys($fields).forEach(function(key){
+                    
+                    const $field = $('[name="' + $fields[key] + '"]')
+
+                    if (!$field.length) return
+        
+                    if ($field.is('input')) {
+                        $field.val(json[key])
+                        return
+                    }
+        
+                    if ($field.is('div')) {
+                        $field.replaceWith(json[key])
+                        return
+                    }
+        
+                    if ($field.is('select')) {
+
+                        // Perfil de dado esperado
+                        //[{ value: 1, label: 'UF'}, ...]
+                        if (Array.isArray(json[key + "_options"])) {
+                            const template = json[key + "_options"].reduce( (prev, cur) => prev + `<option value="${cur.value}">${cur.label}</option>`, '')
+                            $field.html(template)
+                        }
+
+                        $field.val(json[key])
+
+                    }
+        
+                });
+
+            })
+            .fail(function() {
+                alert("error");
+            })
+            .always(function() {
+                // alert( "complete" );
+            });
+
+        }
+
+        $('[data-ajax-url]').each(function() {
+            switch ($(this).data('ajax-event')) {
+                case 'click':
+                    $(this).click(ajaxEventHandler);
+                    break;
+                default:
+                    $(this).change(ajaxEventHandler);
+            }
+        })
+
+
+
+
+
     })($)
 
 })(jQuery)

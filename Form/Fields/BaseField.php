@@ -221,10 +221,10 @@ class BaseField
         if (isset($options['ajax'])) {
             $this->attrs['data-ajax-url'] = $options['ajax']['url'] ?? '';
             $this->attrs['data-ajax-fields'] = json_encode($options['ajax']['fields'] ?? []);
-            $this->attrs['data-ajax-method'] = $options['ajax']['method'] ?? 'POST';
+            $this->attrs['data-ajax-method'] = $options['ajax']['method'] ?? 'GET';
             $this->attrs['data-ajax-event'] = $options['ajax']['event'] ?? 'change';
-            $this->attrs['data-ajax-post-data'] = json_encode($options['ajax']['postData'] ?? []);
-            $this->attrs['data-ajax-post-fields'] = json_encode($options['ajax']['postFields'] ?? []);
+            $this->attrs['data-ajax-data'] = json_encode($options['ajax']['data'] ?? []);
+            $this->attrs['data-ajax-data-fields'] = json_encode($options['ajax']['dataFields'] ?? []);
         }
     }
 
