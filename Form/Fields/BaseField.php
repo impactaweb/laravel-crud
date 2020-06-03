@@ -63,6 +63,8 @@ class BaseField
     /** @var string|null */
     protected $nullable = false;
 
+    protected $ajax = [];
+
 
     /**
      *
@@ -74,18 +76,54 @@ class BaseField
      */
     public function __construct(string $id, string $label, array $options, string $type)
     {
+        $this->id = $id;
+        $this->label = $label;
+        $this->options = $options;
+
+        # Get field template
+        $this->getTemplate($type);
+
+        # Set all options as local variables
+        $this->setOptions($options);
+        return $this;
+    }
+
+    public function getTemplate(string $type)
+    {
         $this->template_name = config('form.templates.fields.' . $type);
         if (!View::exists($this->template_name)) {
             throw new Exception("Template " . $this->template_name . ' não existe!');
         }
-        $this->id = $id;
-        $this->label = $label;
+    }
 
-        $this->options = $options;
-        foreach ($options as $atributo => $parametro) {
-            $this->$atributo = $parametro;
+    public function setOptions(array $options)
+    {
+        foreach ($options as $attr => $value) {
+            $this->$attr = $value;
         }
-        return $this;
+    }
+
+    /**
+     * Returns field HTML
+     * @param array $initial
+     * @param array $rules
+     * @return Factory|\Illuminate\View\View
+     * @throws Exception
+     */
+    public function render(array $initial = [], array $rules = [])
+    {
+        $this->buildInitialValue($initial);
+        $this->buildRules($rules, $initial);
+        $this->clearAttrs();
+        $this->buildAjax($this->options);
+
+        try {
+            # The function get_object_vars, will put all class local variables inside blade template
+            $html = view($this->template_name, get_object_vars($this));
+        } catch (Exception $e) {
+            throw new Exception("Field template not found.", 1);
+        }
+        return $html;
     }
 
     /**
@@ -104,48 +142,6 @@ class BaseField
                 ' requires string or numeric, ' . getType($this->value) . ' given');
         }
     }
-
-
-    /**
-     * Returns field HTML
-     * @param array $initial
-     * @param array $rules
-     * @return Factory|\Illuminate\View\View
-     * @throws Exception
-     */
-    public function render(array $initial = [], array $rules = [])
-    {
-        $this->buildInitialValue($initial);
-
-        # Constrói as regras
-        $this->buildRules($rules, $initial);
-
-        # Caso o usuário tenha informado a classe no array ATTRS,
-        # essa classe será adicionada na classe principal do elemento
-        # e depois removida do attrs, para evitar conflito
-        if (isset($this->attrs['class'])) {
-            $this->class .= ' ' . $this->attrs['class'];
-            unset($this->attrs['class']);
-        }
-
-        # If user enters an ID in the ATTRS
-        # The id will be store in $this->id, then will be unset
-        if (isset($this->attrs['id'])) {
-            if (empty($this->id)) {
-                $this->id = $this->attrs['id'];
-            }
-            unset($this->attrs['id']);
-        }
-
-        try {
-            # The function get_object_vars, will put all class local variables inside blade template
-            $html = view($this->template_name, get_object_vars($this));
-        } catch (Exception $e) {
-            throw new Exception("Field template not found.", 1);
-        }
-        return $html;
-    }
-
 
     /**
      * Build field rules
@@ -170,10 +166,10 @@ class BaseField
                 $this->nullable = true;
             }
 
-            if (getType($item) == 'string' && strpos($item, 'max') !== false) {
+            if (strpos($item, 'max') !== false) {
                 $this->attrs['maxlength'] = str_replace('max:', '', $item);
             }
-            if (getType($item) == 'string' && strpos($item, 'min') !== false) {
+            if (strpos($item, 'min') !== false) {
                 $this->attrs['min'] = str_replace('min:', '', $item);
             }
 
@@ -192,6 +188,47 @@ class BaseField
             };
 
         }
+    }
+
+    /**
+     * Clear not necessary attrs
+     */
+    private function clearAttrs()
+    {
+        # If the user has entered the class in ATTRS array,
+        # this class will be added to the element's main class
+        # and then will be removed from attrs, to avoid conflict
+        if (isset($this->attrs['class'])) {
+            $this->class .= ' ' . $this->attrs['class'];
+            unset($this->attrs['class']);
+        }
+
+        # If user enters an ID in the ATTRS
+        # The id will be store in $this->id, then will be unset
+        if (isset($this->attrs['id'])) {
+            if (empty($this->id)) {
+                $this->id = $this->attrs['id'];
+            }
+            unset($this->attrs['id']);
+        }
+    }
+
+    /**
+     * @param array $options
+     */
+    public function buildAjax(array $options)
+    {
+        if (!isset($options['ajax'])) {
+            return;
+        }
+
+        $this->attrs['data-ajax-url'] = $options['ajax']['url'] ?? '';
+        $this->attrs['data-ajax-fields'] = json_encode($options['ajax']['fields'] ?? []);
+        $this->attrs['data-ajax-fields-options'] = json_encode($options['ajax']['fieldsOptions'] ?? []);
+        $this->attrs['data-ajax-method'] = $options['ajax']['method'] ?? 'GET';
+        $this->attrs['data-ajax-event'] = $options['ajax']['event'] ?? 'change';
+        $this->attrs['data-ajax-data'] = json_encode($options['ajax']['data'] ?? []);
+        $this->attrs['data-ajax-data-fields'] = json_encode($options['ajax']['dataFields'] ?? []);
     }
 
 }
