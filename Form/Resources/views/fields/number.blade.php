@@ -4,7 +4,7 @@
 
     <div class="@if($col >= '10') col @else col-md-{{$col}} @endif">
         <input
-            type="text"
+            type="number"
             class="form-control {{ $class }}"
             id="c-{{$id}}"
             name="{{$id}}"
@@ -19,7 +19,6 @@
             @if($required)
                 required
             @endif
-            data-input="number"
         />
         <div class="invalid-feedback"></div>
     </div>
