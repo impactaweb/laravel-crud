@@ -1,13 +1,20 @@
-const ajaxEventHandler = require("./ajaxEventHandler")(function (
+const ajaxEventHandler = require("./ajaxEventHandler");
+const asyncFileUpload = require("./asyncFileUpload");
+const handleFailureSendForm = require("./handleFailureSendForm");
+const handleSuccessSendForm = require("./handleSuccessSendForm");
+
+(function (
   $,
   axios,
-  ajaxEventHandler
+  ajaxEventHandler,
+  asyncFileUpload,
+  handleFailureSendForm,
+  handleSuccessSendForm
 ) {
   if (!$("[data-its-form]").length) return;
 
   $('[data-toggle="tooltip"]').tooltip();
 
-  const $alert = document.querySelector("[data-expect-alert]");
   const $deleteFiles = $("[data-destroy]");
 
   $("#form").validate({
@@ -38,83 +45,14 @@ const ajaxEventHandler = require("./ajaxEventHandler")(function (
         contentType: false,
         data: new FormData(form),
       })
-        .done(handleSuccess)
-        .fail(handleFailure);
+        .done(handleSuccessSendForm)
+        .fail(handleFailureSendForm);
     },
     errorElement: "li",
     errorPlacement: function (error, element) {
       error.appendTo(element.parent().children().last());
     },
   });
-
-  function handleSuccess(res) {
-    if (!res.url) {
-      alert(
-        "Ops, pedimos desculpas pelo erro, entre em contato com o suporte para que possamos fazer os ajustes."
-      );
-      $('[data-container="loading"]').html("");
-      return;
-    }
-
-    const url = res.url;
-
-    window.location.href = url;
-  }
-
-  function handleFailure(error) {
-    $('[data-container="loading"]').html("");
-    if (error.status >= 500) {
-      const alertError = `
-          <div class="container alert mb-1 alert-danger alert-dismissible fade show" role="alert" data-expect >
-          <span data-content>${error.responseJSON.errors}</span>
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times</span>
-          </button>
-          </div>
-          `;
-
-      $alert.innerHTML = alertError;
-      $alert.scrollIntoView();
-      return;
-    }
-
-    if (error.status !== 422 || !error.responseJSON.errors) return;
-
-    const alertMessage = `
-      <div class="container alert mb-1 alert-danger alert-dismissible fade show" role="alert" data-expect >
-          <span data-content>Ops! Por favor, verifique os campos abaixo.</span>
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times</span>
-          </button>
-      </div>
-      `;
-    const camposInvalidos = error.responseJSON.errors;
-
-    let hasScroll = false;
-
-    Object.keys(camposInvalidos).forEach(function (name) {
-      let input;
-      const erros = "<li>" + camposInvalidos[name].join("</li><li>") + "</li>";
-      if (name.includes(".")) {
-        name = name.split(".");
-        input = '[name="' + name[0] + "[" + name[1] + ']"]';
-      } else {
-        input = '[name="' + name + '"]';
-      }
-      const $input = $(input);
-
-      $input.hasClass("is-invalid") ? null : $input.toggleClass("is-invalid");
-      $input.next(".invalid-feedback").html(erros);
-
-      if (hasScroll) return;
-
-      $input.get(0).scrollIntoView(true);
-      hasScroll = true;
-    });
-
-    $alert.innerHTML = alertMessage;
-    $alert.scrollIntoView();
-  }
 
   $("select[multiple]").each(function (idx, ele) {
     $(ele).multiselect({
@@ -180,122 +118,9 @@ const ajaxEventHandler = require("./ajaxEventHandler")(function (
     };
   });
 
-  function asyncFileUpload() {
-    const $inputs = $('[data-file="async-upload"]');
-    let inProgrees = false;
-    const method = $('input[name="_method"').val();
-    const action = $("#form").attr("action");
-    if (!$inputs.length) return;
-
-    function handleSuccess(res) {
-      const { error, success } = res.data;
-      if (error) {
-        const items = Object.values(error).reduce(function (prev, cur) {
-          return prev + ", " + cur;
-        }, "");
-        alert("Falha no envio dos seguintes arquivos: " + items);
-        this.value = null;
-        this.files.length = 0;
-        return;
-      }
-
-      Object.keys(success).forEach(function (key) {
-        const $info = $(`[mock-name="${key}"]`)
-          .parent("div")
-          .find("[actions-container]");
-        $info
-          .find("[link-container]")
-          .attr("href", success[key].url)
-          .css("display", "none");
-        $info.css("display", "block");
-        $info
-          .find("[destroy-file]")
-          .attr("destroy-file", success[key].hashName);
-        $(`input[name="${key}"]`).val(success[key].hashName);
-      });
-
-      $info.css("display", "block");
-      inProgrees = false;
-    }
-
-    function handleFailure() {
-      const $progressContainer = $(this).next(".progress.mt-1");
-      $progressContainer.find(".progress-bar").css("width", "0%");
-      $progressContainer.css("display", "none");
-      inProgrees = false;
-    }
-
-    /**
-     * Handle input file
-     * @param {event} e
-     */
-    function handleChange(e) {
-      const files = new FormData();
-      files.append(this.getAttribute("mock-name"), this.files[0]);
-      const $progressContainer = $(this).next(".progress.mt-1");
-      $progressContainer.css("display", "block");
-      const $progress = $progressContainer.find(".progress-bar");
-      $progress.css("width", "0%");
-      inProgrees = true;
-      axios[method.toLowerCase()](action, files, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        onUploadProgress: function (progressEvent) {
-          let percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          $progress
-            .css("width", percentCompleted + "%")
-            .html(
-              percentCompleted === 100 ? "Concluído" : percentCompleted + "%"
-            );
-        },
-      })
-        .then(handleSuccess)
-        .catch(handleFailure);
-    }
-
-    $inputs.each(function (idx, $input) {
-      let accept = $input.getAttribute("accept");
-      let extensions = null;
-      if (accept) {
-        accept = accept.split(",");
-        extensions = accept.map(function (ext) {
-          return ext.replace(/(\w*\/?\.?)(\w+[-?\w\.]*)/im, "$2");
-        });
-
-        $input.setAttribute("data-ext", extensions.join(","));
-      }
-
-      $input.onchange = handleChange;
-      $($input)
-        .parent(".form-group")
-        .find("[destroy-file]")
-        .click(function (e) {
-          e.preventDefault();
-          const hash = $(this).attr("destroy-file");
-          const $inputFile = $($input);
-          const field = $inputFile.attr("mock-name");
-          if (!hash) return;
-          axios
-            .delete(`${action}?field=${field}&hash=${hash}`)
-            .then(function (res) {
-              $inputFile
-                .parent("div")
-                .find("[actions-container]")
-                .css("display", "none");
-              $inputFile.parent("div").find('input[type="hidden"]').val(null);
-              $inputFile.parent("div").find(".progress").css("display", "none");
-              $inputFile.val(null);
-            })
-            .catch(function () {
-              alert("Falha ao excluir");
-            });
-        });
-    });
-  }
-
+  /**
+   * Chamando componente de upload asyncrono
+   */
   asyncFileUpload();
 
   /**
@@ -375,7 +200,14 @@ const ajaxEventHandler = require("./ajaxEventHandler")(function (
         $(this).change(ajaxEventHandler);
     }
   });
-})(jQuery, axios, ajaxEventHandler);
+})(
+  jQuery,
+  axios,
+  ajaxEventHandler,
+  asyncFileUpload,
+  handleFailureSendForm,
+  handleSuccessSendForm
+);
 
 window.onpageshow = function (event) {
   if (event.persisted) {

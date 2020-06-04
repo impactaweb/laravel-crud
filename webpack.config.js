@@ -14,7 +14,7 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: devMode ? "[name].css" : "[name].[hash].css",
+      filename: devMode ? "[name].css" : "[name].bundle.css",
       chunkFilename: "[id].css",
     }),
   ],

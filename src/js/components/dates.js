@@ -1,7 +1,6 @@
 const moment = require("moment");
-const $ = window.jQuery;
 
-(function () {
+(function (moment, $) {
   $("[data-input='date-time']")
     .change(function () {
       let data = moment($(this).val(), $(this).data("input-format-client"));
@@ -47,4 +46,4 @@ const $ = window.jQuery;
       }
       $(this).val(data.format($(this).data("input-format-client")));
     });
-})();
+})(moment, window.jQuery);

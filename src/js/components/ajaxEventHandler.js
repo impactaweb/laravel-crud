@@ -1,5 +1,5 @@
 module.exports = function ajaxEventHandler(element) {
-  let $element = $(this);
+  let $element = jQuery(this);
   let $url = $element.data("ajax-url");
   let $method =
     $element.data("ajax-method").toUpperCase() == "POST" ? "POST" : "GET";
@@ -11,14 +11,17 @@ module.exports = function ajaxEventHandler(element) {
     .parents("form")
     .find(":input")
     .each(function () {
-      if (!$(this).attr("name")) return;
-      $url = $url.replace("{" + $(this).attr("name") + "}", $(this).val());
+      if (!jQuery(this).attr("name")) return;
+      $url = $url.replace(
+        "{" + jQuery(this).attr("name") + "}",
+        jQuery(this).val()
+      );
     });
 
   // Pega os parametros do dataFields e cada elemento vira um parametro para
   // submeter ao formulário, sendo seu valor representando o nome de um :input do form.
   Object.keys($dataFields).forEach(function (key) {
-    $data[key] = $('[name="' + $dataFields[key] + '"]').val();
+    $data[key] = jQuery('[name="' + $dataFields[key] + '"]').val();
   });
 
   // Inicia a requisição, com o contexto do elemento principal (input que chama o ajax)
@@ -30,9 +33,9 @@ module.exports = function ajaxEventHandler(element) {
     context: $element,
   })
     .done(function (json) {
-      let $fieldsOptions = $(this).data("ajax-fields-options");
+      let $fieldsOptions = jQuery(this).data("ajax-fields-options");
       Object.keys($fieldsOptions).forEach(function (key) {
-        const $field = $('[name="' + key + '"]');
+        const $field = jQuery('[name="' + key + '"]');
         if (!$field.length) return;
 
         // Perfil de dado esperado
@@ -48,9 +51,9 @@ module.exports = function ajaxEventHandler(element) {
       });
 
       // Para cada campo configurado em fields, alimenta o :input correspondente
-      let $fields = $(this).data("ajax-fields");
+      let $fields = jQuery(this).data("ajax-fields");
       Object.keys($fields).forEach(function (key) {
-        const $field = $('[name="' + key + '"]');
+        const $field = jQuery('[name="' + key + '"]');
         if (!$field.length) return;
 
         if ($field.is("div")) {
