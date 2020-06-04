@@ -1,9 +1,15 @@
-require("./js/bootstrap");
+require("./css/main.css");
 
-// internal components
+require("./js/bootstrap");
 
 // customs
 require("./js/customs/jqueryExtends");
 require("./js/customs/loadEditor");
 require("./js/customs/mask");
 require("./js/customs/textarea");
+
+// internal components
+require("./js/components/multiselect");
+require("./js/components/form");
+require("./js/components/listing");
+require("./js/components/dates");
