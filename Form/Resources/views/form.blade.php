@@ -17,12 +17,10 @@
     target="__blank"
     @endif
 
-    method="POST"
-    enctype="multipart/form-data"
-
     {{-- Autocomplete--}}
     @if($form->autoComplete)
     autocomplete="off"
+    data-form-prefix="c-"
     @endif>
 
     {{ csrf_field() }}

@@ -27,6 +27,11 @@
             placeholder: '___.___.___-__',
         })
 
+        $('[data-input="cnpj"]').inputmask({
+            mask: '99.999.999/9999-99',
+            placeholder: '__.___.___/____-__',
+        })
+
         $('[data-input="cep"]').inputmask({
             mask: '99999-999',
             placeholder: '_____-___'
