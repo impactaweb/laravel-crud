@@ -8,7 +8,6 @@
                     <button class="btn btn-primary" name="action" value="{{$actionName}}" data-action="{{$actionName}}">
                         {{$action[0]}}
                     </button>
-                    <input hidden value="{{$action[1]}}" name="redirect_{{$actionName}}">
                     @if (count($form->actions) > 1)
                         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">
@@ -22,8 +21,8 @@
                             value="{{$actionName}}"
                             class="dropdown-item" type="submit">{{$action[0]}}
                     </button>
-                    <input hidden value="{{$action[1]}}" name="redirect_{{$actionName}}">
                 @endif
+                <input hidden value="{{$action[1]}}" name="redirect_{{$actionName}}">
             @endforeach
 
             @if (count($form->actions) > 1)
