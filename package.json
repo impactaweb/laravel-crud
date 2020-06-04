@@ -1,0 +1,14 @@
+{
+  "name": "laravel-crud",
+  "version": "1.0.0",
+  "description": "javascript components using in laravel-crud package",
+  "main": "index.js",
+  "repository": "https://github.com/impactaweb/laravel-crud.git",
+  "author": "antunesgabriel <gabrielantunescontato@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  }
+}
