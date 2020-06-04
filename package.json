@@ -10,5 +10,17 @@
   "devDependencies": {
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "bootstrap4-notify": "^4.0.3",
+    "checkboxes.js": "^1.2.2",
+    "inputmask": "^5.0.3",
+    "jquery": "^3.5.1",
+    "jquery-ui": "^1.12.1",
+    "jquery-validation": "^1.19.2",
+    "knockout": "^3.5.1",
+    "popper.js": "^1.16.1",
+    "summernote": "^0.8.18",
+    "sweetalert2": "^9.14.0"
   }
 }
