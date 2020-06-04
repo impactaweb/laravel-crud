@@ -4,6 +4,7 @@ namespace Impactaweb\Crud\Form;
 
 use Exception;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Impactaweb\Crud\Form\Traits\Fields;
 
@@ -246,9 +247,9 @@ class Form
      * @param string $routeName
      * @return self
      */
-    public function action(string $action, string $label, string $routeName = ''): Form
+    public function action(string $label, string $routeName = ''): Form
     {
-        $this->actions = array_merge([$action => [$label, $routeName]], $this->actions);
+        $this->actions = array_merge([Str::random(7) => [$label, $routeName]], $this->actions);
         return $this;
     }
 

@@ -1753,9 +1753,6 @@
 
         const $alert = document.querySelector('[data-expect-alert]')
         const $deleteFiles = $('[data-destroy]')
-        $('[data-route]').click(function () {
-            $('#c-form-submit-route').val($(this).attr('data-route'))
-        })
         $('#form').validate({
             submitHandler: function (form) {
                 $(form).submit(function (e) {
