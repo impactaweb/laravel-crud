@@ -10,6 +10,7 @@ require("./js/customs/textarea");
 
 // internal components
 require("./js/components/multiselect");
-require("./js/components/form");
 require("./js/components/listing");
+require("./js/components/form");
+require("./js/components/ajaxInputEventHandler");
 require("./js/components/dates");

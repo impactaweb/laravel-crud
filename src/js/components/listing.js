@@ -1,11 +1,36 @@
-(function ($, axios) {
-  const $form = $("#listingForm");
+/**
+ Swal.queue([{
+  title: 'Your public IP',
+  confirmButtonText: 'Show my public IP',
+  text:
+    'Your public IP will be received ' +
+    'via AJAX request',
+  showLoaderOnConfirm: true,
+  preConfirm: () => {
+    return fetch(ipAPI)
+      .then(response => response.json())
+      .then(data => Swal.insertQueueStep(data.ip))
+      .catch(() => {
+        Swal.insertQueueStep({
+          icon: 'error',
+          title: 'Unable to get your public IP'
+        })
+      })
+  }
+}])
+ */
+
+const Swal = require('sweetalert2');
+
+jQuery(document).ready(function () {
+    const $form = $("#listingForm");
 
   $(".actionButton").click(function () {
-    var url = $(this).data("url");
-    var _method = $(this).data("method");
-    var confirmationText = $(this).data("confirmation");
-    var method = $(this).data("method") == "GET" ? "GET" : "POST";
+    let url = $(this).data("url");
+    let _method = $(this).data("method");
+    let confirmationText = $(this).data("confirmation");
+    let continueFunction = null;
+    let method = $(this).data("method") == "GET" ? "GET" : "POST";
     if (!$.inArray(method, ["GET", "POST", "PUT", "PATCH", "DELETE"]) == -1) {
       method = "GET";
     }
@@ -21,17 +46,17 @@
       return;
     }
 
-    var ids = [];
+    let ids = [];
     $checkboxes.each(function () {
       ids.push($(this).val());
     });
-    var id = ids[0];
+    let id = ids[0];
     idsFormatado = ids.join(",");
 
     url = url.replace("{id}", id).replace("{ids}", idsFormatado);
 
     if (method == "GET") {
-      var continueFunction = function () {
+      continueFunction = function () {
         listagemLoading();
         window.location.href = url;
       };
@@ -39,20 +64,22 @@
       $form.prop("action", url);
       $form.prop("method", method);
       $form.find('input[name="_method"]').val(_method);
-      var continueFunction = function () {
-        listagemLoading();
+      continueFunction = function () {;
         $form.submit();
       };
     }
 
     if (confirmationText.length > 0) {
-      $("#confirmationModal").data("executar", continueFunction).modal("show");
-      $("#confirmationModal .modal-body").html(confirmationText);
-      $("#confirmationModal .btnConfirm").click(function () {
-        var func = $("#confirmationModal").data("executar");
-        func();
-        e.preventDefault();
-      });
+        Swal.queue([{
+            title: 'Confirmação:',
+            text: confirmationText,
+            confirmButtonText: 'Sim',
+            showLoaderOnConfirm: true,
+            // TODO: Fazer essas requisições realmente de forma assincrona
+            preConfirm: () => (new Promise(function(res, rej) {
+                continueFunction()
+            })).then(() => {}),
+        }])
     } else {
       continueFunction();
     }
@@ -132,21 +159,21 @@
 
   // Funcão para atualizar a flag de um registro:
   function handleListingFlag() {
-    var primaryKeyValue = $(this)
+    let primaryKeyValue = $(this)
       .parents("tr")
       .find(".listing-checkboxes")
       .val();
-    var newFlag = $(this).hasClass("flag-on") ? 0 : 1;
-    var fieldName = $(this).data("field");
+    let newFlag = $(this).hasClass("flag-on") ? 0 : 1;
+    let fieldName = $(this).data("field");
 
     listagemLoading();
 
-    var postUrl =
+    let postUrl =
       window.location.pathname.replace(/\/+$/, "") +
       "/" +
       primaryKeyValue +
       "/updateflag";
-    var postData = {
+    let postData = {
       //'_method': 'PUT',
       responseFormat: "json",
       listingFlagField: fieldName,
@@ -212,7 +239,7 @@
     $item.checked = false;
   });
 
-  // Ativar tooltip para todos os actions
+  // Atilet tooltip para todos os actions
   if (
     !(
       $('[data-toggle="tooltip"]:first').data &&
@@ -224,7 +251,7 @@
 
   $("#listingForm th order-asc").addClass("fas fa-sort-up");
   $("#listingForm th order-desc").addClass("fas fa-sort-down");
-})(jQuery, axios);
+})
 
 window.onpageshow = function (event) {
   if (event.persisted) {
