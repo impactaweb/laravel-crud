@@ -139,20 +139,22 @@ jQuery(document).ready(function() {
         }
 
         let setEventChange = false;
+        let fieldHideRules;
         if (inputToHandle.data("hide-rules")) {
-        let fieldHideRules = inputToHandle.data("hide-rules");
+            fieldHideRules = inputToHandle.data("hide-rules");
         } else {
-        let fieldHideRules = {};
-        setEventChange = true;
+            fieldHideRules = {};
+            setEventChange = true;
         }
 
         fieldHideRules[hideField] = rules[ruleField];
+
         inputToHandle.data("hide-rules", fieldHideRules);
 
         if (setEventChange) {
         inputToHandle.change(function () {
             if ($(this).is(":radio:not(:checked)")) {
-            return;
+                return;
             }
 
             let inputValue = $(this).val();

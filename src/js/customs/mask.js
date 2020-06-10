@@ -12,6 +12,11 @@
           }).mask(document.querySelectorAll('[data-input="date"]'));
 
           Inputmask({
+              mask: '99/99/9999 99:99:99',
+              placeholder: '__/__/____ __:__:__'
+          }).mask(document.querySelectorAll('[data-input="date-time"]'))
+
+          Inputmask({
               mask: '99:99:99',
               placeholder: '__:__:__'
           }).mask(document.querySelectorAll('[data-input="time"]'));

@@ -1,25 +1,3 @@
-/**
- Swal.queue([{
-  title: 'Your public IP',
-  confirmButtonText: 'Show my public IP',
-  text:
-    'Your public IP will be received ' +
-    'via AJAX request',
-  showLoaderOnConfirm: true,
-  preConfirm: () => {
-    return fetch(ipAPI)
-      .then(response => response.json())
-      .then(data => Swal.insertQueueStep(data.ip))
-      .catch(() => {
-        Swal.insertQueueStep({
-          icon: 'error',
-          title: 'Unable to get your public IP'
-        })
-      })
-  }
-}])
- */
-
 const Swal = require('sweetalert2');
 
 jQuery(document).ready(function () {
@@ -70,18 +48,15 @@ jQuery(document).ready(function () {
     }
 
     if (confirmationText.length > 0) {
-        Swal.queue([{
-            title: 'Confirmação:',
-            text: confirmationText,
-            confirmButtonText: 'Sim',
-            showLoaderOnConfirm: true,
-            // TODO: Fazer essas requisições realmente de forma assincrona
-            preConfirm: () => (new Promise(function(res, rej) {
-                continueFunction()
-            })).then(() => {}),
-        }])
+        $('#confirmationModal').data('executar', continueFunction).modal('show')
+        $('#confirmationModal .modal-body').html(confirmationText);
+        $('#confirmationModal .btnConfirm').click(function() {
+            const func = $('#confirmationModal').data('executar')
+            func()
+            e.preventDefault()
+        })
     } else {
-      continueFunction();
+        continueFunction()
     }
   });
 
