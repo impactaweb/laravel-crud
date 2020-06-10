@@ -1756,7 +1756,7 @@ eval("function webpackEmptyContext(req) {\n\tvar e = new Error(\"Cannot find mod
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("(function($) {\n    $(document).ready(function() {\n        $('.btn-multiselect').click(function() {\n            $(this).parent().find('.dropdown-menu').toggleClass('show');\n        })\n    })\n})(jQuery)\n\n\n//# sourceURL=webpack:///./src/js/components/activeMultiselect.js?");
+eval("(function($) {\n    $(document).ready(function() {\n        $('.btn-multiselect').click(function() {\n            $(this).parent().find('.dropdown-menu').toggleClass('show');\n        })\n\n        $(document).mouseup(function(e){\n            let container = $(\".multiselect-container.dropdown-menu\");\n\n            if (\n                !container.is(e.target)\n                && container.has(e.target).length === 0\n                && container.hasClass('show')) {\n\n                container.removeClass('show');\n            }\n        });\n    })\n})(jQuery)\n\n\n//# sourceURL=webpack:///./src/js/components/activeMultiselect.js?");
 
 /***/ }),
 
