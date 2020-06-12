@@ -1,9 +1,9 @@
-const Swal = require('sweetalert2');
+const Swal = require("sweetalert2");
 
-jQuery(document).ready(function () {
-    const $form = $("#listingForm");
+jQuery(document).ready(function() {
+  const $form = $("#listingForm");
 
-  $(".actionButton").click(function () {
+  $(".actionButton").click(function() {
     let url = $(this).data("url");
     let _method = $(this).data("method");
     let confirmationText = $(this).data("confirmation");
@@ -25,7 +25,7 @@ jQuery(document).ready(function () {
     }
 
     let ids = [];
-    $checkboxes.each(function () {
+    $checkboxes.each(function() {
       ids.push($(this).val());
     });
     let id = ids[0];
@@ -34,7 +34,7 @@ jQuery(document).ready(function () {
     url = url.replace("{id}", id).replace("{ids}", idsFormatado);
 
     if (method == "GET") {
-      continueFunction = function () {
+      continueFunction = function() {
         listagemLoading();
         window.location.href = url;
       };
@@ -42,33 +42,32 @@ jQuery(document).ready(function () {
       $form.prop("action", url);
       $form.prop("method", method);
       $form.find('input[name="_method"]').val(_method);
-      continueFunction = function () {;
+      continueFunction = function() {
         $form.submit();
       };
     }
 
     if (confirmationText.length > 0) {
-        $('#confirmationModal').data('executar', continueFunction).modal('show')
-        $('#confirmationModal .modal-body').html(confirmationText);
-        $('#confirmationModal .btnConfirm').click(function() {
-            const func = $('#confirmationModal').data('executar')
-            func()
-            e.preventDefault()
-        })
+      $("#confirmationModal")
+        .data("executar", continueFunction)
+        .modal("show");
+      $("#confirmationModal .modal-body").html(confirmationText);
+      $("#confirmationModal .btnConfirm").click(function() {
+        const func = $("#confirmationModal").data("executar");
+        func();
+        e.preventDefault();
+      });
     } else {
-        continueFunction()
+      continueFunction();
     }
   });
 
   function listagemLoading(open = true) {
     if (!open) {
-      $('[data-container="loading"]').html("");
+      window.finishLoading();
       return;
     }
-    $('[data-container="loading"]').html(
-      '<div class="loading-container fixed"><div class="lds-roller">' +
-        "<div></div><div></div><div></div><div></div></div></div>"
-    );
+    window.initLoading();
   }
 
   const $checkboxs = $("input.listing-checkboxes");
@@ -95,13 +94,19 @@ jQuery(document).ready(function () {
       return;
     }
 
-    const $checkbox = $(this).parents("tr").find(".listing-checkboxes:first");
+    const $checkbox = $(this)
+      .parents("tr")
+      .find(".listing-checkboxes:first");
     if ($checkbox.is(":checked")) {
       $checkbox.prop("checked", false);
-      $(this).parents("tr").removeClass("active");
+      $(this)
+        .parents("tr")
+        .removeClass("active");
     } else {
       $checkbox.prop("checked", "checked");
-      $(this).parents("tr").addClass("active");
+      $(this)
+        .parents("tr")
+        .addClass("active");
     }
   }
 
@@ -152,13 +157,13 @@ jQuery(document).ready(function () {
       //'_method': 'PUT',
       responseFormat: "json",
       listingFlagField: fieldName,
-      newFlag: newFlag,
+      newFlag: newFlag
     };
 
     $.post(
       postUrl,
       postData,
-      function (jsonData) {
+      function(jsonData) {
         if (jsonData.error) {
           alert(jsonData.error);
           return;
@@ -174,14 +179,14 @@ jQuery(document).ready(function () {
       },
       "json"
     )
-      .fail(function (jqXHR) {
+      .fail(function(jqXHR) {
         alert(
           jqXHR.responseJSON.error
             ? jqXHR.responseJSON.error
             : "Erro ao alterar."
         );
       })
-      .always(function () {
+      .always(function() {
         listagemLoading(false);
       });
   }
@@ -210,7 +215,7 @@ jQuery(document).ready(function () {
   $("a.flagItem").click(handleListingFlag);
   $('input[name="checkbox-listing"]').click(handleAllChecked);
 
-  $checkboxs.each(function (idx, $item) {
+  $checkboxs.each(function(idx, $item) {
     $item.checked = false;
   });
 
@@ -226,9 +231,9 @@ jQuery(document).ready(function () {
 
   $("#listingForm th order-asc").addClass("fas fa-sort-up");
   $("#listingForm th order-desc").addClass("fas fa-sort-down");
-})
+});
 
-window.onpageshow = function (event) {
+window.onpageshow = function(event) {
   if (event.persisted) {
     window.location.reload();
   }
