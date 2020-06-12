@@ -180,9 +180,7 @@ class Listing {
      */
     public function setPerPageDefault(int $perPage): void
     {
-        if (!isset($this->perPagePagination)) {
-            $this->perPagePagination = $perPage;
-        }
+        $this->perPagePagination = $perPage;
     }
 
     /**
