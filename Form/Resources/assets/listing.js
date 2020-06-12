@@ -44,7 +44,7 @@
         if (confirmationText.length > 0) {
             $('#confirmationModal').data('executar', continueFunction).modal('show')
             $('#confirmationModal .modal-body').html(confirmationText);
-            $('#confirmationModal .btnConfirm').click(function() {
+            $('#confirmationModal .btnConfirm').click(function(e) {
                 var func = $('#confirmationModal').data('executar')
                 func()
                 e.preventDefault()
@@ -57,10 +57,10 @@
 
     function listagemLoading(open = true) {
         if (!open) {
-            $.fn.finishLoading()
+            window.finishLoading()
             return
         }
-        $.fn.initLoading()
+        window.initLoading()
     }
 
     const $checkboxs = $('input.listing-checkboxes')
@@ -78,10 +78,10 @@
     }
 
     function handleTdClick(e) {
-        
-        if ($(e.target).is("a") 
-                || $(e.target).is("img") 
-                || $(e.target).is("input") 
+
+        if ($(e.target).is("a")
+                || $(e.target).is("img")
+                || $(e.target).is("input")
                 || $(e.target).is("button")) {
             return;
         }
@@ -99,9 +99,9 @@
 
     function handleDblClick(e) {
 
-        if ($(e.target).is("a") 
-                || $(e.target).is("img") 
-                || $(e.target).is("input") 
+        if ($(e.target).is("a")
+                || $(e.target).is("img")
+                || $(e.target).is("input")
                 || $(e.target).is("button")) {
             return;
         }
@@ -133,7 +133,7 @@
 
         var postUrl = window.location.pathname.replace(/\/+$/,'') + '/' + primaryKeyValue + '/updateflag';
         var postData = {
-            //'_method': 'PUT', 
+            //'_method': 'PUT',
             'responseFormat': 'json',
             'listingFlagField': fieldName,
             'newFlag': newFlag
@@ -185,13 +185,13 @@
     $('input.listing-checkboxes').change(handleCheckboxChange)
     $('#listagemTable').checkboxes('range', true)
     $('[data-avancada="buscar"]').click(handleBuscaAvancada)
-    $('a.flagItem').click(handleListingFlag)    
+    $('a.flagItem').click(handleListingFlag)
     $('input[name="checkbox-listing"]').click(handleAllChecked)
 
     $checkboxs.each(function(idx, $item) {
         $item.checked = false
     })
-    
+
     // Ativar tooltip para todos os actions
     if (!($('[data-toggle="tooltip"]:first').data && $('[data-toggle="tooltip"]:first').data('bs.tooltip'))) {
         $('[data-toggle="tooltip"]').tooltip()
@@ -199,12 +199,12 @@
 
     $('#listingForm th order-asc').addClass('fas fa-sort-up')
     $('#listingForm th order-desc').addClass('fas fa-sort-down')
-    
-    
+
+
 })(jQuery, axios)
 
 window.onpageshow = function(event) {
     if (event.persisted) {
-        window.location.reload() 
+        window.location.reload()
     }
 };

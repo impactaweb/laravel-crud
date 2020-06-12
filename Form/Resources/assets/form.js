@@ -1762,7 +1762,7 @@
                     return false
                 })
 
-                $.fn.initLoading()
+                window.initLoading()
 
                 const ACTION = form.getAttribute('action')
 
@@ -1785,7 +1785,7 @@
         function handleSuccess(res) {
             if (!res.url) {
                 alert('Ops, pedimos desculpas pelo erro, entre em contato com o suporte para que possamos fazer os ajustes.')
-                $.fn.finishLoading()
+                window.finishLoading()
                 return
             }
 
@@ -1795,7 +1795,7 @@
         }
 
         function handleFailure(error) {
-            $.fn.finishLoading()
+            window.finishLoading()
             if (error.status >= 500) {
                 const alertError = `
                 <div class="container alert mb-1 alert-danger alert-dismissible fade show" role="alert" data-expect >
@@ -1865,7 +1865,7 @@
 
         $deleteFiles.each(function(idx, $link) {
             $link.onclick = function(e) {
-                $.fn.initLoading()
+                window.initLoading()
                 e.preventDefault()
                 e.stopPropagation()
                 const path = $link.getAttribute('data-destroy');
@@ -1883,8 +1883,8 @@
                         alert(jsonData.error)
                         return;
                     }
-        
-                    $.fn.finishLoading()
+
+                    window.finishLoading()
                     $($link).parent('span').prev('input').val(null)
                     $($link).parent('span').remove()
                 })
@@ -1892,7 +1892,7 @@
                     alert(jqXHR.responseJSON.error ? jqXHR.responseJSON.error : 'Falha ao excluir o arquivo.')
                 })
                 .always(function() {
-                    $.fn.finishLoading()
+                    window.finishLoading()
                 })
             }
         })
@@ -2000,7 +2000,7 @@
         }
 
         asyncFileUpload()
-        
+
 
 
 
@@ -2034,7 +2034,7 @@
 
                 if (setEventChange) {
                     inputToHandle.change(function(){
-                        
+
                         if ($(this).is(":radio:not(:checked)")) {
                             return;
                         }
@@ -2079,12 +2079,12 @@
 
         /**
          * -----------------------------------------------------------------------------------------------
-         * Ajax para preenchimento de campos 
+         * Ajax para preenchimento de campos
          * -----------------------------------------------------------------------------------------------
          */
 
         function ajaxEventHandler(element){
-            
+
             var $element = $(this)
             var $url = $element.data('ajax-url')
             var $method = $element.data('ajax-method').toUpperCase() == 'POST' ? 'POST' : 'GET';
@@ -2115,7 +2115,7 @@
 
                 let $fieldsOptions = $(this).data('ajax-fields-options')
                 Object.keys($fieldsOptions).forEach(function(key){
-                    
+
                     const $field = $('[name="' + key + '"]')
                     if (!$field.length) return;
 
@@ -2126,23 +2126,23 @@
                         $field.html(template)
                     }
                 })
-                
+
                 // Para cada campo configurado em fields, alimenta o :input correspondente
                 let $fields = $(this).data('ajax-fields')
                 Object.keys($fields).forEach(function(key){
-                    
+
                     const $field = $('[name="' + key + '"]')
                     if (!$field.length) return;
-        
+
                     if ($field.is('div')) {
                         $field.replaceWith(json[$fields[key]])
                         return
                     }
-        
+
                     if ($field.is('select') || $field.is('input')) {
                         $field.val(json[$fields[key]])
                     }
-        
+
                 });
 
             })
@@ -2175,6 +2175,6 @@
 
 window.onpageshow = function(event) {
     if (event.persisted) {
-        window.location.reload() 
+        window.location.reload()
     }
 };
