@@ -46,6 +46,9 @@ $(document).ready(function() {
           $data[key] = jQuery('[name="' + $dataFields[key] + '"]').val();
         });
 
+        // Loading...
+        window.initLoading();
+
         // Inicia a requisição, com o contexto do elemento principal (input que chama o ajax)
         $.ajax({
           method: $method,
@@ -54,45 +57,45 @@ $(document).ready(function() {
           dataType: "json",
           context: $element,
         })
-          .done(function (json) {
-            let $fieldsOptions = jQuery(this).data("ajax-fields-options");
-            Object.keys($fieldsOptions).forEach(function (key) {
+        .done(function (json) {
+          let $fieldsOptions = jQuery(this).data("ajax-fields-options");
+          Object.keys($fieldsOptions).forEach(function (key) {
+            const $field = jQuery('[name="' + key + '"]');
+            if (!$field.length) return;
+
+            // Perfil de dado esperado
+            //[{ value: 1, label: 'UF'}, ...]
+            if (Array.isArray(json[$fieldsOptions[key]])) {
+              const template = json[$fieldsOptions[key]].reduce(
+                (prev, cur) =>
+                  prev + `<option value="${cur.value}">${cur.label}</option>`,
+                ""
+              );
+              $field.html(template);
+            }
+          });
+
+          // Para cada campo configurado em fields, alimenta o :input correspondente
+          let $fields = jQuery(this).data("ajax-fields");
+          Object.keys($fields).forEach(function (key) {
               const $field = jQuery('[name="' + key + '"]');
               if (!$field.length) return;
 
-              // Perfil de dado esperado
-              //[{ value: 1, label: 'UF'}, ...]
-              if (Array.isArray(json[$fieldsOptions[key]])) {
-                const template = json[$fieldsOptions[key]].reduce(
-                  (prev, cur) =>
-                    prev + `<option value="${cur.value}">${cur.label}</option>`,
-                  ""
-                );
-                $field.html(template);
+              if ($field.is("div")) {
+                  $field.replaceWith(json[$fields[key]]);
+                  return;
               }
-            });
 
-            // Para cada campo configurado em fields, alimenta o :input correspondente
-            let $fields = jQuery(this).data("ajax-fields");
-            Object.keys($fields).forEach(function (key) {
-                const $field = jQuery('[name="' + key + '"]');
-                if (!$field.length) return;
-
-                if ($field.is("div")) {
-                    $field.replaceWith(json[$fields[key]]);
-                    return;
-                }
-
-                if ($field.is("select") || $field.is("input")) {
-                    $field.val(json[$fields[key]]);
-                }
-            });
+              if ($field.is("select") || $field.is("input")) {
+                  $field.val(json[$fields[key]]);
+              }
+          });
         })
-          .fail(function () {
-            alert("error");
+        .fail(function () {
+          alert("error");
         })
-          .always(function () {
-            // alert( "complete" );
+        .always(function () {
+          window.finishLoading();
         });
     };
 })
