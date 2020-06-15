@@ -1,11 +1,14 @@
-(function ($, axios) {
+const Swal = require("sweetalert2");
+
+jQuery(document).ready(function() {
   const $form = $("#listingForm");
 
-  $(".actionButton").click(function () {
-    var url = $(this).data("url");
-    var _method = $(this).data("method");
-    var confirmationText = $(this).data("confirmation");
-    var method = $(this).data("method") == "GET" ? "GET" : "POST";
+  $(".actionButton").click(function() {
+    let url = $(this).data("url");
+    let _method = $(this).data("method");
+    let confirmationText = $(this).data("confirmation");
+    let continueFunction = null;
+    let method = $(this).data("method") == "GET" ? "GET" : "POST";
     if (!$.inArray(method, ["GET", "POST", "PUT", "PATCH", "DELETE"]) == -1) {
       method = "GET";
     }
@@ -21,17 +24,17 @@
       return;
     }
 
-    var ids = [];
-    $checkboxes.each(function () {
+    let ids = [];
+    $checkboxes.each(function() {
       ids.push($(this).val());
     });
-    var id = ids[0];
+    let id = ids[0];
     idsFormatado = ids.join(",");
 
     url = url.replace("{id}", id).replace("{ids}", idsFormatado);
 
     if (method == "GET") {
-      var continueFunction = function () {
+      continueFunction = function() {
         listagemLoading();
         window.location.href = url;
       };
@@ -39,17 +42,18 @@
       $form.prop("action", url);
       $form.prop("method", method);
       $form.find('input[name="_method"]').val(_method);
-      var continueFunction = function () {
-        listagemLoading();
+      continueFunction = function() {
         $form.submit();
       };
     }
 
     if (confirmationText.length > 0) {
-      $("#confirmationModal").data("executar", continueFunction).modal("show");
+      $("#confirmationModal")
+        .data("executar", continueFunction)
+        .modal("show");
       $("#confirmationModal .modal-body").html(confirmationText);
-      $("#confirmationModal .btnConfirm").click(function () {
-        var func = $("#confirmationModal").data("executar");
+      $("#confirmationModal .btnConfirm").click(function() {
+        const func = $("#confirmationModal").data("executar");
         func();
         e.preventDefault();
       });
@@ -60,13 +64,10 @@
 
   function listagemLoading(open = true) {
     if (!open) {
-      $('[data-container="loading"]').html("");
+      window.finishLoading();
       return;
     }
-    $('[data-container="loading"]').html(
-      '<div class="loading-container fixed"><div class="lds-roller">' +
-        "<div></div><div></div><div></div><div></div></div></div>"
-    );
+    window.initLoading();
   }
 
   const $checkboxs = $("input.listing-checkboxes");
@@ -93,13 +94,19 @@
       return;
     }
 
-    const $checkbox = $(this).parents("tr").find(".listing-checkboxes:first");
+    const $checkbox = $(this)
+      .parents("tr")
+      .find(".listing-checkboxes:first");
     if ($checkbox.is(":checked")) {
       $checkbox.prop("checked", false);
-      $(this).parents("tr").removeClass("active");
+      $(this)
+        .parents("tr")
+        .removeClass("active");
     } else {
       $checkbox.prop("checked", "checked");
-      $(this).parents("tr").addClass("active");
+      $(this)
+        .parents("tr")
+        .addClass("active");
     }
   }
 
@@ -132,31 +139,31 @@
 
   // Funcão para atualizar a flag de um registro:
   function handleListingFlag() {
-    var primaryKeyValue = $(this)
+    let primaryKeyValue = $(this)
       .parents("tr")
       .find(".listing-checkboxes")
       .val();
-    var newFlag = $(this).hasClass("flag-on") ? 0 : 1;
-    var fieldName = $(this).data("field");
+    let newFlag = $(this).hasClass("flag-on") ? 0 : 1;
+    let fieldName = $(this).data("field");
 
     listagemLoading();
 
-    var postUrl =
+    let postUrl =
       window.location.pathname.replace(/\/+$/, "") +
       "/" +
       primaryKeyValue +
       "/updateflag";
-    var postData = {
+    let postData = {
       //'_method': 'PUT',
       responseFormat: "json",
       listingFlagField: fieldName,
-      newFlag: newFlag,
+      newFlag: newFlag
     };
 
     $.post(
       postUrl,
       postData,
-      function (jsonData) {
+      function(jsonData) {
         if (jsonData.error) {
           alert(jsonData.error);
           return;
@@ -172,14 +179,14 @@
       },
       "json"
     )
-      .fail(function (jqXHR) {
+      .fail(function(jqXHR) {
         alert(
           jqXHR.responseJSON.error
             ? jqXHR.responseJSON.error
             : "Erro ao alterar."
         );
       })
-      .always(function () {
+      .always(function() {
         listagemLoading(false);
       });
   }
@@ -208,11 +215,11 @@
   $("a.flagItem").click(handleListingFlag);
   $('input[name="checkbox-listing"]').click(handleAllChecked);
 
-  $checkboxs.each(function (idx, $item) {
+  $checkboxs.each(function(idx, $item) {
     $item.checked = false;
   });
 
-  // Ativar tooltip para todos os actions
+  // Atilet tooltip para todos os actions
   if (
     !(
       $('[data-toggle="tooltip"]:first').data &&
@@ -224,9 +231,9 @@
 
   $("#listingForm th order-asc").addClass("fas fa-sort-up");
   $("#listingForm th order-desc").addClass("fas fa-sort-down");
-})(jQuery, axios);
+});
 
-window.onpageshow = function (event) {
+window.onpageshow = function(event) {
   if (event.persisted) {
     window.location.reload();
   }

@@ -1,16 +1,14 @@
-const ajaxEventHandler = require("./ajaxEventHandler");
+"use strict";
+
 const asyncFileUpload = require("./asyncFileUpload");
 const handleFailureSendForm = require("./handleFailureSendForm");
 const handleSuccessSendForm = require("./handleSuccessSendForm");
+const Swal = require("sweetalert2");
 
-(function (
-  $,
-  axios,
-  ajaxEventHandler,
-  asyncFileUpload,
-  handleFailureSendForm,
-  handleSuccessSendForm
-) {
+jQuery(document).ready(function() {
+  const $ = window.jQuery;
+  const axios = window.axios;
+
   if (!$("[data-its-form]").length) return;
 
   $('[data-toggle="tooltip"]').tooltip();
@@ -18,23 +16,14 @@ const handleSuccessSendForm = require("./handleSuccessSendForm");
   const $deleteFiles = $("[data-destroy]");
 
   $("#form").validate({
-    submitHandler: function (form) {
-      $(form).submit(function (e) {
+    submitHandler: function(form) {
+      $(form).submit(function(e) {
         e.preventDefault();
         e.stopPropagation();
         return false;
       });
 
-      $('[data-container="loading"]').html(`
-              <div class="loading-container fixed">
-                  <div class="lds-roller">
-                      <div></div>
-                      <div></div>
-                      <div></div>
-                      <div></div>
-                  </div>
-              </div>
-          `);
+      window.initLoading();
 
       const ACTION = form.getAttribute("action");
 
@@ -43,40 +32,42 @@ const handleSuccessSendForm = require("./handleSuccessSendForm");
         type: "POST",
         processData: false,
         contentType: false,
-        data: new FormData(form),
+        data: new FormData(form)
       })
         .done(handleSuccessSendForm)
         .fail(handleFailureSendForm);
     },
     errorElement: "li",
-    errorPlacement: function (error, element) {
-      error.appendTo(element.parent().children().last());
-    },
+    errorPlacement: function(error, element) {
+      error.appendTo(
+        element
+          .parent()
+          .children()
+          .last()
+      );
+      $(
+        element
+          .parent()
+          .children()
+          .last()
+      ).css("display", "block");
+    }
   });
 
-  $("select[multiple]").each(function (idx, ele) {
+  $("select[multiple]").each(function(idx, ele) {
     $(ele).multiselect({
       enableClickableOptGroups: true,
       enableCollapsibleOptGroups: true,
       includeSelectAllOption: true,
       enableCaseInsensitiveFiltering: !!ele.getAttribute("enable-filter"),
       collapseOptGroupsByDefault: true,
-      maxHeight: 400,
+      maxHeight: 400
     });
   });
 
-  $deleteFiles.each(function (idx, $link) {
-    $link.onclick = function (e) {
-      $('[data-container="loading"]').html(`
-              <div class="loading-container fixed">
-                  <div class="lds-roller">
-                      <div></div>
-                      <div></div>
-                      <div></div>
-                      <div></div>
-                  </div>
-              </div>
-          `);
+  $deleteFiles.each(function(idx, $link) {
+    $link.onclick = function(e) {
+      window.initLoading();
       e.preventDefault();
       e.stopPropagation();
       const path = $link.getAttribute("data-destroy");
@@ -92,28 +83,33 @@ const handleSuccessSendForm = require("./handleSuccessSendForm");
           ""
         )}/destroyfile?model_id=${id}&file_delete=${fieldFile}`,
         {
-          _token: $('[name="_token"]').val(),
+          _token: $('[name="_token"]').val()
         },
-        function (jsonData) {
+        function(jsonData) {
           if (jsonData.error) {
             alert(jsonData.error);
             return;
           }
 
-          $('[data-container="loading"]').html("");
-          $($link).parent("span").prev("input").val(null);
-          $($link).parent("span").remove();
+          window.finishLoading();
+          $($link)
+            .parent("span")
+            .prev("input")
+            .val(null);
+          $($link)
+            .parent("span")
+            .remove();
         }
       )
-        .fail(function (jqXHR) {
+        .fail(function(jqXHR) {
           alert(
             jqXHR.responseJSON.error
               ? jqXHR.responseJSON.error
               : "Falha ao excluir o arquivo."
           );
         })
-        .always(function () {
-          $('[data-container="loading"]').html("");
+        .always(function() {
+          window.finishLoading();
         });
     };
   });
@@ -128,11 +124,11 @@ const handleSuccessSendForm = require("./handleSuccessSendForm");
    */
   let inputsToBind = {};
 
-  $("div[data-show-rules]").each(function () {
+  $("div[data-show-rules]").each(function() {
     let rules = $(this).data("show-rules");
     let hideField = $(this).data("field-name");
 
-    Object.keys(rules).forEach(function (ruleField) {
+    Object.keys(rules).forEach(function(ruleField) {
       inputsToBind[ruleField] = true;
       let inputToHandle = $(":input[name='" + ruleField + "']");
       if (!inputToHandle.length) {
@@ -140,18 +136,20 @@ const handleSuccessSendForm = require("./handleSuccessSendForm");
       }
 
       let setEventChange = false;
+      let fieldHideRules;
       if (inputToHandle.data("hide-rules")) {
-        let fieldHideRules = inputToHandle.data("hide-rules");
+        fieldHideRules = inputToHandle.data("hide-rules");
       } else {
-        let fieldHideRules = {};
+        fieldHideRules = {};
         setEventChange = true;
       }
 
       fieldHideRules[hideField] = rules[ruleField];
+
       inputToHandle.data("hide-rules", fieldHideRules);
 
       if (setEventChange) {
-        inputToHandle.change(function () {
+        inputToHandle.change(function() {
           if ($(this).is(":radio:not(:checked)")) {
             return;
           }
@@ -185,32 +183,9 @@ const handleSuccessSendForm = require("./handleSuccessSendForm");
     $(":input[name='" + field + "']").trigger("change");
   }
 
-  /**
-   * -----------------------------------------------------------------------------------------------
-   * Ajax para preenchimento de campos
-   * -----------------------------------------------------------------------------------------------
-   */
-
-  $("[data-ajax-url]").each(function () {
-    switch ($(this).data("ajax-event")) {
-      case "click":
-        $(this).click(ajaxEventHandler);
-        break;
-      default:
-        $(this).change(ajaxEventHandler);
+  window.onpageshow = function(event) {
+    if (event.persisted) {
+      window.location.reload();
     }
-  });
-})(
-  jQuery,
-  axios,
-  ajaxEventHandler,
-  asyncFileUpload,
-  handleFailureSendForm,
-  handleSuccessSendForm
-);
-
-window.onpageshow = function (event) {
-  if (event.persisted) {
-    window.location.reload();
-  }
-};
+  };
+});

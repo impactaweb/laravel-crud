@@ -1,5 +1,6 @@
 try {
     window.knockout = require('knockout');
+    window.ko = require('knockout');
     window.Popper = require('popper.js').default;
     window.jQuery = require('jquery');
     window.$ = window.jQuery;
