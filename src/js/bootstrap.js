@@ -4,7 +4,7 @@ try {
     window.Popper = require('popper.js').default;
     window.jQuery = require('jquery');
     window.$ = window.jQuery;
-    require('bootstrap');
+    const bootstrap = window.bootstrap; //require('bootstrap');
     window.Swal = require('sweetalert2')
     require('jquery-ui');
     require('jquery-validation');

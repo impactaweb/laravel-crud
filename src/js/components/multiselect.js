@@ -387,7 +387,7 @@
             nonSelectedText: 'Nenhum selecionado',
             nSelectedText: 'selected',
             allSelectedText: 'Todos selecionados',
-            numberDisplayed: 3,
+            numberDisplayed: 1,
             disableIfEmpty: false,
             disabledText: '',
             delimiterText: ', ',
