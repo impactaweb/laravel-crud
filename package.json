@@ -17,18 +17,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "bootstrap": "^4.5.0",
-    "bootstrap4-notify": "^4.0.3",
-    "checkboxes.js": "^1.2.2",
-    "inputmask": "^5.0.3",
-    "jquery": "^3.5.1",
-    "jquery-ui": "^1.12.1",
-    "jquery-validation": "^1.19.2",
-    "knockout": "^3.5.1",
-    "moment": "^2.26.0",
-    "popper.js": "^1.16.1",
-    "summernote": "^0.8.18",
-    "sweetalert2": "^9.14.0"
+    "knockout": "^3.5.1"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack",

@@ -1,20 +1,22 @@
-const moment = require("moment");
-
-(function (moment, $) {
+(function(moment, $) {
   $("[data-input='date-time']")
-    .change(function () {
+    .change(function() {
       let data = moment($(this).val(), $(this).data("input-format-client"));
       if (!data.isValid()) {
-        $(this).next("input:hidden").val("");
+        $(this)
+          .next("input:hidden")
+          .val("");
         return;
       }
       $(this)
         .next("input:hidden")
         .val(data.format($(this).data("input-format-server")));
     })
-    .each(function () {
+    .each(function() {
       let data = moment(
-        $(this).next("input:hidden").val(),
+        $(this)
+          .next("input:hidden")
+          .val(),
         $(this).data("input-format-server")
       );
       if (!data.isValid()) {
@@ -25,19 +27,23 @@ const moment = require("moment");
     });
 
   $("[data-input='date']")
-    .change(function () {
+    .change(function() {
       let data = moment($(this).val(), $(this).data("input-format-client"));
       if (!data.isValid()) {
-        $(this).next("input:hidden").val("");
+        $(this)
+          .next("input:hidden")
+          .val("");
         return;
       }
       $(this)
         .next("input:hidden")
         .val(data.format($(this).data("input-format-server")));
     })
-    .each(function () {
+    .each(function() {
       let data = moment(
-        $(this).next("input:hidden").val(),
+        $(this)
+          .next("input:hidden")
+          .val(),
         $(this).data("input-format-server")
       );
       if (!data.isValid()) {
@@ -46,4 +52,4 @@ const moment = require("moment");
       }
       $(this).val(data.format($(this).data("input-format-client")));
     });
-})(moment, window.jQuery);
+})(window.moment, window.jQuery);

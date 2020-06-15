@@ -1,7 +1,7 @@
 module.exports = function handleFailureSendForm(error) {
   const $alert = document.querySelector("[data-expect-alert]");
 
-  jQuery('[data-container="loading"]').html("");
+  window.jQuery('[data-container="loading"]').html("");
 
   if (error.status >= 500) {
     const alertError = `
@@ -33,7 +33,7 @@ module.exports = function handleFailureSendForm(error) {
   let hasScroll = false;
 
   // Erros enviados pela request do laravel
-  Object.keys(camposInvalidos).forEach(function (name) {
+  Object.keys(camposInvalidos).forEach(function(name) {
     let input;
     const erros = "<li>" + camposInvalidos[name].join("</li><li>") + "</li>";
     if (name.includes(".")) {
@@ -42,7 +42,7 @@ module.exports = function handleFailureSendForm(error) {
     } else {
       input = '[name="' + name + '"]';
     }
-    const $input = jQuery(input);
+    const $input = window.jQuery(input);
 
     $input.hasClass("is-invalid") ? null : $input.toggleClass("is-invalid");
     $input.next(".invalid-feedback").html(erros);

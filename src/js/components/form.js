@@ -3,11 +3,9 @@
 const asyncFileUpload = require("./asyncFileUpload");
 const handleFailureSendForm = require("./handleFailureSendForm");
 const handleSuccessSendForm = require("./handleSuccessSendForm");
-const Swal = require("sweetalert2");
 
-jQuery(document).ready(function() {
+window.jQuery(document).ready(function() {
   const $ = window.jQuery;
-  const axios = window.axios;
 
   if (!$("[data-its-form]").length) return;
 
@@ -188,5 +186,4 @@ jQuery(document).ready(function() {
       window.location.reload();
     }
   };
-
 });

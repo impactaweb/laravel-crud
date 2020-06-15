@@ -1,6 +1,8 @@
-const Swal = require("sweetalert2");
+"use strict";
 
-jQuery(document).ready(function() {
+const $ = window.jQuery;
+
+$(document).ready(function() {
   const $form = $("#listingForm");
 
   $(".actionButton").click(function() {
@@ -13,7 +15,9 @@ jQuery(document).ready(function() {
       method = "GET";
     }
 
-    $checkboxes = $(".listing-checkboxes:checked");
+    let $checkboxes = $(".listing-checkboxes:checked");
+    console.log($checkboxes);
+
     if (
       (url.indexOf("{id}") >= 0 ||
         url.indexOf("{ids}") >= 0 ||
@@ -29,7 +33,7 @@ jQuery(document).ready(function() {
       ids.push($(this).val());
     });
     let id = ids[0];
-    idsFormatado = ids.join(",");
+    let idsFormatado = ids.join(",");
 
     url = url.replace("{id}", id).replace("{ids}", idsFormatado);
 
@@ -97,6 +101,7 @@ jQuery(document).ready(function() {
     const $checkbox = $(this)
       .parents("tr")
       .find(".listing-checkboxes:first");
+
     if ($checkbox.is(":checked")) {
       $checkbox.prop("checked", false);
       $(this)

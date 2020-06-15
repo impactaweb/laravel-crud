@@ -1,7 +1,3 @@
-require("./css/main.css");
-
-require("./js/bootstrap");
-
 // customs
 require("./js/customs/jqueryExtends");
 require("./js/customs/loadEditor");
