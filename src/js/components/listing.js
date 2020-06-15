@@ -16,7 +16,6 @@ $(document).ready(function() {
     }
 
     let $checkboxes = $(".listing-checkboxes:checked");
-    console.log($checkboxes);
 
     if (
       (url.indexOf("{id}") >= 0 ||
