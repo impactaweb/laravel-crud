@@ -1,7 +1,12 @@
-
 .corpo-listing .input-group .input-group-append.btn.btn-default,
 .btn.btn-lg.btn-default {
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #f5f5f5), to(#e8e8e8));
+  background-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0, #f5f5f5),
+    to(#e8e8e8)
+  );
   background-image: linear-gradient(to bottom, #f5f5f5 0, #e8e8e8 100%);
 }
 
@@ -19,61 +24,61 @@
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   margin-left: 0;
-  background-image: linear-gradient(to bottom,#fff 0,#e0e0e0 100%);
+  background-image: linear-gradient(to bottom, #fff 0, #e0e0e0 100%);
 }
 
 .corpo-listing .data-listagem a:last-child {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   margin-left: 0;
-  background-image: linear-gradient(to bottom,#fff 0,#e0e0e0 100%);
+  background-image: linear-gradient(to bottom, #fff 0, #e0e0e0 100%);
 }
 
 .corpo-listing .data-listagem a:hover {
-      background-color: #e0e0e0;
-      background-position: 0 -15px;
+  background-color: #e0e0e0;
+  background-position: 0 -15px;
 }
 
 .corpo-listing #listagemTable tbody tr.active {
-  color:#000;
-  text-shadow:0px 0px 0.5px black;
+  color: #000;
+  text-shadow: 0px 0px 0.5px black;
   background-color: rgba(0, 0, 0, 0.075);
 }
 
 .corpo-listing .btn.btn-default {
-  background-image: linear-gradient(to bottom,#fff 0,#e0e0e0 100%);
+  background-image: linear-gradient(to bottom, #fff 0, #e0e0e0 100%);
 }
 
-#listagemTable { 
-  font-size:12px;
+#listagemTable {
+  font-size: 12px;
 }
 
 #listagemTable tr.empty td {
-  padding:10px;
+  padding: 10px;
 }
 
 #listagemTable td {
-  vertical-align: middle
+  vertical-align: middle;
 }
 
 #listagemTable th .order-asc:after {
-  content: '\f0d7';
+  content: "\f0d7";
   font-family: "Font Awesome 5 Free";
   font-style: normal;
   font-weight: bold;
   text-decoration: none;
-  margin-left:5px;
-  color:#333;
+  margin-left: 5px;
+  color: #333;
 }
 
 #listagemTable th .order-desc:after {
-  content: '\f0d8';
+  content: "\f0d8";
   font-family: "Font Awesome 5 Free";
   font-style: normal;
   font-weight: bold;
   text-decoration: none;
-  margin-left:5px;
-  color:#333;
+  margin-left: 5px;
+  color: #333;
 }
 
 #listagemTable th a {
@@ -81,11 +86,13 @@
   text-decoration: none;
 }
 
-.flagItem, .flag-on, .flag-off {
+.flagItem,
+.flag-on,
+.flag-off {
   display: inline-block;
   overflow: hidden;
   text-indent: -9999px;
-  text-decoration:none;
+  text-decoration: none;
   font-family: "Font Awesome 5 Free";
   font-style: normal;
   font-size: 18px;
@@ -95,18 +102,17 @@
   width: 18px;
 }
 
-.flag-on:before { 
-  content: '\f058';
+.flag-on:before {
+  content: "\f058";
   font-weight: bold;
-  color:#093;
+  color: #093;
   float: left;
   text-indent: 0;
-
 }
-.flag-off:before { 
-  content: '\f058';
+.flag-off:before {
+  content: "\f058";
   font-weight: normal;
-  color:#999;
+  color: #999;
   float: left;
   text-indent: 0;
 }
