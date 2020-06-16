@@ -65,7 +65,7 @@ trait FieldTypes {
     public function button(string $buttonName, string $urlWithParameters, ?string $buttonClass = null)
     {
         $buttonClass = ($buttonClass && !empty($buttonClass)) ? $buttonClass : ' btn btn-default btn-sm ';
-        return $this->link($buttonName, $urlWithParameters, $buttonClass);
+        return $this->link($buttonName, $urlWithParameters, ['class' => $buttonClass]);
     }
 
     /**
