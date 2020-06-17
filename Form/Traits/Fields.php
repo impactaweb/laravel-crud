@@ -161,6 +161,56 @@ trait Fields
     }
 
     /**
+     * Campo de data
+     * @param string $name
+     * @param string $label
+     * @param array $options
+     * @return mixed
+     */
+    public function date(string $name, string $label, array $options = [])
+    {
+        return $this->field('date', $name, $label, $options);
+    }
+
+
+    /**
+     * Campo de data
+     * @param string $name
+     * @param string $label
+     * @param array $options
+     * @return mixed
+     */
+    public function datePicker(string $name, string $label, array $options = [])
+    {
+        return $this->field('date', $name, $label,  array_merge(['attrs' => ['data-date-picker' => 'true']], $options));
+    }
+
+    /**
+     * Campo de data
+     * @param string $name
+     * @param string $label
+     * @param array $options
+     * @return mixed
+     */
+    public function dateTimePicker(string $name, string $label, array $options = [])
+    {
+        return $this->field('datetime', $name, $label,  array_merge(['attrs' => ['data-datetime-picker' => 'true']], $options));
+    }
+
+    /**
+     * Campo de data
+     * @param string $name
+     * @param string $label
+     * @param array $options
+     * @return mixed
+     */
+    public function timePicker(string $name, string $label, array $options = [])
+    {
+        return $this->field('time', $name, $label,  array_merge(['attrs' => ['data-time-picker' => 'true']], $options));
+    }
+
+
+    /**
      * Campo de hora
      * @param string $name
      * @param string $label
@@ -195,6 +245,4 @@ trait Fields
     {
         return $this->field('multiselectgroup', $name, $label, array_merge(['selectOptions' => $selectOptions], $options));
     }
-
-
 }
