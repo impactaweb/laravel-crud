@@ -33,8 +33,6 @@ async function handlerListDestroyItems(url, ids) {
       confirmButtonText: "Ok",
       confirmButtonAriaLabel: "Okay"
     });
-
-    history.pushState(null, document.title, href);
   } catch (err) {
     //TODO: Acesso a variavel de ambiente para mostrar o erro em ambiente local;
     alert("Erro ao excluir items");
