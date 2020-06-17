@@ -1,6 +1,7 @@
 "use strict";
 
 const $ = window.jQuery;
+const handlerListDestroyItems = require("./handlerListDestroyItems");
 
 $(document).ready(function() {
   const $form = $("#listingForm");
@@ -10,7 +11,7 @@ $(document).ready(function() {
     let _method = $(this).data("method");
     let confirmationText = $(this).data("confirmation");
     let continueFunction = null;
-    let method = $(this).data("method") == "GET" ? "GET" : "POST";
+    let method = _method == "GET" ? "GET" : "POST";
     if (!$.inArray(method, ["GET", "POST", "PUT", "PATCH", "DELETE"]) == -1) {
       method = "GET";
     }
@@ -55,7 +56,13 @@ $(document).ready(function() {
         .data("executar", continueFunction)
         .modal("show");
       $("#confirmationModal .modal-body").html(confirmationText);
-      $("#confirmationModal .btnConfirm").click(function() {
+      $("#confirmationModal .btnConfirm").click(function(e) {
+        if (_method === "DELETE") {
+          document.querySelector('button[data-dismiss="modal"]').click();
+          listagemLoading();
+          return handlerListDestroyItems(url, ids);
+        }
+
         const func = $("#confirmationModal").data("executar");
         func();
         e.preventDefault();
