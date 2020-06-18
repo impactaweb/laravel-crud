@@ -73,7 +73,7 @@ function makeContent(data) {
   let content = data.success.reduce(
     (prev, item) =>
       `${prev}<li class="text-success" style="font-size: 13px;">${item}</li>`,
-    '<ul style="max-width: 220px;">'
+    '<ul style="max-width: 400px; max-height: 200px; overflow-y: auto;">'
   );
 
   content = data.erros.reduce(
