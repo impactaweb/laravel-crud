@@ -32,7 +32,7 @@ async function handlerListDestroyItems(url, ids) {
       focusConfirm: false,
       confirmButtonText: "Ok",
       confirmButtonAriaLabel: "Okay"
-    });
+    }).then(() => window.location.reload());
   } catch (err) {
     //TODO: Acesso a variavel de ambiente para mostrar o erro em ambiente local;
     alert("Erro ao excluir items");
