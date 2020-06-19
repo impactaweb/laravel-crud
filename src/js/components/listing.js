@@ -147,7 +147,16 @@ $(document).ready(function() {
       .parents("tr")
       .find(".listing-checkboxes")
       .val();
-    let newFlag = $(this).hasClass("flag-on") ? 0 : 1;
+
+    const flagIsOn = this.classList.contains("flag-on");
+    let newFlag = null;
+
+    if (this.hasAttribute("data-double-flag")) {
+      newFlag = flagIsOn ? 1 : 0;
+    } else {
+      newFlag = flagIsOn ? 0 : 1;
+    }
+
     let fieldName = $(this).data("field");
 
     listagemLoading();
@@ -173,8 +182,17 @@ $(document).ready(function() {
           return;
         }
 
-        $('.listing-checkboxes[value="' + jsonData.id + '"]')
-          .parents("tr")
+        const $reference = $(
+          '.listing-checkboxes[value="' + jsonData.id + '"]'
+        ).parents("tr");
+
+        if ($reference.find("[data-double-flag]").length === 2) {
+          jsonData.flag === "1"
+            ? $reference.find('[data-double-flag="off"]').remove()
+            : $reference.find('[data-double-flag="on"]').remove();
+        }
+
+        $reference
           .find('a[data-field="' + jsonData.field + '"]')
           .html(jsonData.flag)
           .removeClass("flag-on")
