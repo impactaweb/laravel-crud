@@ -147,7 +147,14 @@ $(document).ready(function() {
       .parents("tr")
       .find(".listing-checkboxes")
       .val();
-    let newFlag = $(this).hasClass("flag-on") ? 0 : 1;
+
+    let newFlag = null;
+    if ($(this).parents("td").find("[data-double-flag]").length > 1) {
+      newFlag = $(this).hasClass("flag-on") ? 1 : 0;
+    } else {
+      newFlag = $(this).hasClass("flag-on") ? 0 : 1;
+    }
+
     let fieldName = $(this).data("field");
 
     listagemLoading();
@@ -157,6 +164,7 @@ $(document).ready(function() {
       "/" +
       primaryKeyValue +
       "/updateflag";
+
     let postData = {
       //'_method': 'PUT',
       responseFormat: "json",
@@ -164,35 +172,47 @@ $(document).ready(function() {
       newFlag: newFlag
     };
 
-    $.post(
-      postUrl,
-      postData,
-      function(jsonData) {
+    $.ajax({
+
+      url: postUrl,
+      method: "POST",
+      data: postData,
+      context: $(this),
+      dataType: "json"
+
+    }).done(function(jsonData) {
+
         if (jsonData.error) {
           alert(jsonData.error);
           return;
         }
 
-        $('.listing-checkboxes[value="' + jsonData.id + '"]')
-          .parents("tr")
-          .find('a[data-field="' + jsonData.field + '"]')
+        if ($(this).parents("td").find("[data-double-flag]").length > 1) {
+          jsonData.flag === "1"
+            ? $(this).parents('td').find('[data-double-flag="off"]').remove()
+            : $(this).parents('td').find('[data-double-flag="on"]').remove();
+
+          $(this).attr("data-double-flag", "");
+        }
+
+        $(this)
           .html(jsonData.flag)
           .removeClass("flag-on")
           .removeClass("flag-off")
           .addClass(jsonData.flag == "1" ? "flag-on" : "flag-off");
-      },
-      "json"
-    )
-      .fail(function(jqXHR) {
-        alert(
-          jqXHR.responseJSON.error
-            ? jqXHR.responseJSON.error
-            : "Erro ao alterar."
-        );
-      })
-      .always(function() {
-        listagemLoading(false);
-      });
+    })
+    .fail(function(jqXHR) {
+      alert(
+        jqXHR.responseJSON.error
+          ? jqXHR.responseJSON.error
+          : "Erro ao alterar."
+      );s
+    })
+    .always(function() {
+      listagemLoading(false);
+    });
+
+
   }
 
   function handleAllChecked() {
