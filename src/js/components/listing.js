@@ -148,13 +148,11 @@ $(document).ready(function() {
       .find(".listing-checkboxes")
       .val();
 
-    const flagIsOn = this.classList.contains("flag-on");
     let newFlag = null;
-
-    if (this.hasAttribute("data-double-flag")) {
-      newFlag = flagIsOn ? 1 : 0;
+    if ($(this).parents("td").find("[data-double-flag]").length > 1) {
+      newFlag = $(this).hasClass("flag-on") ? 1 : 0;
     } else {
-      newFlag = flagIsOn ? 0 : 1;
+      newFlag = $(this).hasClass("flag-on") ? 0 : 1;
     }
 
     let fieldName = $(this).data("field");
@@ -166,6 +164,7 @@ $(document).ready(function() {
       "/" +
       primaryKeyValue +
       "/updateflag";
+
     let postData = {
       //'_method': 'PUT',
       responseFormat: "json",
@@ -173,44 +172,48 @@ $(document).ready(function() {
       newFlag: newFlag
     };
 
-    $.post(
-      postUrl,
-      postData,
-      function(jsonData) {
+    $.ajax({
+
+      url: postUrl,
+      method: "POST",
+      data: postData,
+      context: $(this),
+      dataType: "json"
+
+    }).done(function(jsonData) {
+
         if (jsonData.error) {
           alert(jsonData.error);
           return;
         }
 
-        const $reference = $(
-          '.listing-checkboxes[value="' + jsonData.id + '"]'
-        ).parents("tr");
-
-        if ($reference.find("[data-double-flag]").length === 2) {
+        console.log($(this).parents("td").find("[data-double-flag]"));
+        if ($(this).parents("td").find("[data-double-flag]").length > 1) {
           jsonData.flag === "1"
-            ? $reference.find('[data-double-flag="off"]').remove()
-            : $reference.find('[data-double-flag="on"]').remove();
+            ? $(this).parents('td').find('[data-double-flag="off"]').remove()
+            : $(this).parents('td').find('[data-double-flag="on"]').remove();
+
+          $(this).attr("data-double-flag", "");
         }
 
-        $reference
-          .find('a[data-field="' + jsonData.field + '"]')
+        $(this)
           .html(jsonData.flag)
           .removeClass("flag-on")
           .removeClass("flag-off")
           .addClass(jsonData.flag == "1" ? "flag-on" : "flag-off");
-      },
-      "json"
-    )
-      .fail(function(jqXHR) {
-        alert(
-          jqXHR.responseJSON.error
-            ? jqXHR.responseJSON.error
-            : "Erro ao alterar."
-        );
-      })
-      .always(function() {
-        listagemLoading(false);
-      });
+    })
+    .fail(function(jqXHR) {
+      alert(
+        jqXHR.responseJSON.error
+          ? jqXHR.responseJSON.error
+          : "Erro ao alterar."
+      );s
+    })
+    .always(function() {
+      listagemLoading(false);
+    });
+
+
   }
 
   function handleAllChecked() {
