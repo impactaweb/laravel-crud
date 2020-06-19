@@ -187,7 +187,6 @@ $(document).ready(function() {
           return;
         }
 
-        console.log($(this).parents("td").find("[data-double-flag]"));
         if ($(this).parents("td").find("[data-double-flag]").length > 1) {
           jsonData.flag === "1"
             ? $(this).parents('td').find('[data-double-flag="off"]').remove()
