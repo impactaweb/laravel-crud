@@ -149,7 +149,11 @@ $(document).ready(function() {
       .val();
 
     let newFlag = null;
-    if ($(this).parents("td").find("[data-double-flag]").length > 1) {
+    if (
+      $(this)
+        .parents("td")
+        .find("[data-double-flag]").length > 1
+    ) {
       newFlag = $(this).hasClass("flag-on") ? 1 : 0;
     } else {
       newFlag = $(this).hasClass("flag-on") ? 0 : 1;
@@ -173,24 +177,32 @@ $(document).ready(function() {
     };
 
     $.ajax({
-
       url: postUrl,
       method: "POST",
       data: postData,
       context: $(this),
       dataType: "json"
-
-    }).done(function(jsonData) {
-
+    })
+      .done(function(jsonData) {
         if (jsonData.error) {
           alert(jsonData.error);
           return;
         }
 
-        if ($(this).parents("td").find("[data-double-flag]").length > 1) {
+        if (
+          $(this)
+            .parents("td")
+            .find("[data-double-flag]").length > 1
+        ) {
           jsonData.flag === "1"
-            ? $(this).parents('td').find('[data-double-flag="off"]').remove()
-            : $(this).parents('td').find('[data-double-flag="on"]').remove();
+            ? $(this)
+                .parents("td")
+                .find('[data-double-flag="off"]')
+                .remove()
+            : $(this)
+                .parents("td")
+                .find('[data-double-flag="on"]')
+                .remove();
 
           $(this).attr("data-double-flag", "");
         }
@@ -200,19 +212,17 @@ $(document).ready(function() {
           .removeClass("flag-on")
           .removeClass("flag-off")
           .addClass(jsonData.flag == "1" ? "flag-on" : "flag-off");
-    })
-    .fail(function(jqXHR) {
-      alert(
-        jqXHR.responseJSON.error
-          ? jqXHR.responseJSON.error
-          : "Erro ao alterar."
-      );s
-    })
-    .always(function() {
-      listagemLoading(false);
-    });
-
-
+      })
+      .fail(function(jqXHR) {
+        alert(
+          jqXHR.responseJSON.error
+            ? jqXHR.responseJSON.error
+            : "Erro ao alterar."
+        );
+      })
+      .always(function() {
+        listagemLoading(false);
+      });
   }
 
   function handleAllChecked() {
