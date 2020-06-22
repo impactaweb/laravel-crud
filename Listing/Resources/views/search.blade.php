@@ -12,7 +12,7 @@
                     aria-label="{{ __('listing::listing.search') }}"
                 >
                 <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                    <button class="input-group-append btn btn-default p-0 border" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                    <button class="input-group-append btn btn-default p-0 border d-flex align-items-center" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
                       <span class="input-group-text bg-transparent border-0" id="basic-addon2"><i class="fas fa-search"></i></span>
                     </button>
                     <div class="btn-group" role="group">
