@@ -26,6 +26,7 @@ class Form
     public $baseAction;
     public $formId = 'form';
     public $initial = [];
+    public $options = [];
     public $template;
     public $formAction = '';
     public $method = 'POST';
@@ -49,6 +50,7 @@ class Form
         $this->initial = $initial;
         $this->request = request();
         $this->primaryKey = $primaryKey;
+        $this->options = $options;
 
         $this->buildBaseAction();
         $this->buildFormMethod();
@@ -147,7 +149,7 @@ class Form
     public function buildIdField()
     {
         # Display field ID automatically
-        if (($options['showId'] ?? true) && !empty($this->primaryKeyValue)) {
+        if (($this->options['showId'] ?? true) && !empty($this->primaryKeyValue)) {
             $this->show('ID', $this->primaryKeyValue);
         }
     }
