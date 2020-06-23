@@ -1,55 +1,75 @@
 (function(moment, $) {
+  /**
+   * For handler date with time
+   */
   $("[data-input='date-time']")
-    .change(function() {
-      let data = moment($(this).val(), $(this).data("input-format-client"));
+    .on("change input", function() {
+      // guarda a referência do elemento ajuda na perfomance da execução do código
+      const $ELEMENT_REF = $(this);
+
+      let data = moment(
+        $ELEMENT_REF.val(),
+        $ELEMENT_REF.data("input-format-client")
+      );
+
       if (!data.isValid()) {
-        $(this)
-          .next("input:hidden")
-          .val("");
+        $ELEMENT_REF.next("input:hidden").val("");
         return;
       }
-      $(this)
+
+      $ELEMENT_REF
         .next("input:hidden")
-        .val(data.format($(this).data("input-format-server")));
+        .val(data.format($ELEMENT_REF.data("input-format-server")));
     })
     .each(function() {
+      const $ELEMENT_REF = $(this);
+
       let data = moment(
-        $(this)
-          .next("input:hidden")
-          .val(),
-        $(this).data("input-format-server")
+        $ELEMENT_REF.next("input:hidden").val(),
+        $ELEMENT_REF.data("input-format-server")
       );
+
       if (!data.isValid()) {
-        $(this).val("");
+        $ELEMENT_REF.val("");
         return;
       }
-      $(this).val(data.format($(this).data("input-format-client")));
+
+      $ELEMENT_REF.val(data.format($ELEMENT_REF.data("input-format-client")));
     });
 
+  /**
+   * For handler date only
+   */
   $("[data-input='date']")
-    .change(function() {
-      let data = moment($(this).val(), $(this).data("input-format-client"));
+    .on("change input", function() {
+      const $ELEMENT_REF = $(this);
+      let data = moment(
+        $ELEMENT_REF.val(),
+        $ELEMENT_REF.data("input-format-client")
+      );
+
       if (!data.isValid()) {
-        $(this)
-          .next("input:hidden")
-          .val("");
+        $ELEMENT_REF.next("input:hidden").val("");
         return;
       }
-      $(this)
+
+      $ELEMENT_REF
         .next("input:hidden")
-        .val(data.format($(this).data("input-format-server")));
+        .val(data.format($ELEMENT_REF.data("input-format-server")));
     })
     .each(function() {
+      $ELEMENT_REF = $(this);
+
       let data = moment(
-        $(this)
-          .next("input:hidden")
-          .val(),
-        $(this).data("input-format-server")
+        $ELEMENT_REF.next("input:hidden").val(),
+        $ELEMENT_REF.data("input-format-server")
       );
+
       if (!data.isValid()) {
-        $(this).val("");
+        $ELEMENT_REF.val("");
         return;
       }
-      $(this).val(data.format($(this).data("input-format-client")));
+
+      $ELEMENT_REF.val(data.format($ELEMENT_REF.data("input-format-client")));
     });
 })(window.moment, window.jQuery);
