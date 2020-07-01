@@ -58,7 +58,7 @@ class Form
         $this->buildDefaultActions();
         $this->buildCancelLinkUrl();
         $this->buildPrimaryKeyValue();
-        $this->buildIdField();
+
         return $this;
     }
 
@@ -170,6 +170,14 @@ class Form
             $id = $this->idPanel++;
         }
         $this->panels[] = new Panel($title, $id, $class);
+
+        # Se for o primeiro panel injeta o id
+        $panel = end($this->panels);
+
+        if(count($this->panels) === 1 && empty($panel->fields)) {
+            $this->buildIdField();
+        }
+
         return $this;
     }
 
