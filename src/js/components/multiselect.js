@@ -385,7 +385,7 @@
             includeFilterClearBtn: true,
             preventInputChangeEvent: false,
             nonSelectedText: 'Nenhum selecionado',
-            nSelectedText: 'selected',
+            nSelectedText: 'selecionados',
             allSelectedText: 'Todos selecionados',
             numberDisplayed: 1,
             disableIfEmpty: false,
