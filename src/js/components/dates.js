@@ -1,10 +1,10 @@
 (function(moment, $) {
   /**
-   * For handler date with time
+   * For handle date with time
    */
   $("[data-input='date-time']")
     .on("change input", function() {
-      // guarda a referência do elemento ajuda na perfomance da execução do código
+      // guarda a referência do elemento, ajuda na perfomance da execução do código
       const $ELEMENT_REF = $(this);
 
       let data = moment(
@@ -38,7 +38,7 @@
     });
 
   /**
-   * For handler date only
+   * For handle date only
    */
   $("[data-input='date']")
     .on("change input", function() {
