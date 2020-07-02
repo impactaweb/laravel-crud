@@ -21,9 +21,9 @@ trait FieldTypes {
     {
         if (!$name) {
             // Criando um nome aleatório para o campo
-            $name = 'customfield.' 
-                . substr(strtolower(preg_replace("/[^A-Za-z0-9?!]/",'', $label)), 0, 20) 
-                . '_' 
+            $name = 'customfield.'
+                . substr(strtolower(preg_replace("/[^A-Za-z0-9?!]/",'', $label)), 0, 20)
+                . '_'
                 . substr(md5(uniqid()),0,10);
         }
 
@@ -120,9 +120,17 @@ trait FieldTypes {
     public function flag(string $name, string $label, $hasFlagLink = false)
     {
         $callback = function($data) use ($name, $hasFlagLink) {
+            if(is_null($data->$name) && $hasFlagLink) {
+                return "
+                    <a href='javascript:;' data-double-flag='off' class='flagItem flag-off' data-field='{$name}' title='Desativar' style='margin-right: 4px'>0</a>
+                    <a href='javascript:;' data-double-flag='on' class='flagItem flag-on' data-field='{$name}' title='Ativar'>1</a>
+                ";
+            }
+
             if (!isset($data->$name)) {
                 return 'ERRO';
             }
+
             if ($hasFlagLink) {
                 return '<a href="javascript:;" class="flagItem '
                         . ($data->$name == 1 ? 'flag-on' : 'flag-off')

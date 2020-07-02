@@ -2,10 +2,11 @@
 
 namespace Impactaweb\Crud\Form;
 
+use Exception;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Impactaweb\Crud\Form\Traits\Fields;
-use Exception;
 
 /**
  * Class Form
@@ -13,402 +14,311 @@ use Exception;
 class Form
 {
 
-	use Fields;
+    use Fields;
 
-	/**
-	 * @var array - Array com os fields disponíveis
-	 */
-	protected $fields = FieldAlias::fields;
-
-	protected $panels = [];
-
-	public $initial = [];
-
-	protected $template;
-
-	protected $idPanel = 0;
-
-	protected $formId = 'form';
-
-	protected $action = '';
-
-	protected $method = 'POST';
-
-	protected $class;
-
-	protected $hidden = [];
-
-	protected $html = [];
-
-	protected $actions = [];
-
-	protected $autoComplete = false;
-
-	protected $targetBlank = false;
-
-	private $primaryKey = '';
-
-	private $primaryKeyValue = '';
-
-	private $cancelVisible = true;
-
-	private $cancelLinkUrl = '#';
-
-	private $hideActions = false;
-
-    /**
-     * @return bool
-     */
-    public function isHideActions(): bool
-    {
-        return $this->hideActions;
-    }
-
-    /**
-     * @param bool $hideActions
-     */
-    public function setHideActions(bool $hideActions)
-    {
-        $this->hideActions = $hideActions;
-        return $this;
-    }
-
-	protected $request;
-
-	/**
-	 * Array com regras para serem utilizadas na
-	 * criação dos fields
-	 * @var array
-	 */
-	private $rules = [];
+    protected $fields = FieldAlias::fields;
+    protected $rules = [];
+    public $request;
+    public $actions = [];
+    public $panels = [];
+    public $idPanel = 0;
+    public $primaryKeyValue = '';
+    public $baseAction;
+    public $formId = 'form';
+    public $initial = [];
+    public $options = [];
+    public $template;
+    public $formAction = '';
+    public $method = 'POST';
+    public $class;
+    public $autoComplete = false;
+    public $targetBlank = false;
+    public $primaryKey = '';
+    public $cancelVisible = true;
+    public $cancelLinkUrl = '#';
 
 
     /**
-     * 	/**
      * Starts a new form
      * Form constructor.
      * @param array $initial
      * @param string $primaryKey
-     * @param bool $showId
+     * @param array $options
      */
     public function __construct(array $initial = [], string $primaryKey = '', array $options = [])
-	{
-		$this->initial = $initial;
-		$this->request = request();
-		$this->setPrimaryKey($primaryKey);
+    {
+        $this->initial = $initial;
+        $this->request = request();
+        $this->primaryKey = $primaryKey;
+        $this->options = $options;
 
-		# Build form method based on current URL
-		try {
-			$this->setMethod(FormUrls::actionMethod());
-		} catch (Exception $e){
-			$this->setMethod('');
-		}
+        $this->buildBaseAction();
+        $this->buildFormMethod();
+        $this->buildFormAction();
+        $this->buildDefaultActions();
+        $this->buildCancelLinkUrl();
+        $this->buildPrimaryKeyValue();
 
-		# Build form action based on current URL
-		try {
-			$this->setAction(FormUrls::action());
-		} catch (Exception $e){
-			$this->setAction('');
-		}
+        return $this;
+    }
 
-		# Build form cancel link based on current Url
-		try {
-			$this->setCancelLinkUrl(FormUrls::redir('cancel'));
-		} catch (Exception $e){
-			$this->setAction('');
-		}
+    /**
+     * Clear verbs from Action
+     * Ex: foo.edit -> foo
+     * @return string
+     */
+    public function buildBaseAction()
+    {
+        $actionName = $this->request->route()->getName();
+        $this->baseAction = substr($actionName, 0, strrpos($actionName, "."));
+    }
 
-		# Build a hidden input from form ID
-		if (isset($initial[$primaryKey])) {
-			$this->primaryKeyValue = $initial[$primaryKey];
-		}
+    public function buildFormMethod()
+    {
+        $method = $this->request->route()->getActionMethod();
+        $this->method = $method == 'edit' ? 'PUT' : 'POST';
+    }
 
-        # Display field ID automatically
-        if (($options['showId'] ?? true) && !empty($this->primaryKeyValue)) {
-            $this->show('ID', $this->primaryKeyValue);
+
+    public function buildFormAction()
+    {
+        $method = $this->request->route()->getActionMethod();
+        $methodActions = [
+            'edit' => 'update',
+            'create' => 'store'
+        ];
+
+        if (!isset($methodActions[$method])) {
+            throw new Exception("Method has no action implemented");
         }
 
-		return $this;
-	}
+        $route = route($this->baseAction . '.' . $methodActions[$method], $this->request->route()->parameters());
+        $this->formAction = $route . '?' . $this->getQueryString($this->request);
+    }
 
-	/**
-	 * Create a new form panel
-	 * @param string $title Panel Title
-	 * @param string $class Panel class
-	 * @return Form
-	 */
-	public function panel(string $title = '', string $class = "")
-	{
-		if ($title == '') {
-			$title = __('form::form.panel_default');
-		}
+    public function buildDefaultActions()
+    {
+        # Build default actions
+        $this->actions = [
+            "save_close"  => [__('form::form.save_close'), $this->baseAction . '.index'],
+            "save" => [__('form::form.save'), $this->baseAction . '.edit'],
+            "save_create" => [__('form::form.save_create'), $this->baseAction . '.create'],
+        ];
 
-		# Next Panel ID
-		if (empty($id)) {
-			$id = $this->idPanel++;
-		}
-		$this->panels[] = new Panel($title, $id, $class);
-		return $this;
-	}
+        # Build save_next option if 'ids' exist in querystring
+        if ($this->request->has('ids') && strpos(urldecode($this->request->get('ids')), ',') !== false) {
+            $saveNext = ['save_next' => [__('form::form.save_next'), $this->baseAction . '.edit']];
+            $this->actions = array_merge($saveNext, $this->actions);
+        }
+    }
 
-	/**
-	 * Add a new field
-	 * @param string $type    Field Type
-	 * @param string $name
-	 * @param string $label
-	 * @param array  $options Extra options
-	 * @return $this
-	 */
-	public function field(string $type, string $name, string $label, array $options = [])
-	{
-		try {
-			$fieldClass = $this->getField($type);
-		} catch (Exception $e){
-			return $this;
-		}
-		if (is_null($fieldClass)) {
-			return $this;
-		}
+    /**
+     * @param array $actions
+     * @return $this
+     */
+    public function clearActions($actions = [])
+    {
+        if (!empty($actions)) {
+            foreach ((array) $actions as $actionName) {
+                unset($this->actions[$actionName]);
+            }
+        } else {
+            $this->actions = [];
+        }
+        return $this;
+    }
 
-		# If the last element isn't a panel, a new panel is created
-		if (empty($this->panels)) {
-			$this->panel();
-		}
+    public function buildCancelLinkUrl()
+    {
+        # Build form cancel link based on current Url
+        $this->cancelLinkUrl = urldecode($this->request->get('redir'));
 
-		$panel = end($this->panels);
-		$panel->fields[] = new $fieldClass($name, $label, $options, $type);
+        if ($this->cancelLinkUrl == false) {
+            $parameters = $this->request->route()->parameters();
+            $this->cancelLinkUrl = $this->clearUrl(route($this->baseAction . '.index', $parameters));
+        }
 
-		return $this;
-	}
+    }
 
-	/**
-	 * Get field class based on FieldAlias
-	 * @param string $field Field alias
-	 * @return object
-	 * @throws Exception
-	 */
-	protected function getField(string $field)
-	{
-		$fieldClass = isset($this->fields[$field]) ? $this->fields[$field] : null;
-		if (!$fieldClass) {
-			throw new Exception($field . " - Field doesn't exist.");
-		}
-		return $fieldClass;
-	}
+    public function buildPrimaryKeyValue()
+    {
+        # Build a hidden input from form ID
+        $this->primaryKeyValue = $this->initial[$this->primaryKey] ?? '';
+    }
 
-	/**
-	 * Render entire form
-	 * @return Factory|View
-	 */
-	public function render()
-	{
-		# Build a new panel if variable panels is empty
-		if (empty($this->panels)) {
-			$panel = $this->panel();
-			$this->panels[] = $panel;
-		} else {
-			$panel = end($this->panels);
-		}
-
-		# Build default actions
-		if (empty($this->actions)) {
-			$this->actions = [
-				["save_close", __('form::form.save_close')],
-				["save", __('form::form.save')],
-				["save_create", __('form::form.save_create')],
-			];
-		}
-
-		# Build save_next option if 'ids' exist in querystring
-		if ($this->request->has('ids') && strpos(urldecode($this->request->get('ids')), ',') !== false) {
-			$this->actions = array_merge(
-				[['save_next', __('form::form.save_next')]],
-				$this->actions
-			);
-		}
-
-		# Make a separation between primary and secondary actions
-		$primaryAction = $this->actions[0];
-		$secondaryActions = array_slice($this->actions, 1);
-
-		$formTemplate = $this->template ?? config("form.templates.form");
-
-		# Render form HTML
-		return view($formTemplate, [
-				"panels" => $this->panels,
-				"primaryAction" => $primaryAction,
-				"secondaryActions" => $secondaryActions,
-				"method" => $this->method,
-				"action" => $this->action,
-				"formId" => $this->formId,
-				"formClass" => $this->class,
-				"primaryKeyValue" => $this->primaryKeyValue,
-				"primaryKey" => $this->primaryKey,
-				"targetBlank" => $this->targetBlank,
-				"autoComplete" => $this->getAutoComplete(),
-				"panelTemplate" => config('form.templates.panel'),
-				"actionsTemplate" => config('form.templates.actions'),
-				"isCancelVisible" => $this->isCancelVisible(),
-				"cancelUrl" => $this->getCancelLinkUrl(),
-				"hideActions" => $this->isHideActions(),
-				"form" => $this,
-			]
-		);
-	}
-
-	/**
-	 * Add a new action button
-	 * @param string $action - Action name
-	 * @param string $label  - Action Label
-	 * @return self
-	 */
-	public function action(string $action, string $label): Form
-	{
-		$this->actions[] = [$action, $label];
-		return $this;
-	}
-
-	#########################
-	#   GETTER E SETTERS    #
-	#########################
-
-	/**
-	 * Set the value of template
-	 * @param string $template Form template
-	 * @return  self
-	 */
-	public function setTemplate($template): Form
-	{
-		$this->template = $template;
-		return $this;
-	}
-
-	/**
-	 * Set the value of action
-	 * @param $action
-	 * @return  self
-	 */
-	public function setAction(string $action)
-	{
-		$this->action = $action;
-		return $this;
-	}
-
-	/**
-	 * Get the value of autoComplete
-	 */
-	public function getAutoComplete()
-	{
-		return $this->autoComplete;
-	}
+    public function buildIdField()
+    {
+        # Display field ID automatically
+        if (($this->options['showId'] ?? true) && !empty($this->primaryKeyValue)) {
+            $this->show('ID', $this->primaryKeyValue);
+        }
+    }
 
 
-	/**
-	 * Set the value of autoComplete
-	 * @return  self
-	 */
-	public function setAutoComplete($autoComplete)
-	{
-		$this->autoComplete = $autoComplete;
-		return $this;
-	}
+    /**
+     * Create a new form panel
+     * @param string $title Panel Title
+     * @param string $class Panel class
+     * @return Form
+     */
+    public function panel(string $title = '', string $class = "")
+    {
+        $title = empty($title) ? __('form::form.panel_default') : $title;
 
-	/**
-	 * @param string $method
-	 * @return $this
-	 */
-	public function setMethod(string $method)
-	{
-		$this->method = $method;
-		return $this;
-	}
+        # Next Panel ID
+        if (empty($id)) {
+            $id = $this->idPanel++;
+        }
+        $this->panels[] = new Panel($title, $id, $class);
 
-	/**
-	 * @return string
-	 */
-	public function getMethod()
-	{
-		return $this->method;
-	}
+        # Se for o primeiro panel injeta o id
+        $panel = end($this->panels);
 
+        if(count($this->panels) === 1 && empty($panel->fields)) {
+            $this->buildIdField();
+        }
 
-	/**
-	 * @return array
-	 */
-	public function getRules(): array
-	{
-		return $this->rules;
-	}
+        return $this;
+    }
 
-	/**
-	 * Set rules array
-	 * @param Object $objRules
-	 */
-	public function setRules(Object $objRules): void
-	{
-		# O array com regras é uma estrutura de chave
-		# valor, sendo que o valor pode ser do tipo array ou string.
-		# Ex:
-		# 'title' => 'required|unique:posts|max:255',
-		# OU
-		# 'title' => ['required', 'unique:posts', 'max:255'],
-		# O padrão adotato será os valores separados com array
-		$rules = $objRules->rules();
-		foreach ($rules as $ind => $rule) {
-			if (getType($rule) == 'string') {
-				$rules[$ind] = explode('|', $rule);
-			}
-		}
-		$this->rules = $rules;
-	}
+    /**
+     * Add a new field
+     * @param string $type Field Type
+     * @param string $name
+     * @param string $label
+     * @param array $options Extra options
+     * @return $this
+     */
+    public function field(string $type, string $name, string $label, array $options = [])
+    {
+        try {
+            $fieldClass = $this->getField($type);
+        } catch (Exception $e) {
+            return $this;
+        }
+        if (is_null($fieldClass)) {
+            return $this;
+        }
 
-	/**
-	 * @return bool
-	 */
-	public function isCancelVisible(): bool
-	{
-		return $this->cancelVisible;
-	}
+        # If the last element isn't a panel, a new panel is created
+        if (empty($this->panels)) {
+            $this->panel();
+        }
 
-	/**
-	 * @param bool $CancelVisible
-	 */
-	public function setCancelVisible(bool $CancelVisible): void
-	{
-		$this->cancelVisible = $CancelVisible;
-	}
+        $panel = end($this->panels);
+        $panel->fields[] = new $fieldClass($name, $label, $options, $type);
 
-	/**
-	 * @return string
-	 */
-	public function getCancelLinkUrl(): string
-	{
-		return $this->cancelLinkUrl;
-	}
+        return $this;
+    }
 
-	/**
-	 * @param string $cancelLinkUrl
-	 */
-	public function setCancelLinkUrl(string $cancelLinkUrl): void
-	{
-		$this->cancelLinkUrl = $cancelLinkUrl;
-	}
+    /**
+     * Get field class based on FieldAlias
+     * @param string $field Field alias
+     * @return object
+     * @throws Exception
+     */
+    protected function getField(string $field)
+    {
+        $fieldClass = isset($this->fields[$field]) ? $this->fields[$field] : null;
+        if (!$fieldClass) {
+            throw new Exception($field . " - Field doesn't exist.");
+        }
+        return $fieldClass;
+    }
 
+    /**
+     * Render entire form
+     * @return Factory|View
+     */
+    public function render()
+    {
+        # Build a new panel if variable panels is empty
+        if (empty($this->panels)) {
+            $panel = $this->panel();
+            $this->panels[] = $panel;
+        }
 
-	/**
-	 * @return string
-	 */
-	public function getPrimaryKey(): string
-	{
-		return $this->primaryKey;
-	}
+        $formTemplate = $this->template ?? config("form.templates.form");
 
-	/**
-	 * @param string $primaryKey
-	 */
-	public function setPrimaryKey(string $primaryKey): void
-	{
-		$this->primaryKey = $primaryKey;
-	}
+        # Render form HTML
+        return view($formTemplate, [
+                "panelTemplate" => config('form.templates.panel'),
+                "actionsTemplate" => config('form.templates.actions'),
+                'firstAction' => array_key_first($this->actions),
+                "form" => $this,
+            ]
+        );
+    }
+
+    /**
+     * Add a new action button
+     * @param string $action - Action name
+     * @param string $label - Action Label
+     * @param string $routeName
+     * @return self
+     */
+    public function action(string $label, string $routeName = ''): Form
+    {
+        $this->actions = array_merge([Str::random(7) => [$label, $routeName]], $this->actions);
+        return $this;
+    }
+
+    #########################
+    #   GETTER E SETTERS    #
+    #########################
+
+    /**
+     * @return array
+     */
+    public function getRules(): array
+    {
+        return $this->rules;
+    }
+
+    /**
+     * Set rules array
+     * @param Object $objRules
+     */
+    public function setRules(object $objRules): void
+    {
+        # Transform rules written as string into array
+        # 'required|unique:posts|max:255',
+        # TO
+        # ['required', 'unique:posts', 'max:255'],
+
+        $rules = $objRules->rules();
+        foreach ($rules as $ind => $rule) {
+            if (getType($rule) == 'string') {
+                $rules[$ind] = explode('|', $rule);
+            }
+        }
+        $this->rules = $rules;
+    }
+
+    private function clearUrl($url)
+    {
+
+        if (strpos($url, "?") !== false) {
+            return substr($url, 0, strpos($url, "?"));
+        }
+        return $url;
+    }
+
+    /**
+     * Search for specific parameter inside a querystring
+     * @param $request
+     * @param array $ignoreList
+     * @return string
+     */
+    private function getQueryString($request, $ignoreList = [])
+    {
+        parse_str($request->getQueryString(), $queryArray);
+        foreach ($ignoreList as $ignoreItem) {
+            if (array_key_exists($ignoreItem, $queryArray)) {
+                unset($queryArray[$ignoreItem]);
+            }
+        }
+        return http_build_query($queryArray);
+    }
 
 }
