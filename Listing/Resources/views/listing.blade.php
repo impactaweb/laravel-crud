@@ -16,7 +16,7 @@
                         data-method="{{ $action->getMethod() }}"
                         title="{{ strip_tags($action->getLabel()) }}"
                         data-confirmation="{{ $action->getConfirmationText() }}"
-                        data-toggle="tooltip" data-placement="top" 
+                        data-toggle="tooltip" data-placement="top"
                     >
                         @if($action->getIcon())
                             <i class="{{ $action->getIcon() }}"></i>
@@ -67,7 +67,11 @@
                 <td><input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->$primaryKey }}" /></td>
             @endif
             @foreach ($columns as $column)
-                <td>{!! $column->formatData($item) !!}</td>
+                @if($column->type === 'text')
+                    <td>{{ $column->formatData($item) }}</td>
+                @else
+                    <td>{!! $column->formatData($item) !!}</td>
+                @endif
             @endforeach
             </tr>
         @empty
