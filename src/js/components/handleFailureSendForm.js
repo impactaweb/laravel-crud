@@ -1,33 +1,20 @@
 module.exports = function handleFailureSendForm(error) {
-  const $alert = document.querySelector("[data-expect-alert]");
-
   window.jQuery('[data-container="loading"]').html("");
 
   if (error.status >= 500) {
-    const alertError = `
-          <div class="container alert mb-1 alert-danger alert-dismissible fade show" role="alert" data-expect >
-          <span data-content>${error.responseJSON.errors}</span>
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times</span>
-          </button>
-          </div>
-          `;
+    // TODO: Uma boa feature seria um endpoint pra envios de erros internos a partir do front.
+    const errorData = {
+      title: "Ocorreu um erro no processo",
+      type: "error",
+      html:
+        "<p>Pedimos desculpa pelo erro, por favor entre em contato com o suporte.</p>"
+    };
 
-    $alert.innerHTML = alertError;
-    $alert.scrollIntoView();
-    return;
+    return window.alertaHtml(errorData);
   }
 
   if (error.status !== 422 || !error.responseJSON.errors) return;
 
-  const alertMessage = `
-      <div class="container alert mb-1 alert-danger alert-dismissible fade show" role="alert" data-expect >
-          <span data-content>Ops! Por favor, verifique os campos abaixo.</span>
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times</span>
-          </button>
-      </div>
-      `;
   const camposInvalidos = error.responseJSON.errors;
 
   let hasScroll = false;
@@ -53,6 +40,11 @@ module.exports = function handleFailureSendForm(error) {
     hasScroll = true;
   });
 
-  $alert.innerHTML = alertMessage;
-  $alert.scrollIntoView();
+  const errorData = {
+    title: "Alguns campos estão incorretos",
+    type: "error",
+    html: "<p>Corrija os campos marcados em vermelho e reenvie o formulário</p>"
+  };
+
+  return window.alertaHtml(errorData, 8000);
 };
