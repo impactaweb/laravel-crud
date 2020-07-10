@@ -4,6 +4,7 @@
             @foreach ($panel->attrs as $atributo => $valorAtributo)
                 @if ( $atributo === 'data-show-rules-panel')
                     data-show-rules-panel='@json($valorAtributo)'
+                    style="display: none;"
                 @elseif(gettype($valorAtributo) == 'string')
                     {{ $atributo }}="{{ $valorAtributo }}"
                 @endif
