@@ -15,11 +15,11 @@ class Panel
     /**
      * @var array
      */
-    public $attrs = array();
+    public $attrs = [];
     /**
      * @var array
      */
-    public $fields = array();
+    public $fields = [];
     /**
      * @var string
      */
@@ -34,11 +34,12 @@ class Panel
      * @param string $id    Panel ID
      * @param string $class Panel Class
      */
-    public function __construct(string $title, string $id, string $class = "")
+    public function __construct(string $title, string $id, string $class = "", $attrs = [])
     {
         $this->title = $title;
         $this->class = $class;
         $this->id = $id;
+        $this->attrs = $attrs;
     }
 
     /**
