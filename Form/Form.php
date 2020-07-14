@@ -54,9 +54,14 @@ class Form
 
         $this->buildBaseAction();
         $this->buildFormMethod();
-        $this->buildFormAction();
-        $this->buildDefaultActions();
-        $this->buildCancelLinkUrl();
+        try {
+            $this->buildFormAction();
+            $this->buildDefaultActions();
+            $this->buildCancelLinkUrl();
+        } catch (Exception $e) {
+            # When is not a resource
+        }
+
         $this->buildPrimaryKeyValue();
 
         return $this;
