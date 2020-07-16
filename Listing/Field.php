@@ -19,7 +19,7 @@ class Field {
         $this->type = $type;
         $this->name = $name;
         $this->label = $label;
-        
+
         if (isset($options['default']) && $options['default'] == false) {
             $this->activeByDefault = false;
         }
@@ -51,7 +51,7 @@ class Field {
     {
         return $this->searchOptions;
     }
-    
+
     public function getNameConverted()
     {
         return str_replace('.', '_', $this->name);
@@ -99,14 +99,14 @@ class Field {
     }
 
     // Formata o dado conforme parâmetros do campo (executa o callback, etc)
-    public function formatData(Model $data): ?string
+    public function formatData(Model $data, $index = null, $datas = null): ?string
     {
         $columnName = $this->getIndexName();
 
         // Executando callbacks
         if (is_callable($this->callbackFunction)) {
             $functionToExecute = $this->callbackFunction;
-            return $functionToExecute($data);
+            return $functionToExecute($data, $index, $datas);
         }
 
         // Aplicando máscaras

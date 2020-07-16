@@ -166,7 +166,7 @@ class Form
      * @param string $class Panel class
      * @return Form
      */
-    public function panel(string $title = '', string $class = "")
+    public function panel(string $title = '', string $class = "", $attrs = [])
     {
         $title = empty($title) ? __('form::form.panel_default') : $title;
 
@@ -174,7 +174,7 @@ class Form
         if (empty($id)) {
             $id = $this->idPanel++;
         }
-        $this->panels[] = new Panel($title, $id, $class);
+        $this->panels[] = new Panel($title, $id, $class, $attrs);
 
         # Se for o primeiro panel injeta o id
         $panel = end($this->panels);

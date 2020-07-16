@@ -12,3 +12,4 @@ require("./js/components/ajaxInputEventHandler");
 require("./js/components/dates");
 require("./js/components/multiselect");
 require("./js/components/activeMultiselect");
+require('./js/components/showHidePanel');
