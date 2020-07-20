@@ -4,7 +4,7 @@
     @include('listing::confirmation-modal')
 
     <div class="header row">
-        @if($actions)
+        @if($actions && !$formToFieldId)
             <div class="col">
                 @foreach ($actions as $action)
                     <button
@@ -65,7 +65,7 @@
             @forelse ($data->items() as $index => $item)
                 <tr @if($formToFieldId)
                     data-search-field="{{ $formToFieldId }}"
-                    data-search-value="{{ $formFromFieldId }}"
+                    data-search-value="{{ $item->$formFromFieldId }}"
                     @endif>
                 @if($showCheckbox)
                     <td><input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->$primaryKey }}"/></td>

@@ -88,20 +88,23 @@ $(document).ready(function() {
   }
 
   function handleTdClick(e) {
+
+    // Verifica se é o clique para o SearchField
+    const $tr = $(this).parents("tr")
+    let data_search = $tr.attr('data-search-field')
+    if (data_search) {
+      parent.$('#modal-search-' + data_search).modal('hide')
+      parent.$('#c-' + data_search).val($tr.attr('data-search-value'))
+      return;
+    }
+
+    // Verifica se foi clicado em elementos
     if (
       $(e.target).is("a") ||
       $(e.target).is("img") ||
       $(e.target).is("input") ||
       $(e.target).is("button")
     ) {
-      return;
-    }
-
-    const $tr = $(this).parents("tr")
-    let data_search = $tr.attr('data-search-field')
-    if (data_search) {
-      $('#modal-search-' + data_search).modal('hide')
-      $('#c-' + data_search).val($tr.attr('data-search-value'))
       return;
     }
 

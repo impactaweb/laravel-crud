@@ -3,30 +3,32 @@
     @include('form::fields.label')
 
     <div class="col-5">
-        <input
-          type="text"
-          class="form-control {{ $class }}"
-          id="c-{{$id}}"
-          name="{{$id}}"
-          value="{{ $value }}"
+        <div class="d-flex">
+            <input
+              type="text"
+              class="form-control {{ $class }}"
+              id="c-{{$id}}"
+              name="{{$id}}"
+              value="{{ $value }}"
 
-          {{-- Atributos adicionais --}}
-          @foreach ($attrs as $attr => $attrValue)
-            @if(gettype($attrValue) == 'string')
-                {{ $attr }}="{{ $attrValue }}"
-            @endif
-          @endforeach
-          {{-- Fim - Atributos adicionais --}}
+              {{-- Atributos adicionais --}}
+              @foreach ($attrs as $attr => $attrValue)
+                @if(gettype($attrValue) == 'string')
+                    {{ $attr }}="{{ $attrValue }}"
+                @endif
+              @endforeach
+              {{-- Fim - Atributos adicionais --}}
 
-          @if($required)
-          required
-          @endif
-        >
+              @if($required)
+              required
+              @endif
+            >
 
-        <a href="#" data-toggle="modal" class="search-icon d-inline" data-target="#modal-search-{{$id}}">
-            <i class="fa fa-search"></i> Buscar
-        </a>
+            <a href="#" class="ml-2 d-inline-flex mt-2" data-toggle="modal" data-target="#modal-search-{{$id}}">
+                <i class="fa fa-search pt-1"></i> <span class="ml-2">Buscar</span>
+            </a>
 
+        </div>
         <div class="invalid-feedback"></div>
 
 
@@ -38,7 +40,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <iframe data-url="{{ $url }}?to_field_id={{$id}}&from_field_id={{ $search }}&is_popup=1"
-                    id="iframe-{{$id}}" src="{{ $url }}?to_field_id={{$id}}&from_field_id={{ $search }}&is_popup=1"
+                    id="iframe-{{$id}}" src="about:blank"
                     style="width: 100%; height: 900px; border: 0">
             </iframe>
         </div>
