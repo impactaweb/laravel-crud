@@ -63,9 +63,12 @@
         <tbody>
             {{-- Registros --}}
             @forelse ($data->items() as $index => $item)
-                <tr>
+                <tr @if($formToFieldId)
+                    data-search-field="{{ $formToFieldId }}"
+                    data-search-value="{{ $formFromFieldId }}"
+                    @endif>
                 @if($showCheckbox)
-                    <td><input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->$primaryKey }}" /></td>
+                    <td><input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->$primaryKey }}"/></td>
                 @endif
                 @foreach ($columns as $column)
                     <td>{!! $column->formatData($item, $index, $data->items()) !!}</td>

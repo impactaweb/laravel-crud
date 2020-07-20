@@ -97,6 +97,14 @@ $(document).ready(function() {
       return;
     }
 
+    const $tr = $(this).parents("tr")
+    let data_search = $tr.attr('data-search-field')
+    if (data_search) {
+      $('#modal-search-' + data_search).modal('hide')
+      $('#c-' + data_search).val($tr.attr('data-search-value'))
+      return;
+    }
+
     const $checkbox = $(this)
       .parents("tr")
       .find(".listing-checkboxes:first");
