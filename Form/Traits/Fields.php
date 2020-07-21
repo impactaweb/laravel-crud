@@ -143,9 +143,9 @@ trait Fields
      * @param $conteudo
      * @return mixed
      */
-    public function hidden($name, $label, $conteudo = '', array $options = [])
+    public function hidden($name, array $options = [])
     {
-        return $this->field('hidden', $name, $label, array_merge(['content' => $conteudo], $options));
+        return $this->field('hidden', $name, '', $options);
     }
 
     /**
