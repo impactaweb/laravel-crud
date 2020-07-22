@@ -16,7 +16,7 @@
                         data-method="{{ $action->getMethod() }}"
                         title="{{ strip_tags($action->getLabel()) }}"
                         data-confirmation="{{ $action->getConfirmationText() }}"
-                        data-toggle="tooltip" data-placement="top" 
+                        data-toggle="tooltip" data-placement="top"
                     >
                         @if($action->getIcon())
                             <i class="{{ $action->getIcon() }}"></i>
@@ -60,21 +60,23 @@
             </tr>
         </thead>
 
-        {{-- Registros --}}
-        @forelse ($data->items() as $item)
-            <tr>
-            @if($showCheckbox)
-                <td><input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->$primaryKey }}" /></td>
-            @endif
-            @foreach ($columns as $column)
-                <td>{!! $column->formatData($item) !!}</td>
-            @endforeach
-            </tr>
-        @empty
-            <tr class="empty">
-                <td colspan="100%">Nenhum item encontrado</td>
-            </tr>
-        @endforelse
+        <tbody>
+            {{-- Registros --}}
+            @forelse ($data->items() as $index => $item)
+                <tr>
+                @if($showCheckbox)
+                    <td><input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->$primaryKey }}" /></td>
+                @endif
+                @foreach ($columns as $column)
+                    <td>{!! $column->formatData($item, $index, $data->items()) !!}</td>
+                @endforeach
+                </tr>
+            @empty
+                <tr class="empty">
+                    <td colspan="100%">Nenhum item encontrado</td>
+                </tr>
+            @endforelse
+        </tbody>
     </table>
     @endif
 

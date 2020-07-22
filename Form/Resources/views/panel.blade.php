@@ -2,7 +2,10 @@
     @foreach ($form->panels as $panel)
         <div class="card mb-4 border overflow-visible"
             @foreach ($panel->attrs as $atributo => $valorAtributo)
-                @if(gettype($valorAtributo) == 'string')
+                @if ( $atributo === 'data-show-rules-panel')
+                    data-show-rules-panel='@json($valorAtributo)'
+                    style="display: none;"
+                @elseif(gettype($valorAtributo) == 'string')
                     {{ $atributo }}="{{ $valorAtributo }}"
                 @endif
             @endforeach
@@ -29,7 +32,7 @@
                 <div class="card-body">
 
                     @foreach ($panel->fields as $field)
-                        <div class="fieldBlock" data-field-name="{{ $field->id }}" 
+                        <div class="fieldBlock" data-field-name="{{ $field->id }}"
                             @if(isset($field->options['show_rules'])) data-show-rules='@json($field->options['show_rules'])' @endif
                             >
 
