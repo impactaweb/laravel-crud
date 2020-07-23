@@ -10,6 +10,7 @@ return [
 
         'fields' => [
             'text' => 'form::fields.text',
+            'search' => 'form::fields.search',
             'password' => 'form::fields.password',
             'number' => 'form::fields.number',
             'select' => 'form::fields.select',

@@ -10,12 +10,18 @@
     </div>
     <div class="modal-body" style="max-height: 450px; overflow-y: scroll;">
 
-    @foreach ($advancedSearchFields as $position => $field) 
+    @if(request()->get('to_field_id'))
+        <input hidden name="to_field_id" value="{{ request()->get('to_field_id') }}">
+        <input hidden name="from_field_id" value="{{ request()->get('from_field_id') }}">
+        <input hidden name="is_popup" value="1">
+    @endif
+
+    @foreach ($advancedSearchFields as $position => $field)
         <div class="form-group row">
             <div class="col-md-4">
                 <label class="col-auto col-form-label font-weight-bold" style="text-transform: capitalize;">{{ $field->getLabel() }}:</label>
             </div>
-    
+
             @switch($field->getType())
                 @case('flag')
                 @case('select')
@@ -26,7 +32,7 @@
             @endswitch
         </div>
     @endforeach
-            
+
     </div>
     <div class="modal-footer">
         <a

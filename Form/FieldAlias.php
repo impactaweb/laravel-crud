@@ -29,7 +29,8 @@ class FieldAlias
         "date" => Fields\DateField::class,
         "time" => Fields\TimeField::class,
         "rtf" => Fields\RtfField::class,
-        'multiselectgroup' => Fields\MultiSelectGroupField::class
+        'multiselectgroup' => Fields\MultiSelectGroupField::class,
+        'search' => Fields\SearchField::class,
     ];
 
 }

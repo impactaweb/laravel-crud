@@ -196,5 +196,18 @@ trait Fields
         return $this->field('multiselectgroup', $name, $label, array_merge(['selectOptions' => $selectOptions], $options));
     }
 
+    /**
+     * Search Field
+     * @param string $name
+     * @param string $label
+     * @param string $url
+     * @param string $coluna
+     * @return mixed
+     */
+    public function search(string $name, string $label, string $url, string $search)
+    {
+        return $this->field('search', $name, $label, ['url' => $url, 'search' => $search]);
+    }
+
 
 }
