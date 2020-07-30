@@ -93,6 +93,8 @@ class Listing {
 
         $data = [
             'data' => $this->performQuery(),
+            'formToFieldId' => request()->get('to_field_id', null),
+            'formFromFieldId' => request()->get('from_field_id', null),
             'actions' => $this->actions,
             'showCheckbox' => $this->isCheckboxNeeded(),
             'columns' => $this->fields->getActiveFields(),
@@ -119,7 +121,7 @@ class Listing {
         $orderby = $this->getOrderby();
 
         $this->isSearching = (request()->has('q') && trim(request()->get('q')) !== '');
-        
+
         // Adicionar colunas da busca ao SELECT e JOIN para garantir que a coluna esteja acessível
         foreach ($this->fields->getFieldsName() as $fieldName) {
             $fieldNameQuerystring = str_replace('.', '_', $fieldName);
@@ -130,7 +132,7 @@ class Listing {
                 }
             }
         }
-        
+
         // Campos adicionais para o select
         $activeColumns = array_merge($activeColumns, $this->aditionalSelectFields);
 
@@ -208,8 +210,8 @@ class Listing {
     {
         foreach ($this->actions as $action) {
             $url = $action->getUrl();
-            if ($action->getMethod() != 'GET' 
-                || strpos($url, '{id}') !== false 
+            if ($action->getMethod() != 'GET'
+                || strpos($url, '{id}') !== false
                 || strpos($url, '{ids}') !== false) {
                 return true;
             }

@@ -186,4 +186,11 @@ window.jQuery(document).ready(function() {
       window.location.reload();
     }
   };
+
+  // Mostra o Iframe dentro das modals do botão SEARCH
+  $("[data-search-iframe]").on('show.bs.modal', function (e) {
+    let id = $(this).attr('data-search-iframe')
+    $('#iframe-' + id).attr('src', $('#iframe-' + id).attr('data-url'))
+  })
+
 });

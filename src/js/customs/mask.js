@@ -12,6 +12,9 @@
      */
     function onComplete(e) {
       const { target: $currentElement } = e;
+
+      $($currentElement).trigger('blur');
+
       const callback = $currentElement.getAttribute("data-oncomplete");
 
       if (!callback) return;
