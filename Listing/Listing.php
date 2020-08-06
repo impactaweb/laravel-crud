@@ -25,6 +25,7 @@ class Listing {
     protected $configFile = 'listing';
     protected $isSearching = false;
     protected $aditionalSelectFields = [];
+    protected $showCheckbox = true;
 
     /**
      * Construtor da classe
@@ -96,7 +97,7 @@ class Listing {
             'formToFieldId' => request()->get('to_field_id', null),
             'formFromFieldId' => request()->get('from_field_id', null),
             'actions' => $this->actions,
-            'showCheckbox' => $this->isCheckboxNeeded(),
+            'showCheckbox' => $this->showCheckbox == false ? false : $this->isCheckboxNeeded(),
             'columns' => $this->fields->getActiveFields(),
             'primaryKey' => $this->primaryKey,
             'advancedSearchFields' => $this->fields->getAllFields(),
