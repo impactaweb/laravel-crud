@@ -190,6 +190,9 @@ class DataSource
                         continue;
                     }
                     $i++;
+                    # remove qualquer apelido que a coluna tiver, para não dar erro na query:
+                    $col = explode(' ', $column);
+                    $column = $col[0];
                     $whereRaw .= ($i == 1 ? '' : ' OR ') . $column . ' like ? ';
                     $whereRawValues[] = is_numeric($searchText) ? $searchText : '%' . $searchText . '%';
                 }
