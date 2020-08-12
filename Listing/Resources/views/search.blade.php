@@ -3,6 +3,13 @@
         <div class="input-group mb-2 mr-sm-2">
 
             <div class="input-group mb-3">
+                @if(request()->get('todos'))
+                    <input 
+                        type="hidden" 
+                        name="todos"
+                        value="1"
+                    />
+                @endif
                 <input
                     type="text"
                     class="form-control form-control-lg"
