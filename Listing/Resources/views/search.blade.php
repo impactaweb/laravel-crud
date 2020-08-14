@@ -1,7 +1,13 @@
 <form action="{{ request()->url() }}" method="get" class="frmBusca">
     <div class="form-group">
         <div class="input-group mb-2 mr-sm-2">
-
+            @forelse($keepQueryStrings as $i => $field)
+                <input type="hidden" 
+                       name="{{ $field }}"
+                       value="{{ request()->get($field) ?? '' }}" 
+                />
+            @empty
+            @endforelse
             <div class="input-group mb-3">
                 <input
                     type="text"

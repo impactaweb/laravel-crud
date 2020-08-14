@@ -26,6 +26,7 @@ class Listing {
     protected $isSearching = false;
     protected $aditionalSelectFields = [];
     protected $showCheckbox = true;
+    protected $keepQueryStrings = [];
 
     /**
      * Construtor da classe
@@ -104,7 +105,8 @@ class Listing {
             'isSearching' => $this->isSearching,
             'advancedSearchOperators' => DataSource::getAdvancedSearchOperators(),
             'currentOrderby' => $this->getOrderby(),
-            'allowedOrderbyColumns' => $this->dataSource->getAllowedOrderbyColumns()
+            'allowedOrderbyColumns' => $this->dataSource->getAllowedOrderbyColumns(),
+            'keepQueryStrings' => $this->keepQueryStrings,
         ];
 
         return view($viewFile, $data);
@@ -262,6 +264,14 @@ class Listing {
     public function aditionalSelectFields(array $fields)
     {
         $this->aditionalSelectFields = $fields;
+    }
+
+    /**
+     * Informa quais queryStrings vamos manter no searchform ao realizar uma busca:
+     */
+    public function setKeepQueryString(array $fields) 
+    {
+        $this->keepQueryStrings = $fields;
     }
 
 }
