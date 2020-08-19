@@ -16,6 +16,11 @@
 
           $($panel).hide();
         });
+
+        $selectedId = $('[data-input="selectSelected"]').val();
+        if ($selectedId === String(rules[key])) {
+          return $($panel).show();
+        }
     });
   });
 })(jQuery);
