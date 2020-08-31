@@ -1,0 +1,57 @@
+<?php
+
+namespace DummyNamespace;
+
+use App\Forms\DummyDir\DummyNameForm;
+use App\Http\Requests\DummyDir\DummyNameRequest;
+use App\Http\Controllers\Controller;
+use Impactaweb\Crud\Traits\CrudControllerTrait;
+use DummyModel;
+
+class DummyClass extends Controller
+{
+    use CrudControllerTrait;
+
+    /**
+    * Função do relacionamento da model => id do campo no name do form
+    * @var array
+    */
+    public $belongsToManyRelations = [];
+
+    public $model = DummyModelName::class;
+    public $validation = DummyNameRequest::class;
+
+    public function index()
+    {
+        # listagem
+    }
+
+    public function create()
+    {
+        $form = new DummyNameForm();
+        $form->setRules(new DummyNameRequest());
+        $htmlForm = $form->renderForm();
+        # return view('formulario.padrao', ['formulario' => $htmlForm]);
+    }
+
+    public function edit()
+    {
+        $dadosIniciais = [];
+        $form = new DummyNameForm($dadosIniciais, 'id_model_primarykey'); # Coloque a PK da model
+        $form->setRules(new DummyNameRequest());
+        $htmlForm = $form->renderForm();
+        # return view('formulario.padrao', ['formulario' => $htmlForm]);
+    }
+
+//    # Callbacks to work with data after or before save
+//    protected function beforeSave($requestData)
+//    {
+//        $requestData['my_field'] = onlyNumbers('my_field');
+//        return $requestData;
+//    }
+//
+//    protected function afterSave($modelObj)
+//    {
+//        # Do stuff here
+//    }
+}

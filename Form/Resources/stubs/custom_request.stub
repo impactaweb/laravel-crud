@@ -1,0 +1,21 @@
+<?php
+
+namespace DummyNamespace;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class DummyClass extends FormRequest
+{
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        # Descomente as regras e edite as validações nescessarias
+        return [
+            {{ myRules }}
+        ];
+    }
+}
