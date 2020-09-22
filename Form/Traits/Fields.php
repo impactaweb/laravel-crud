@@ -155,7 +155,6 @@ trait Fields
      * @param array $options
      * @return mixed
      */
-<<<<<<< HEAD
     public function datePicker(string $name, string $label, array $options = [])
     {
         return $this->field('date', $name, $label,  array_merge(['attrs' => ['data-date-picker' => 'true']], $options));
@@ -163,21 +162,11 @@ trait Fields
 
     /**
      * Campo de data e hora
-=======
-    public function dateTime(string $name, string $label, array $options = [])
-    {
-        return $this->field('datetime', $name, $label, $options);
-    }
-
-    /**
-     * Campo de hora
->>>>>>> 04fd5a689bec6bfa6ff4a34529ea7728d44f6b3c
      * @param string $name
      * @param string $label
      * @param array $options
      * @return mixed
      */
-<<<<<<< HEAD
     public function dateTimePicker(string $name, string $label, array $options = [])
     {
         return $this->field('datetime', $name, $label,  array_merge(['attrs' => ['data-datetime-picker' => 'true']], $options));
@@ -193,11 +182,6 @@ trait Fields
     public function timePicker(string $name, string $label, array $options = [])
     {
         return $this->field('time', $name, $label,  array_merge(['attrs' => ['data-time-picker' => 'true']], $options));
-=======
-    public function time(string $name, string $label, array $options = [])
-    {
-        return $this->field('time', $name, $label, $options);
->>>>>>> 04fd5a689bec6bfa6ff4a34529ea7728d44f6b3c
     }
 
     /**
