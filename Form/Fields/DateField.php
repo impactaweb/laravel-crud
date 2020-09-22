@@ -19,7 +19,6 @@ class DateField extends BaseField
         $this->formatClient = (string) config('form.fields.date.formatClient', 'YYYY-MM-DD');
         $this->formatServer = (string) config('form.fields.date.formatServer', 'YYYY-MM-DD');
         parent::__construct($id, $label, $options, $type);
-        
     }
 
 }
