@@ -173,7 +173,7 @@ trait Fields
     }
 
     /**
-     * Campo de hora
+     * Campo de hora 
      * @param string $name
      * @param string $label
      * @param array $options
