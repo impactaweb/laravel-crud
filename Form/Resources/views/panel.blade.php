@@ -7,9 +7,7 @@
                     data-show-rules-panel='@json($valorAtributo)'
                     style="display: none;"
                 @elseif ($atributo == 'show_rules')
-                    data-show-rules='@json($valorAtributo)' 
-                @elseif ($atributo == 'show_rules')
-                    data-show-rules='@json($valorAtributo)' 
+                    data-show-rules='@json($valorAtributo)'
                 @elseif(gettype($valorAtributo) == 'string')
                     {{ $atributo }}="{{ $valorAtributo }}"
                 @endif
