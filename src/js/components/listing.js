@@ -195,6 +195,7 @@ $(document).ready(function() {
 
         if (jsonData.error) {
           alert(jsonData.error);
+          listagemLoading(false);
           return;
         }
 
