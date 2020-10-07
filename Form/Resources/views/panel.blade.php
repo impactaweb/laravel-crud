@@ -1,10 +1,15 @@
 <div class="accordion" id="abas-form-{{ $form->formId }}">
-    @foreach ($form->panels as $panel)
+    @foreach ($form->panels as $index => $panel)
         <div class="card mb-4 border overflow-visible"
+            data-field-name="panel-{{ $index }}"
             @foreach ($panel->attrs as $atributo => $valorAtributo)
                 @if ( $atributo === 'data-show-rules-panel')
                     data-show-rules-panel='@json($valorAtributo)'
                     style="display: none;"
+                @elseif ($atributo == 'show_rules')
+                    data-show-rules='@json($valorAtributo)' 
+                @elseif ($atributo == 'show_rules')
+                    data-show-rules='@json($valorAtributo)' 
                 @elseif(gettype($valorAtributo) == 'string')
                     {{ $atributo }}="{{ $valorAtributo }}"
                 @endif
