@@ -218,7 +218,7 @@ $(document).ready(function() {
         jqXHR.responseJSON.error
           ? jqXHR.responseJSON.error
           : "Erro ao alterar."
-      );s
+      );
     })
     .always(function() {
       listagemLoading(false);
