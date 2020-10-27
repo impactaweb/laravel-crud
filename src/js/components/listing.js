@@ -195,6 +195,7 @@ $(document).ready(function() {
 
         if (jsonData.error) {
           alert(jsonData.error);
+          listagemLoading(false);
           return;
         }
 
@@ -217,7 +218,7 @@ $(document).ready(function() {
         jqXHR.responseJSON.error
           ? jqXHR.responseJSON.error
           : "Erro ao alterar."
-      );s
+      );
     })
     .always(function() {
       listagemLoading(false);
