@@ -13,6 +13,15 @@
             @if($required)
             required
             @endif
+
+            {{-- Atributos adicionais --}}
+            @foreach ($attrs as $attr => $attrValue)
+                @if(gettype($attrValue) == 'string')
+                    {{ $attr }}="{{ $attrValue }}"
+                @endif
+            @endforeach
+            {{-- Fim - Atributos adicionais --}}
+            
         >
         <div class="invalid-feedback"></div>
     </div>

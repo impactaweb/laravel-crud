@@ -17,6 +17,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "flatpickr": "^4.6.6",
     "jquery": "^3.5.1",
     "knockout": "^3.5.1"
   },
