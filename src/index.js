@@ -3,6 +3,7 @@ require("./js/customs/jqueryExtends");
 require("./js/customs/loadEditor");
 require("./js/customs/mask");
 require("./js/customs/textarea");
+require("./js/customs/select2");
 
 // internal components
 require("./js/components/loading");
