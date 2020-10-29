@@ -1,11 +1,16 @@
 (function ($) {
   $(window.document).ready(function () {
-
-    $('[data-select2]').select2({
+    $('[data-form-select2]').select2({
+      placeholder: "Buscar",
+      language: {
+        inputTooShort: function () {
+          return "Digite 3 ou mais caracteres...";
+        }
+      },
+      minimumInputLength: 3,
       ajax: {
-        url: $(this).data('url'),
-        dataType: 'json'
-      }
+        dataType: 'json',
+      },
     });
 
   });

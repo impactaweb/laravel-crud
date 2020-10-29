@@ -3,25 +3,25 @@
     @include('form::fields.label')
 
     <div class="@if($col >= '10') col @else col-md-{{$col}} @endif">
-        <input
-          type="text"
-          class="form-control {{ $class }}"
-          id="c-{{$id}}"
-          name="{{$id}}"
-          value="{{ $value }}"
-
-          {{-- Atributos adicionais --}}
-          @foreach ($attrs as $attr => $attrValue)
+        <select
+            data-form-select2="true"
+            data-ajax--url="{{ $url }}"
+            data-ajax--cache="true"
+            class="form-control {{ $class }}"
+            id="c-{{$id}}"
+            name="{{$id}}"
+        {{-- Atributos adicionais --}}
+        @foreach ($attrs as $ind => $attrValue)
             @if(gettype($attrValue) == 'string')
-                {{ $attr }}="{{ $attrValue }}"
+                {{ $ind }}="{{ $attrValue }}"
             @endif
-          @endforeach
-          {{-- Fim - Atributos adicionais --}}
-
-          @if($required)
-          required
-          @endif
+        @endforeach
+        @if($required)
+            required
+        @endif
         >
+        </select>
         <div class="invalid-feedback"></div>
     </div>
+
 </div>
