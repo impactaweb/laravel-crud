@@ -11,6 +11,7 @@ return [
         'fields' => [
             'text' => 'form::fields.text',
             'search' => 'form::fields.search',
+            'select2' => 'form::fields.select2',
             'password' => 'form::fields.password',
             'number' => 'form::fields.number',
             'select' => 'form::fields.select',

@@ -105,7 +105,7 @@ class Form
     {
         # Build default actions
         $this->actions = [
-            "save_close"  => [__('form::form.save_close'), $this->baseAction . '.index'],
+            "save_close" => [__('form::form.save_close'), $this->baseAction . '.index'],
             "save" => [__('form::form.save'), $this->baseAction . '.edit'],
             "save_create" => [__('form::form.save_create'), $this->baseAction . '.create'],
         ];
@@ -124,7 +124,7 @@ class Form
     public function clearActions($actions = [])
     {
         if (!empty($actions)) {
-            foreach ((array) $actions as $actionName) {
+            foreach ((array)$actions as $actionName) {
                 unset($this->actions[$actionName]);
             }
         } else {
@@ -179,7 +179,7 @@ class Form
         # Se for o primeiro panel injeta o id
         $panel = end($this->panels);
 
-        if(count($this->panels) === 1 && empty($panel->fields)) {
+        if (count($this->panels) === 1 && empty($panel->fields)) {
             $this->buildIdField();
         }
 

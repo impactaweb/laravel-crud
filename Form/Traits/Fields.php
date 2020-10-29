@@ -75,6 +75,18 @@ trait Fields
     }
 
     /**
+     * Campo select2
+     * @param string $name
+     * @param string $label
+     * @param string $url
+     * @return mixed
+     */
+    public function select2(string $name, string $label, string $url)
+    {
+        return $this->field('select2', $name, $label, ['url' => $url]);
+    }
+
+    /**
      * Campo Text Area
      * @param string $name
      * @param string $label
