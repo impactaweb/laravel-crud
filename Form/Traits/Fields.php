@@ -75,7 +75,7 @@ trait Fields
     }
 
     /**
-     * Campo select2
+     * Field select2
      * @param string $name
      * @param string $label
      * @param string $url
