@@ -5,6 +5,9 @@
       language: {
         inputTooShort: function () {
           return "Digite 3 ou mais caracteres...";
+        },
+        noResults: function () {
+          return "Nenhum resultado encontrado.";
         }
       },
       minimumInputLength: 3,
