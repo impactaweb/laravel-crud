@@ -4,7 +4,7 @@
       placeholder: "Buscar",
       language: {
         inputTooShort: function () {
-          return "Digite 3 ou mais caracteres...";
+          return "Digite um valor...";
         },
         noResults: function () {
           return "Nenhum resultado encontrado.";
