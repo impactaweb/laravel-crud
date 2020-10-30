@@ -10,7 +10,7 @@
           return "Nenhum resultado encontrado.";
         }
       },
-      minimumInputLength: 3,
+      minimumInputLength: 1,
       ajax: {
         dataType: 'json',
       },
