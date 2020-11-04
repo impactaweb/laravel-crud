@@ -18,7 +18,8 @@
   },
   "dependencies": {
     "jquery": "^3.5.1",
-    "knockout": "^3.5.1"
+    "knockout": "^3.5.1",
+    "select2": "^4.0.13"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack",

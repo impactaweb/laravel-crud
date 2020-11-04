@@ -31,6 +31,7 @@ class FieldAlias
         "rtf" => Fields\RtfField::class,
         'multiselectgroup' => Fields\MultiSelectGroupField::class,
         'search' => Fields\SearchField::class,
+        'select2' => Fields\Select2Field::class,
     ];
 
 }
