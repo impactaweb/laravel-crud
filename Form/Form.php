@@ -97,7 +97,7 @@ class Form
             throw new Exception("Method has no action implemented");
         }
 
-        $route = route($this->baseAction . '.' . $methodActions[$method], $this->request->route()->parameters());
+        $route = route($this->baseAction . '.' . $methodActions[$method], $this->request->route()->parameters(), false);
         $this->formAction = $route . '?' . $this->getQueryString($this->request);
     }
 
