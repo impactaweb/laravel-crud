@@ -25,7 +25,7 @@
                 <optgroup label="{{ $groupParent }}">
                     @foreach ($childrens as $id => $textValue)
                         <option
-                            @if(in_array($id, $value))
+                            @if(is_array($value) && in_array($id, $value))
                             selected
                             @endif
                             value="{{$id}}"

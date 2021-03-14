@@ -6,7 +6,7 @@
                 class="form-control {{ $class }}"
                 id="c-{{$id}}"
                 name="{{$id}}"
-                value="{{ $value }}"
+                value="{{ $value ?? '' }}"
                 @if($required)
                 required
                 @endif
