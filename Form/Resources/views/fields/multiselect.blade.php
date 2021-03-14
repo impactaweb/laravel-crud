@@ -23,7 +23,7 @@
             {{-- Build selectOptions --}}
             @foreach ($selectOptions as $id => $option)
                 <option
-                    @if(in_array($id, $value))
+                    @if(is_array($value) && in_array($id, $value))
                     selected
                     @endif
                     value="{{$id}}">{{$option}}

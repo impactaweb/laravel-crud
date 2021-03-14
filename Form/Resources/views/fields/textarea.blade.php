@@ -16,7 +16,7 @@
             @if($required)
                 required
             @endif
-            >{{ $value }}</textarea>
+            >{{ $value ?? '' }}</textarea>
 
         <div class="invalid-feedback"></div>
     </div>

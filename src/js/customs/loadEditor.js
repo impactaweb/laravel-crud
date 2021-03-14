@@ -8,14 +8,13 @@
       lang: "pt-BR",
       toolbar: [
         // [groupName, [list of button]]
-        ["style", ["bold", "italic", "underline", "clear"]],
-        ["font", ["strikethrough"]],
+        ["style", ["bold", "italic", "underline", "strikethrough", "clear"]],
         ["fontsize", ["fontsize"]],
         ["color", ["color"]],
         ["para", ["ul", "ol", "paragraph"]],
         ["height", ["height"]],
         ["insert", ["picture", "table", "link", "video"]],
-        ["misc", ["fullscreen", "help"]],
+        ["misc", ["fullscreen"]],
       ],
       codeviewFilter: false,
       codeviewIframeFilter: true,

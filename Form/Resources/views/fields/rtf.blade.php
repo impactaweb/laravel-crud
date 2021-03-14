@@ -27,7 +27,7 @@
                 required
             @endif
             rows="3"
-        >{{$value}}</textarea>
+        >{{ $value ?? '' }}</textarea>
 
         <div class="invalid-feedback"></div>
     </div>

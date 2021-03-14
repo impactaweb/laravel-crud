@@ -8,13 +8,11 @@ class MultiSelectGroupField extends BaseField
     protected $value = [];
     protected $selectOptions;
 
-    protected function buildInitialValue(array $initial)
+    protected function buildInitialValue(array $initial): void
     {
-        if (isset($initial[$this->id])) {
-            $this->value = $initial[$this->id];
-            if (getType($this->value) != 'array') {
-                throw new \Exception("Multiselect requires array, " . getType($this->value) . ' given.');
-            }
+        parent::buildInitialValue($initial);
+        if (!is_array($this->value)) {
+            $this->value = [];
         }
     }
 }

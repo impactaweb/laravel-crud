@@ -15,6 +15,10 @@ class BaseField
     /**
      * @var string
      */
+    public $type;
+    /**
+     * @var string
+     */
     public $id = "";
     /**
      * @var string
@@ -79,6 +83,7 @@ class BaseField
         $this->id = $id;
         $this->label = $label;
         $this->options = $options;
+        $this->type = $type;
 
         # Get field template
         $this->getTemplate($type);
@@ -129,18 +134,29 @@ class BaseField
     /**
      * @param array $initial
      * @throws Exception
+     * 
+     * Extracts value from array based on fieldname string
+     * E.g.: field[test] should find data on
+     * [
+     *   'field' => [
+     *     'test' => 'something' // <<<
+     *   ]
+     * ]
      */
-    protected function buildInitialValue(array $initial)
+    protected function buildInitialValue(array $initial): void
     {
-        if (!isset($initial[$this->id])) {
-            return;
+        $fieldname = explode("[", str_replace("]", "", $this->id));
+        $value = $initial;
+
+        do {
+            $value = $value[array_shift($fieldname)] ?? "";
+        } while (count($fieldname));
+
+        if (gettype($value) == "array" && !in_array($this->type, ['multiselect', 'multiselectgroup'])) {
+            $value = "";
         }
 
-        $this->value = $initial[$this->id];
-        if (getType($this->value) != 'string' && !is_numeric($this->value)) {
-            throw new Exception("Field " . $this->id .
-                ' requires string or numeric, ' . getType($this->value) . ' given');
-        }
+        $this->value = $value;
     }
 
     /**
@@ -186,7 +202,6 @@ class BaseField
                     $this->required = true;
                 }
             };
-
         }
     }
 
@@ -230,5 +245,4 @@ class BaseField
         $this->attrs['data-ajax-data'] = json_encode($options['ajax']['data'] ?? []);
         $this->attrs['data-ajax-data-fields'] = json_encode($options['ajax']['dataFields'] ?? []);
     }
-
 }
