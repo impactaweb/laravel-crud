@@ -2,6 +2,7 @@
 </div>
 <div data-expect-alert></div>
 <form
+    method="{{ $form->method }}"
     {{-- não apaga --}}
     data-its-form
     {{-- Actions--}}
@@ -17,11 +18,16 @@
     target="__blank"
     @endif
 
+    @if($form->ajax)
+    data-ajax="true"
+    @endif
+
     {{-- Autocomplete--}}
     @if($form->autoComplete)
     autocomplete="off"
     data-form-prefix="c-"
     @endif>
+
 
     {{ csrf_field() }}
     {{ method_field($form->method) }}
