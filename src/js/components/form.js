@@ -15,6 +15,11 @@ window.jQuery(document).ready(function() {
 
   $("#form").validate({
     submitHandler: function(form) {
+
+      if (! $(form).data('ajax')) {
+        return true;
+      }
+
       $(form).submit(function(e) {
         e.preventDefault();
         e.stopPropagation();

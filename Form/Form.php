@@ -36,6 +36,7 @@ class Form
     public $primaryKey = '';
     public $cancelVisible = true;
     public $cancelLinkUrl = '#';
+    public $ajax = true;
 
 
     /**
@@ -142,7 +143,6 @@ class Form
             $parameters = $this->request->route()->parameters();
             $this->cancelLinkUrl = $this->clearUrl(route($this->baseAction . '.index', $parameters));
         }
-
     }
 
     public function buildPrimaryKeyValue()
@@ -246,7 +246,9 @@ class Form
         $formTemplate = $this->template ?? config("form.templates.form");
 
         # Render form HTML
-        return view($formTemplate, [
+        return view(
+            $formTemplate,
+            [
                 "panelTemplate" => config('form.templates.panel'),
                 "actionsTemplate" => config('form.templates.actions'),
                 'firstAction' => array_key_first($this->actions),
@@ -326,4 +328,13 @@ class Form
         return http_build_query($queryArray);
     }
 
+    /**
+     * Desativar o ajax do formulário
+     *
+     * @return void
+     */
+    public function disableAjax()
+    {
+        $this->ajax = false;
+    }
 }
