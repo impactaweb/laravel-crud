@@ -47,11 +47,9 @@
         {{-- Cabeçalho com as columns --}}
         <thead>
             <tr>
-            @if($showCheckbox)
-                <th scope="col" class="border-top-0">
-                    <input type="checkbox" name="checkbox-listing" />
-                </th>
-            @endif
+            <th scope="col" class="border-top-0"  @if(!$showCheckbox) style="display:none" @endif >
+                <input type="checkbox" name="checkbox-listing" />
+            </th>
             @foreach($columns as $column)
                 <th scope="col" class="border-top-0">
                     {!! $column->getOrderbyLink($currentOrderby, $allowedOrderbyColumns) !!}
@@ -67,9 +65,11 @@
                     data-search-field="{{ $formToFieldId }}"
                     data-search-value="{{ $item->$formFromFieldId }}"
                     @endif>
-                @if($showCheckbox)
-                    <td><input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->$primaryKey }}"/></td>
-                @endif
+                
+                <td @if(!$showCheckbox) style="display:none" @endif >
+                    <input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->$primaryKey }}"/>
+                </td>
+
                 @foreach ($columns as $column)
                     <td>{!! $column->formatData($item, $index, $data->items()) !!}</td>
                 @endforeach
