@@ -1,12 +1,10 @@
 <div class="col-md-3">
     <select name="op[{{ $field->getName() }}]" class="form-control">
-        @if(request()->get('op', null))
-            @foreach ($advancedSearchOperators as $key => $name)
-            <option value="{{ $key }}" {{ request()->get('op')[$field->getName()] == $key ? 'selected' : '' }}>
-                {{ __('listing::listing.operators.'.$name) }}
-            </option>
-            @endforeach
-        @endif
+        @foreach ($advancedSearchOperators as $key => $name)
+        <option value="{{ $key }}" {{ isset(request()->get('op')[$field->getName()]) && request()->get('op')[$field->getName()] == $key ? 'selected' : '' }}>
+            {{ __('listing::listing.operators.'.$name) }}
+        </option>
+        @endforeach
     </select>
 </div>
 <div class="col-md-5">
