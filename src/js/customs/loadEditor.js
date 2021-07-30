@@ -14,7 +14,7 @@
         ["para", ["ul", "ol", "paragraph"]],
         ["height", ["height"]],
         ["insert", ["picture", "table", "link", "video"]],
-        ["misc", ["fullscreen"]],
+        ["misc", ["fullscreen", "codeview"]],
       ],
       codeviewFilter: false,
       codeviewIframeFilter: true,
