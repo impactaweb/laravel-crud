@@ -50,10 +50,15 @@
               placeholder: '0',
           }).mask(document.querySelectorAll('[data-input="number"]'));
 
-          Inputmask({
-              mask: '(99) 99999-9999',
-              placeholder: '(__) _____-____',
-          }).mask(document.querySelectorAll('[data-input="cel_with_ddd"]'));
+          let maskCelDDD = function(event) {
+            if($(this).val().replace(/\D/g, "").length == 11){
+                $(this).inputmask('(99) 99999-999[9]');
+            } else {
+                $(this).inputmask('(99) 9999-9999[9]');
+            }
+          };
+          $('[data-input="cel_with_ddd"]').on('keyup', maskCelDDD);
+          $('[data-input="cel_with_ddd"]').on('blur', maskCelDDD).trigger('blur');
 
           Inputmask({
               mask: '9999-9999',
