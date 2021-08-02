@@ -52,9 +52,9 @@
 
           let maskCelDDD = function(event) {
             if($(this).val().replace(/\D/g, "").length == 11){
-                $(this).inputmask('(99) 99999-999[9]');
+                $(this).inputmask('(99)99999-999[9]');
             } else {
-                $(this).inputmask('(99) 9999-9999[9]');
+                $(this).inputmask('(99)9999-9999[9]');
             }
           };
           $('[data-input="cel_with_ddd"]').on('keyup', maskCelDDD);
