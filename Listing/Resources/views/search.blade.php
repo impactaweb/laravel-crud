@@ -1,4 +1,4 @@
-<form action="{{ request()->url() }}" method="get" class="frmBusca">
+<form method="get" class="frmBusca">
     <div class="form-group">
         <div class="input-group mb-2 mr-sm-2">
             @forelse($keepQueryStrings as $i => $field)
