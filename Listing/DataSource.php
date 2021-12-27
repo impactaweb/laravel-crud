@@ -168,7 +168,15 @@ class DataSource
             $this->columnsSelect[$primaryKey] = $this->table . '.' . $primaryKey;
         }
 
-        $this->dataSource = $this->dataSource->select($this->columnsSelect);
+        $currentColumns = !empty($this->dataSource->getQuery()->columns) ? array_map(function ($item) {
+            return $item->getValue();
+        }, $this->dataSource->getQuery()->columns) : [];
+
+        $currentColumns = $currentColumns
+            ? array_merge($currentColumns, array_values($this->columnsSelect))
+            : array_values($this->columnsSelect);
+
+        $this->dataSource = $this->dataSource->selectRaw(implode(",", $currentColumns));
     }
 
     /**
