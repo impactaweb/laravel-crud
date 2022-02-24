@@ -13,6 +13,7 @@ class Field {
     protected $callbackFunction;
     protected $mask;
     protected $searchOptions = [];
+    protected $searchField;
 
     public function __construct(string $type, string $name, string $label, array $options = [])
     {
@@ -35,6 +36,8 @@ class Field {
         if (isset($options['searchOptions']) && !empty($options['searchOptions'])) {
             $this->searchOptions = $options['searchOptions'];
         }
+
+        $this->searchField = $options['searchField'] ?? $name;
     }
 
     public function getType()
@@ -121,4 +124,13 @@ class Field {
         return $data->$columnName;
     }
 
+    public function getSearchField()
+    {
+        return $this->searchField;
+    }
+
+    public function getSearchFieldConverted()
+    {
+        return str_replace('.', '_', $this->getSearchField());
+    }
 }

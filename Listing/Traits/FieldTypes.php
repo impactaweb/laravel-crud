@@ -158,9 +158,17 @@ trait FieldTypes {
      * @param array $options
      * @return void
      */
-    public function select(string $name, string $label, array $searchOptions, array $options = [])
+    public function select(string $name, string $label, array $searchOptions, array $options = [], ?string $searchField = null)
     {
+        if (is_null($searchField)) {
+            $searchField = $name;
+        }
         $options['searchOptions'] = $searchOptions;
+        if (!is_null($searchField)) {
+            $options['searchField'] = $searchField;
+            $this->addSelectFields($searchField);
+        }
+
         return $this->field($name, $label, $options, 'select');
 
     }
