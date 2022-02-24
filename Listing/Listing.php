@@ -256,7 +256,7 @@ class Listing {
     }
 
     /**
-     * Adiciona campos adicionais para o select da query
+     * Cria lista de campos adicionais para o select da query
      *
      * @param array $fields
      * @return void
@@ -264,6 +264,17 @@ class Listing {
     public function aditionalSelectFields(array $fields)
     {
         $this->aditionalSelectFields = $fields;
+    }
+
+    /**
+     * Adiciona campos adicionais para o select da query
+     *
+     * @param string $field
+     * @return void
+     */
+    public function addSelectFields(string $field)
+    {
+        $this->aditionalSelectFields[] = $field;
     }
 
     /**
