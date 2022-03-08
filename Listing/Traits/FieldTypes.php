@@ -170,7 +170,6 @@ trait FieldTypes {
         }
 
         return $this->field($name, $label, $options, 'select');
-
     }
 
     /**
@@ -226,5 +225,18 @@ trait FieldTypes {
         return $this->field($name, $label, $options, 'text');
     }
 
+
+    /**
+     * Cria uma coluna padrão do tipo "data"
+     *
+     * @param string $name
+     * @param string $label
+     * @param array $options
+     * @return void
+     */
+    public function date(string $name, string $label, array $options = [])
+    {
+        return $this->field($name, $label, $options, 'date');
+    }
 
 }

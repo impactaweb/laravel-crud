@@ -1,5 +1,5 @@
 <input type="hidden" name="op[{{ $field->getSearchField() }}]" value="=" />
-<div class="col-md-8">
+<div>
     <select class="form-control" name="{{ $field->getSearchField() }}">
         <option value=""></option>
         @foreach ($field->getSearchOptions() as $index => $value)
