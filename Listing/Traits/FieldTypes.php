@@ -158,11 +158,18 @@ trait FieldTypes {
      * @param array $options
      * @return void
      */
-    public function select(string $name, string $label, array $searchOptions, array $options = [])
+    public function select(string $name, string $label, array $searchOptions, array $options = [], ?string $searchField = null)
     {
+        if (is_null($searchField)) {
+            $searchField = $name;
+        }
         $options['searchOptions'] = $searchOptions;
-        return $this->field($name, $label, $options, 'select');
+        if (!is_null($searchField)) {
+            $options['searchField'] = $searchField;
+            $this->addSelectFields($searchField);
+        }
 
+        return $this->field($name, $label, $options, 'select');
     }
 
     /**
@@ -218,5 +225,18 @@ trait FieldTypes {
         return $this->field($name, $label, $options, 'text');
     }
 
+
+    /**
+     * Cria uma coluna padrão do tipo "data"
+     *
+     * @param string $name
+     * @param string $label
+     * @param array $options
+     * @return void
+     */
+    public function date(string $name, string $label, array $options = [])
+    {
+        return $this->field($name, $label, $options, 'date');
+    }
 
 }
