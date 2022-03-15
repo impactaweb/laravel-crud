@@ -3,7 +3,7 @@
     <form class="" action="{{ request()->url() }}" method="get"/>
 
         {{-- para manter as querystrings ao submeter o form: --}}
-        @foreach(request()->query() as $item => $valor)
+        @foreach(request()->except('middleware') as $item => $valor)
             @if(!in_array($item, ['page', 'pp']) && !is_array($valor) && !empty($valor))
                 <input type="hidden" name="{{ $item }}" value="{{ $valor }}" />
             @endif
@@ -15,8 +15,8 @@
                 @endif
             @endforeach
         @endif
-        
-    
+
+
         <div class="form-row float-md-left align-items-center">
 
             <label class="col-md-auto col-form-label">Por página:</label>
@@ -58,11 +58,11 @@
             </div>
 
             <div class="col-auto">
-                <a @if(! $data->onFirstPage()) href="{{ $data->appends(request()->query())->previousPageUrl() }}" @endif
-                    class="btn btn-default @if($data->onFirstPage()) disabled @endif" aria-disabled="true"><i 
-                    class="fas fa-chevron-left"></i>  
-                </a><a @if($data->hasMorePages()) href="{{ $data->appends(request()->query())->nextPageUrl() }}" @endif
-                    class="btn btn-default @if(! $data->hasMorePages()) disabled @endif"><i 
+                <a @if(! $data->onFirstPage()) href="{{ $data->appends(request()->except('middleware'))->previousPageUrl() }}" @endif
+                    class="btn btn-default @if($data->onFirstPage()) disabled @endif" aria-disabled="true"><i
+                    class="fas fa-chevron-left"></i>
+                </a><a @if($data->hasMorePages()) href="{{ $data->appends(request()->except('middleware'))->nextPageUrl() }}" @endif
+                    class="btn btn-default @if(! $data->hasMorePages()) disabled @endif"><i
                     class="fas fa-chevron-right"></i>
                 </a>
             </div>
