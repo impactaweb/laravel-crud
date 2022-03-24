@@ -134,7 +134,7 @@ class BaseField
     /**
      * @param array $initial
      * @throws Exception
-     * 
+     *
      * Extracts value from array based on fieldname string
      * E.g.: field[test] should find data on
      * [
@@ -183,10 +183,12 @@ class BaseField
             }
 
             if (strpos($item, 'max') !== false) {
-                $this->attrs['maxlength'] = str_replace('max:', '', $item);
+                $ruleType = $this->type !== 'number' ? 'maxlength' : 'max';
+                $this->attrs[$ruleType] = str_replace('max:', '', $item);
             }
             if (strpos($item, 'min') !== false) {
-                $this->attrs['min'] = str_replace('min:', '', $item);
+                $ruleType = $this->type !== 'number' ? 'minlength' : 'min';
+                $this->attrs[$ruleType] = str_replace('min:', '', $item);
             }
 
             if (Str::startsWith($item, 'required_without')) {
