@@ -16,7 +16,7 @@
             <span class="link-file">
             Visualizar:
             <a href="{{ $dir }}{{ $value }}" target="_blank">
-                {{ $value }}
+                {{ basename($value) }}
             </a>
 
             @if($nullable)
