@@ -3,6 +3,7 @@
 namespace Impactaweb\Crud\Listing;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 class Field {
 
@@ -94,7 +95,12 @@ class Field {
                 $className = ' class="order-' . $direction . '"';
             }
 
-            $fullUrl = $request->fullUrlWithQuery(['ord' => $fieldName, 'dir' => $direction]);
+            $query = $request->except('middleware');
+            $query['ord'] = $fieldName;
+            $query['dir'] = $direction;
+
+            $fullUrl = "?" . Arr::query($query);
+
             return '<a href="' . $fullUrl . '"'.$className.'>' . $this->getLabel() . '</a>';
         }
 
