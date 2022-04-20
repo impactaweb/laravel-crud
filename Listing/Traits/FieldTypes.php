@@ -167,6 +167,7 @@ trait FieldTypes {
         if (!is_null($searchField)) {
             $options['searchField'] = $searchField;
             $this->addSelectFields($searchField);
+            $this->addColumnAlias($searchField, $searchField);
         }
 
         return $this->field($name, $label, $options, 'select');
