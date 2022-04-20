@@ -17,6 +17,7 @@ class Listing {
     use Util;
 
     protected $primaryKey;
+    protected $columnAlias;
     protected $dataSource;
     protected $actions = [];
     protected $perPagePagination = 20;
@@ -140,7 +141,7 @@ class Listing {
         $activeColumns = array_merge($activeColumns, $this->aditionalSelectFields);
 
         // Consulta os dados
-        return $this->dataSource->getData($activeColumns, $orderby, $this->getPerPagePagination(), $queryString);
+        return $this->dataSource->getData($activeColumns, $orderby, $this->getPerPagePagination(), $queryString, $this->columnAlias);
     }
 
     /**
@@ -263,6 +264,11 @@ class Listing {
      */
     public function aditionalSelectFields(array $fields)
     {
+        foreach ($fields as $alias => $field) {
+            if (!is_numeric($alias)) {
+                $this->addColumnAlias($field, $alias);
+            }
+        }
         $this->aditionalSelectFields = $fields;
     }
 
@@ -278,9 +284,20 @@ class Listing {
     }
 
     /**
+     * Adiciona alias para coluna
+     * @param $field
+     * @return void
+     */
+    public function addColumnAlias(string $column, string $alias)
+    {
+        $alias = str_replace('.', '_', $alias);
+        $this->columnAlias[$column] = $alias;
+    }
+
+    /**
      * Informa quais queryStrings vamos manter no searchform ao realizar uma busca:
      */
-    public function setKeepQueryString(array $fields) 
+    public function setKeepQueryString(array $fields)
     {
         $this->keepQueryStrings = $fields;
     }

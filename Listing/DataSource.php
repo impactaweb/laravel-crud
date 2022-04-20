@@ -45,12 +45,13 @@ class DataSource
     /**
      * Retorna o Colletion da query
      */
-    public function getData(array $columns, ?array $orderby = [], int $perPagePagination = 20, ?array $queryString = [])
+    public function getData(array $columns, ?array $orderby = [], int $perPagePagination = 20, ?array $queryString = [],
+                            ?array $alias = [])
     {
         $this->columns = $columns;
         $this->buildJoins();
         $this->buildWhere($queryString);
-        $this->buildSelect();
+        $this->buildSelect($alias);
         $this->orderbyList = [$orderby];
         $this->buildOrderby();
         return $this->dataSource->paginate($perPagePagination);
@@ -159,7 +160,7 @@ class DataSource
     /**
      * Cria os campos para Select
      */
-    public function buildSelect()
+    public function buildSelect(?array $alias = [])
     {
         // Se a chave primária não estiver no objeto, inserí-la
         $primaryKey = $this->model->getKeyName();
@@ -175,6 +176,15 @@ class DataSource
         $currentColumns = $currentColumns
             ? array_merge($currentColumns, array_values($this->columnsSelect))
             : array_values($this->columnsSelect);
+
+        foreach ($currentColumns as $ind => $column) {
+            $relation = array_flip($this->columnsSelect)[$column] ?? null;
+            $aliasColumn = $alias[$relation] ?? null;
+            if ($aliasColumn) {
+                $table = $this->columnsSelect[$relation];
+                $currentColumns[$ind] = $table .  ' as ' . $aliasColumn;
+            }
+        }
 
         $this->dataSource = $this->dataSource->selectRaw(implode(",", $currentColumns));
     }
