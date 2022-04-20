@@ -3,7 +3,7 @@
     <select class="form-control" name="{{ $field->getSearchField() }}">
         <option value=""></option>
         @foreach ($field->getSearchOptions() as $index => $value)
-            <option value="{{ $index }}"{{ request()->get($field->getSearchFieldConverted()) == $index ? ' selected' : '' }}>{{ $value }}</option>
+            <option value="{{ $index }}"{{ (string)request()->get($field->getSearchFieldConverted()) === (string)$index ? ' selected' : '' }}>{{ $value }}</option>
         @endforeach
     </select>
 </div>
