@@ -146,8 +146,7 @@ class Listing {
         $activeColumns = array_merge($activeColumns, $this->aditionalSelectFields);
 
         // Consulta os dados
-        $dados = $this->dataSource->getData($activeColumns, $orderby, $this->getPerPagePagination(), $queryString, $this->columnAlias);
-        return $dados;
+        return $this->dataSource->getData($activeColumns, $orderby, $this->getPerPagePagination(), $queryString, $this->columnAlias);
     }
 
     /**
