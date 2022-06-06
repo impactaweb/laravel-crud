@@ -127,7 +127,12 @@ class Listing {
         $this->isSearching = (request()->has('q') && trim(request()->get('q')) !== '');
 
         // Adicionar colunas da busca ao SELECT e JOIN para garantir que a coluna esteja acessível
-        foreach ($this->fields->getFieldsName() as $fieldName) {
+        foreach ($this->fields as $field) {
+            $fieldName = $field->name;
+            if (!$field->activeByDefault) {
+                continue;
+            }
+
             $fieldNameQuerystring = str_replace('.', '_', $fieldName);
             if (isset($queryString[$fieldNameQuerystring]) && trim($queryString[$fieldNameQuerystring]) !== '') {
                 $this->isSearching = true;
