@@ -39,7 +39,7 @@ class Listing {
     public function __construct(string $primaryKey, $dataSource, array $options = [])
     {
         $this->primaryKey = $primaryKey;
-        $this->dataSource = new DataSource($dataSource);
+        $this->dataSource = new DataSource($dataSource, $options);
         $this->fields = new FieldCollection();
 
         $this->field($primaryKey, "ID", ['default' => $options['showID'] ?? true]);
