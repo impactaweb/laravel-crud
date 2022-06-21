@@ -14,6 +14,7 @@ class DataSource
     public $dataSource;
     public $columns;
     public $columnsSelect;
+    public $columnsSearchText = [];
     public $tablesJoin;
     public $allowedOrderbyColumns;
     public $orderbyList;
@@ -22,7 +23,7 @@ class DataSource
      * Inicia o objeto. O $dataSource deve ser obrigatoriamente
      * do tipo Model ou Builder
      */
-    public function __construct($dataSource)
+    public function __construct($dataSource, array $options)
     {
         if (!$dataSource instanceof Model && !$dataSource instanceof Builder) {
             throw new Exception("Invalid source type");
@@ -34,6 +35,10 @@ class DataSource
             $this->table = $this->model->getTable();
             $this->dataSource = $dataSource::query();
             return;
+        }
+
+        if (!empty($options['searchText'])) {
+            $this->columnsSearchText = $options['searchText'];
         }
 
         # Caso o datasource for Builder, pega a model apartir dele
@@ -197,13 +202,21 @@ class DataSource
         $whereRaw = "";
         $whereRawValues = [];
 
+        $columnsSearch = $this->columnsSelect;
+
+        if (!empty($this->columnsSearchText)) {
+            $columnsSearch = $this->columnsSearchText;
+        }
+
         // Basic search
         if (isset($queryString['q'])) {
             $searchTextParts = $this->getSearchTextParts(trim($queryString['q']));
             foreach ($searchTextParts as $searchText) {
                 $whereRaw .= " AND (";
                 $i = 0;
-                foreach ($this->columnsSelect as $column) {
+
+
+                foreach ($columnsSearch as $column) {
                     if (strpos($column, "*") !== false) {
                         continue;
                     }
