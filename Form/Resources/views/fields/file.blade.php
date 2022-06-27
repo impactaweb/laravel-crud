@@ -10,6 +10,10 @@
                 @if($required)
                 required
                 @endif
+
+            @foreach ($attrs as $attr => $attrValue)
+                {{ $attr }}="{{ $attrValue }}"
+            @endforeach
         >
 
         @if(!empty($value))
