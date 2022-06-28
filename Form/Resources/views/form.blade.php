@@ -2,6 +2,7 @@
 </div>
 <div data-expect-alert></div>
 <form
+    enctype='multipart/form-data'
     method="{{ $form->method }}"
     {{-- não apaga --}}
     data-its-form
