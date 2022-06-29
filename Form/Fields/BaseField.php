@@ -163,7 +163,7 @@ class BaseField
      * Build field rules
      * @param array $rules
      */
-    private function buildRules(array $rules, array $initial)
+    public function buildRules(array $rules, array $initial)
     {
         $rule = $rules[$this->id] ?? [];
 
@@ -180,6 +180,9 @@ class BaseField
 
             if ($item == 'nullable') {
                 $this->nullable = true;
+            }
+            if ($this->type == 'file') {
+                continue;
             }
 
             if (strpos($item, 'max') !== false) {
