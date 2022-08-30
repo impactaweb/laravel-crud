@@ -1,6 +1,6 @@
 @if($data && $data->total() > 0)
 
-    <form class="" action="{{ request()->url() }}" method="get"/>
+    <form method="get"/>
 
         {{-- para manter as querystrings ao submeter o form: --}}
         @foreach(request()->except('middleware') as $item => $valor)
