@@ -294,7 +294,7 @@ class DataSource
         $orderByColumns = [];
         foreach ($this->orderbyList as $orderby) {
             $column = $this->columnsSelect[$orderby[0] ?? 0] ?? null;
-            $direction = (strtolower($orderby[1]) == 'desc' ? 'desc' : 'asc');
+            $direction = (strtolower($orderby[1] ?? 'asc') == 'desc' ? 'desc' : 'asc');
 
             // Verifica se a coluna está disponível para ordenação
             if (!$column) {
