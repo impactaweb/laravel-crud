@@ -91,7 +91,7 @@ class Field {
                 $direction = strtolower($request->get('dir') ?? $currentOrderBy[1] ?? 'asc') == 'desc' ? 'asc' : 'desc';
             }
 
-            if (($request->get('ord') ?? $currentOrderBy[0]) == $fieldName) {
+            if (($request->get('ord') ?? $currentOrderBy[0] ?? '') == $fieldName) {
                 $className = ' class="order-' . $direction . '"';
             }
 
