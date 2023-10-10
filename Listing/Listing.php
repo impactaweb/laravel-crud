@@ -28,6 +28,7 @@ class Listing {
     protected $aditionalSelectFields = [];
     protected $showCheckbox = true;
     protected $keepQueryStrings = [];
+    protected $exportCSV = false;
 
     /**
      * Construtor da classe
@@ -108,6 +109,7 @@ class Listing {
             'currentOrderby' => $this->getOrderby(),
             'allowedOrderbyColumns' => $this->dataSource->getAllowedOrderbyColumns(),
             'keepQueryStrings' => $this->keepQueryStrings,
+            'exportCSV' => $this->exportCSV,
         ];
 
         return view($viewFile, $data);
@@ -118,7 +120,7 @@ class Listing {
      *
      * @return LengthAwarePaginator
      */
-    public function performQuery(): LengthAwarePaginator
+    public function performQuery()
     {
         $activeColumns = $this->fields->getActiveFields(true);
         $queryString = request()->query();
@@ -145,6 +147,9 @@ class Listing {
         // Campos adicionais para o select
         $activeColumns = array_merge($activeColumns, $this->aditionalSelectFields);
 
+        if (request()->get('csv') == '1') {
+            return $this->dataSource->getData($activeColumns, $orderby, $this->getPerPagePagination(), $queryString, $this->columnAlias, true);
+        }
         // Consulta os dados
         return $this->dataSource->getData($activeColumns, $orderby, $this->getPerPagePagination(), $queryString, $this->columnAlias);
     }
@@ -305,6 +310,54 @@ class Listing {
     public function setKeepQueryString(array $fields)
     {
         $this->keepQueryStrings = $fields;
+    }
+
+    public function enableCSV(bool $enable = true)
+    {
+        if (request()->get('csv') == '1') {
+            $dados = $this->performQuery()->toArray();
+
+            header("Content-Type: text/csv; charset=UTF-8");
+            header("Content-Disposition: attachment; filename=file.csv");
+
+            // Adiciona BOM para suporte UTF-8 no Excel
+            echo "\xEF\xBB\xBF";
+
+            // Chama a função recursiva para escrever a linha de cabeçalho
+            $this->writeCsvLine(array_keys($this->flattenArray($dados[0])));
+
+            // Itera através dos dados e chama a função recursiva para escrever cada linha
+            foreach ($dados as $linha) {
+                $this->writeCsvLine($this->flattenArray($linha));
+            }
+
+            exit;
+        }
+
+        $this->exportCSV = $enable;
+    }
+
+    // Função recursiva para achatamento de arrays
+    public function flattenArray($array, $prefix = ''): array
+    {
+        $result = [];
+        foreach ($array as $key => $value) {
+            $new_key = $prefix . (empty($prefix) ? '' : '.') . $key;
+            if (is_array($value)) {
+                $result = array_merge($result, $this->flattenArray($value, $new_key));
+            } else {
+                $result[$new_key] = $value;
+            }
+        }
+        return $result;
+    }
+
+    // Função para escrever uma linha no CSV
+    public function writeCsvLine($array)
+    {
+        echo implode(';', array_map(function($value) {
+                return mb_convert_encoding($value, 'UTF-8');
+            }, $array)) . "\r\n";
     }
 
 }
