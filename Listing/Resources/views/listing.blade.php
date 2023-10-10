@@ -42,45 +42,58 @@
     </form>
 
     @if($data && $columns)
-    <table class="table table-striped table-hover table-sm" id="listagemTable" data-redir="{{ url()->full() }}">
+        <table class="table table-striped table-hover table-sm" id="listagemTable" data-redir="{{ url()->full() }}">
 
-        {{-- Cabeçalho com as columns --}}
-        <thead>
+            {{-- Cabeçalho com as columns --}}
+            <thead>
             <tr>
-            <th scope="col" class="border-top-0"  @if(!$showCheckbox) style="display:none" @endif >
-                <input type="checkbox" name="checkbox-listing" />
-            </th>
-            @foreach($columns as $column)
-                <th scope="col" class="border-top-0">
-                    {!! $column->getOrderbyLink($currentOrderby, $allowedOrderbyColumns) !!}
+                <th scope="col" class="border-top-0"  @if(!$showCheckbox) style="display:none" @endif >
+                    <input type="checkbox" name="checkbox-listing" />
                 </th>
-            @endforeach
+                @foreach($columns as $column)
+                    <th scope="col" class="border-top-0">
+                        {!! $column->getOrderbyLink($currentOrderby, $allowedOrderbyColumns) !!}
+                    </th>
+                @endforeach
             </tr>
-        </thead>
+            </thead>
 
-        <tbody>
+            <tbody>
             {{-- Registros --}}
             @forelse ($data->items() as $index => $item)
                 <tr @if($formToFieldId)
-                    data-search-field="{{ $formToFieldId }}"
+                        data-search-field="{{ $formToFieldId }}"
                     data-search-value="{{ $item->$formFromFieldId }}"
                     @endif>
-                
-                <td @if(!$showCheckbox) style="display:none" @endif >
-                    <input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->$primaryKey }}"/>
-                </td>
 
-                @foreach ($columns as $column)
-                    <td>{!! $column->formatData($item, $index, $data->items()) !!}</td>
-                @endforeach
+                    <td @if(!$showCheckbox) style="display:none" @endif >
+                        <input type="checkbox" name="item[]" class="listing-checkboxes" value="{{ $item->$primaryKey }}"/>
+                    </td>
+
+                    @foreach ($columns as $column)
+                        <td>{!! $column->formatData($item, $index, $data->items()) !!}</td>
+                    @endforeach
                 </tr>
             @empty
                 <tr class="empty">
                     <td colspan="100%">Nenhum item encontrado</td>
                 </tr>
             @endforelse
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    @endif
+
+    @if($exportCSV)
+        <div class="d-flex justify-content-end w-100 mb-2 p-0">
+            @php
+                $query = $_GET;
+                $query['csv'] = 1;
+                $novaUrl = url()->current() . '?' . http_build_query($query);
+            @endphp
+            <a href="{{$novaUrl}}" class="btn btn-default">
+                <i class="fas fa-file-csv"></i> Exportar CSV
+            </a>
+        </div>
     @endif
 
     @include('listing::pagination')
