@@ -28,6 +28,7 @@ class Listing {
     protected $aditionalSelectFields = [];
     protected $showCheckbox = true;
     protected $keepQueryStrings = [];
+    protected $exportCSV = false;
 
     /**
      * Construtor da classe
@@ -108,6 +109,7 @@ class Listing {
             'currentOrderby' => $this->getOrderby(),
             'allowedOrderbyColumns' => $this->dataSource->getAllowedOrderbyColumns(),
             'keepQueryStrings' => $this->keepQueryStrings,
+            'exportCSV' => $this->exportCSV,
         ];
 
         return view($viewFile, $data);
@@ -118,7 +120,7 @@ class Listing {
      *
      * @return LengthAwarePaginator
      */
-    public function performQuery(): LengthAwarePaginator
+    public function performQuery()
     {
         $activeColumns = $this->fields->getActiveFields(true);
         $queryString = request()->query();
@@ -145,6 +147,9 @@ class Listing {
         // Campos adicionais para o select
         $activeColumns = array_merge($activeColumns, $this->aditionalSelectFields);
 
+        if (request()->get('csv') == '1') {
+            return $this->dataSource->getData($activeColumns, $orderby, $this->getPerPagePagination(), $queryString, $this->columnAlias, true);
+        }
         // Consulta os dados
         return $this->dataSource->getData($activeColumns, $orderby, $this->getPerPagePagination(), $queryString, $this->columnAlias);
     }
@@ -305,6 +310,44 @@ class Listing {
     public function setKeepQueryString(array $fields)
     {
         $this->keepQueryStrings = $fields;
+    }
+
+    public function enableCSV(string $name, array $columns,bool $enable = true)
+    {
+        if (request()->get('csv') == '1') {
+            $dados = $this->performQuery()->toArray();
+
+            $timestamp = time();
+            header("Content-Type: text/csv; charset=UTF-8");
+            header("Content-Disposition: attachment; filename={$name}-{$timestamp}.csv");
+
+            // Adiciona BOM para suporte UTF-8 no Excel
+            echo "\xEF\xBB\xBF";
+
+            // Escreve a linha de cabeçalho usando as colunas desejadas
+            $this->writeCsvLine($columns);
+
+            // Itera através dos dados e escreve apenas as colunas desejadas
+            foreach ($dados as $linha) {
+                $linha_filtrada = [];
+                foreach (array_flip($columns) as $column) {
+                    $linha_filtrada[$column] = data_get($linha, $column);
+                }
+                $this->writeCsvLine($linha_filtrada);
+            }
+
+            exit;
+        }
+
+        $this->exportCSV = $enable;
+    }
+
+    // Função para escrever uma linha no CSV
+    public function writeCsvLine($array)
+    {
+        echo implode(';', array_map(function($value) {
+                return mb_convert_encoding($value, 'UTF-8');
+            }, $array)) . "\r\n";
     }
 
 }
