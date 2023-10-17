@@ -325,7 +325,7 @@ class Listing {
             echo "\xEF\xBB\xBF";
 
             // Escreve a linha de cabeçalho usando as colunas desejadas
-            $this->writeCsvLine($columns);
+            $this->writeCsvLine(Str::upper(Str::slug($columns, '_')));
 
             // Itera através dos dados e escreve apenas as colunas desejadas
             foreach ($dados as $linha) {
