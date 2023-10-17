@@ -3,13 +3,13 @@
 namespace Impactaweb\Crud\Listing;
 
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 use Impactaweb\Crud\Listing\DataSource;
 use Impactaweb\Crud\Listing\Field;
 use Impactaweb\Crud\Listing\FieldCollection;
 use Impactaweb\Crud\Listing\Action;
 use Impactaweb\Crud\Listing\Traits\FieldTypes;
 use Impactaweb\Crud\Listing\Traits\Util;
-use Psy\Util\Str;
 
 class Listing {
 
@@ -324,8 +324,12 @@ class Listing {
             // Adiciona BOM para suporte UTF-8 no Excel
             echo "\xEF\xBB\xBF";
 
+            $formetedColumns = [];
+            foreach ($columns as $column) {
+                $formetedColumns[] = Str::upper(Str::slug($column, '_'));
+            }
             // Escreve a linha de cabeçalho usando as colunas desejadas
-            $this->writeCsvLine(Str::upper(Str::slug($columns, '_')));
+            $this->writeCsvLine($formetedColumns);
 
             // Itera através dos dados e escreve apenas as colunas desejadas
             foreach ($dados as $linha) {
@@ -346,8 +350,8 @@ class Listing {
     public function writeCsvLine($array)
     {
         echo implode(';', array_map(function($value) {
-                return mb_convert_encoding($value, 'UTF-8');
-            }, $array)) . "\r\n";
+            return mb_convert_encoding($value, 'UTF-8');
+        }, $array)) . "\r\n";
     }
 
 }
