@@ -312,32 +312,29 @@ class Listing {
         $this->keepQueryStrings = $fields;
     }
 
-    public function enableCSV(string $name, array $columns,bool $enable = true)
+    public function enableCSV(string $name, array $columns, bool $enable = true)
     {
         if (request()->get('csv') == '1') {
-            $dados = $this->performQuery()->toArray();
+            $data = $this->performQuery()->toArray();
 
             $timestamp = time();
             header("Content-Type: text/csv; charset=UTF-8");
             header("Content-Disposition: attachment; filename={$name}-{$timestamp}.csv");
 
-            // Adiciona BOM para suporte UTF-8 no Excel
             echo "\xEF\xBB\xBF";
 
-            $formetedColumns = [];
+            $formattedColumns = [];
             foreach ($columns as $column) {
-                $formetedColumns[] = Str::upper(Str::slug($column, '_'));
+                $formattedColumns[] = Str::upper(Str::slug($column, '_'));
             }
-            // Escreve a linha de cabeçalho usando as colunas desejadas
-            $this->writeCsvLine($formetedColumns);
 
-            // Itera através dos dados e escreve apenas as colunas desejadas
-            foreach ($dados as $linha) {
-                $linha_filtrada = [];
+            $this->writeCsvLine($formattedColumns);
+            foreach ($data as $line) {
+                $filteredLine = [];
                 foreach (array_flip($columns) as $column) {
-                    $linha_filtrada[$column] = data_get($linha, $column);
+                    $filteredLine[$column] = data_get($line, $column);
                 }
-                $this->writeCsvLine($linha_filtrada);
+                $this->writeCsvLine($filteredLine);
             }
 
             exit;
@@ -345,13 +342,13 @@ class Listing {
 
         $this->exportCSV = $enable;
     }
-
-    // Função para escrever uma linha no CSV
+    
     public function writeCsvLine($array)
     {
-        echo implode(';', array_map(function($value) {
-            return mb_convert_encoding($value, 'UTF-8');
-        }, $array)) . "\r\n";
+        echo implode(';', array_map(function ($value) {
+                return mb_convert_encoding($value, 'UTF-8');
+            }, $array)) . "\r\n";
     }
+
 
 }
