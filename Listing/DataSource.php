@@ -51,7 +51,7 @@ class DataSource
      * Retorna o Colletion da query
      */
     public function getData(array $columns, ?array $orderby = [], int $perPagePagination = 20, ?array $queryString = [],
-                            ?array $alias = [])
+                            ?array $alias = [], bool $exportCSV = false)
     {
         $this->columns = $columns;
         $this->buildJoins();
@@ -59,7 +59,8 @@ class DataSource
         $this->buildSelect($alias);
         $this->orderbyList = [$orderby];
         $this->buildOrderby();
-        return $this->dataSource->paginate($perPagePagination);
+
+        return $exportCSV ? $this->dataSource->get() : $this->dataSource->paginate($perPagePagination);
     }
 
     /**
@@ -356,5 +357,4 @@ class DataSource
         return $textParts;
 
     }
-
 }
