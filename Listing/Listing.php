@@ -3,13 +3,13 @@
 namespace Impactaweb\Crud\Listing;
 
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 use Impactaweb\Crud\Listing\DataSource;
 use Impactaweb\Crud\Listing\Field;
 use Impactaweb\Crud\Listing\FieldCollection;
 use Impactaweb\Crud\Listing\Action;
 use Impactaweb\Crud\Listing\Traits\FieldTypes;
 use Impactaweb\Crud\Listing\Traits\Util;
-use Psy\Util\Str;
 
 class Listing {
 
@@ -312,23 +312,29 @@ class Listing {
         $this->keepQueryStrings = $fields;
     }
 
-    public function enableCSV(bool $enable = true)
+    public function enableCSV(string $name, array $columns, bool $enable = true)
     {
         if (request()->get('csv') == '1') {
-            $dados = $this->performQuery()->toArray();
+            $data = $this->performQuery()->toArray();
 
+            $timestamp = time();
             header("Content-Type: text/csv; charset=UTF-8");
-            header("Content-Disposition: attachment; filename=file.csv");
+            header("Content-Disposition: attachment; filename={$name}-{$timestamp}.csv");
 
-            // Adiciona BOM para suporte UTF-8 no Excel
             echo "\xEF\xBB\xBF";
 
-            // Chama a função recursiva para escrever a linha de cabeçalho
-            $this->writeCsvLine(array_keys($this->flattenArray($dados[0])));
+            $formattedColumns = [];
+            foreach ($columns as $column) {
+                $formattedColumns[] = Str::upper(Str::slug($column, '_'));
+            }
 
-            // Itera através dos dados e chama a função recursiva para escrever cada linha
-            foreach ($dados as $linha) {
-                $this->writeCsvLine($this->flattenArray($linha));
+            $this->writeCsvLine($formattedColumns);
+            foreach ($data as $line) {
+                $filteredLine = [];
+                foreach (array_flip($columns) as $column) {
+                    $filteredLine[$column] = data_get($line, $column);
+                }
+                $this->writeCsvLine($filteredLine);
             }
 
             exit;
@@ -336,28 +342,13 @@ class Listing {
 
         $this->exportCSV = $enable;
     }
-
-    // Função recursiva para achatamento de arrays
-    public function flattenArray($array, $prefix = ''): array
-    {
-        $result = [];
-        foreach ($array as $key => $value) {
-            $new_key = $prefix . (empty($prefix) ? '' : '.') . $key;
-            if (is_array($value)) {
-                $result = array_merge($result, $this->flattenArray($value, $new_key));
-            } else {
-                $result[$new_key] = $value;
-            }
-        }
-        return $result;
-    }
-
-    // Função para escrever uma linha no CSV
+    
     public function writeCsvLine($array)
     {
-        echo implode(';', array_map(function($value) {
+        echo implode(';', array_map(function ($value) {
                 return mb_convert_encoding($value, 'UTF-8');
             }, $array)) . "\r\n";
     }
+
 
 }
