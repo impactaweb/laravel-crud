@@ -20,29 +20,13 @@ Laravel CRUD Tools
 
 ## Novidades
 
-### 25/05/2020 - Input Ajax
-
+### 19/02/2025 - Set searchbar
+Agora é possível exibir ou não a searchbar do listing, por padrão e vem setado a exibição como true
+para não exibir basta setar o listing assim:
 ```php
-$form->text('cep', 'CEP', [
-    'ajax' => [
-        'url' => '/url/{parametro}',
-        'fields' => [
-            'endereco_rua' => 'logradouro',
-            'endereco_bairro' => 'bairro',
-            'cidade' => 'localidade',
-            'uf' => 'uf'
-        ],
-        'method' => 'POST',
-        'fieldsOptions' =>  [
-            'uf' => 'uf_options'
-        ]
-        'data' => [
-            'a' => 'b',
-            'c' => 'd',
-        ],
-        'dataFields' => [
-            'cep' => 'endereco_cep',
-        ]
-    ]
+$lista = new Listing();
+
+$lista->setSearchBar(false);
+
 );
 ```

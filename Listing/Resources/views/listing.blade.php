@@ -30,16 +30,18 @@
                 @endforeach
             </div>
         @endif
-        <div class="col">
-            @include('listing::search')
-        </div>
-    </div>
+        @if($searchBar)
+                <div class="col">
+                    @include('listing::search')
+                </div>
 
-    <form id="listingForm" action="" method="POST" style="display:none">
-        {{ csrf_field() }}
-        <input type="hidden" name="_method" value=""></button>
-        <button type="submit"></button>
-    </form>
+                <form id="listingForm" action="" method="POST" style="display:none">
+                    {{ csrf_field() }}
+                    <input type="hidden" name="_method" value=""></button>
+                    <button type="submit"></button>
+                </form>
+            @endif
+        </div>
 
     @if($data && $columns)
         <table class="table table-striped table-hover table-sm" id="listagemTable" data-redir="{{ url()->full() }}">
