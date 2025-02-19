@@ -29,6 +29,7 @@ class Listing {
     protected $showCheckbox = true;
     protected $keepQueryStrings = [];
     protected $exportCSV = false;
+    protected $searchBar = true;
 
     /**
      * Construtor da classe
@@ -52,6 +53,11 @@ class Listing {
         }
 
         $this->setDefaultActions();
+    }
+
+    public function setSearchBar(bool $searchBar = true)
+    {
+        $this->searchBar = $searchBar;
     }
 
     /**
@@ -110,6 +116,7 @@ class Listing {
             'allowedOrderbyColumns' => $this->dataSource->getAllowedOrderbyColumns(),
             'keepQueryStrings' => $this->keepQueryStrings,
             'exportCSV' => $this->exportCSV,
+            'searchBar' => $this->searchBar,
         ];
 
         return view($viewFile, $data);
@@ -342,7 +349,7 @@ class Listing {
 
         $this->exportCSV = $enable;
     }
-    
+
     public function writeCsvLine($array)
     {
         echo implode(';', array_map(function ($value) {
