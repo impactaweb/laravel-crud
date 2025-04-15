@@ -191,6 +191,7 @@ class DataSource
                 $currentColumns[$ind] = $table .  ' as ' . $aliasColumn;
             }
         }
+        $this->dataSource->getQuery()->columns = null;
 
         $this->dataSource = $this->dataSource->selectRaw(implode(",", $currentColumns));
     }
