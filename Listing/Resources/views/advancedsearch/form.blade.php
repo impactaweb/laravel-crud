@@ -16,6 +16,12 @@
         <input hidden name="is_popup" value="1">
     @endif
 
+    @foreach(request()->except('middleware') as $item => $valor)
+        @if(in_array($item, ['page', 'pp', 'q']) && !is_array($valor) && !empty($valor))
+            <input type="hidden" name="{{ $item }}" value="{{ $valor }}" />
+        @endif
+    @endforeach
+
     @foreach ($advancedSearchFields as $position => $field)
         <div class="d-flex flex-row justify-content-center align-items-center mb-2">
             <div style="width: 8rem;

@@ -1,13 +1,18 @@
 <form method="get" class="frmBusca">
     <div class="form-group">
         <div class="input-group mb-2 mr-sm-2">
-            @forelse($keepQueryStrings as $i => $field)
-                <input type="hidden" 
-                       name="{{ $field }}"
-                       value="{{ request()->get($field) ?? '' }}" 
-                />
-            @empty
-            @endforelse
+            @foreach(request()->except('middleware') as $item => $valor)
+                @if(!in_array($item, ['q']) && !is_array($valor) && !empty($valor))
+                    <input type="hidden" name="{{ $item }}" value="{{ $valor }}" />
+                @endif
+            @endforeach
+            @if(request()->has('op') && is_array(request()->get('op')))
+                @foreach(request()->get('op') as $item => $valor)
+                    @if(!empty($valor))
+                        <input type="hidden" name="op[{{ $item }}]" value="{{ $valor }}" />
+                    @endif
+                @endforeach
+            @endif
             <div class="input-group mb-3">
                 <input
                     type="text"
