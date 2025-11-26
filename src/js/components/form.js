@@ -4,7 +4,7 @@ const asyncFileUpload = require("./asyncFileUpload");
 const handleFailureSendForm = require("./handleFailureSendForm");
 const handleSuccessSendForm = require("./handleSuccessSendForm");
 
-window.jQuery(document).ready(function() {
+window.jQuery(document).ready(function () {
   const $ = window.jQuery;
 
   if (!$("[data-its-form]").length) return;
@@ -14,13 +14,13 @@ window.jQuery(document).ready(function() {
   const $deleteFiles = $("[data-destroy]");
 
   $("#form").validate({
-    submitHandler: function(form) {
+    submitHandler: function (form) {
 
-      if (! $(form).data('ajax')) {
+      if (!$(form).data('ajax')) {
         return true;
       }
 
-      $(form).submit(function(e) {
+      $(form).submit(function (e) {
         e.preventDefault();
         e.stopPropagation();
         return false;
@@ -41,7 +41,7 @@ window.jQuery(document).ready(function() {
         .fail(handleFailureSendForm);
     },
     errorElement: "li",
-    errorPlacement: function(error, element) {
+    errorPlacement: function (error, element) {
       error.appendTo(
         element
           .parent()
@@ -57,7 +57,7 @@ window.jQuery(document).ready(function() {
     }
   });
 
-  $("select[multiple]").each(function(idx, ele) {
+  $("select[multiple]").each(function (idx, ele) {
     $(ele).multiselect({
       enableClickableOptGroups: true,
       enableCollapsibleOptGroups: true,
@@ -68,8 +68,8 @@ window.jQuery(document).ready(function() {
     });
   });
 
-  $deleteFiles.each(function(idx, $link) {
-    $link.onclick = function(e) {
+  $deleteFiles.each(function (idx, $link) {
+    $link.onclick = function (e) {
       window.initLoading();
       e.preventDefault();
       e.stopPropagation();
@@ -88,7 +88,7 @@ window.jQuery(document).ready(function() {
         {
           _token: $('[name="_token"]').val()
         },
-        function(jsonData) {
+        function (jsonData) {
           if (jsonData.error) {
             alert(jsonData.error);
             return;
@@ -104,14 +104,14 @@ window.jQuery(document).ready(function() {
             .remove();
         }
       )
-        .fail(function(jqXHR) {
+        .fail(function (jqXHR) {
           alert(
             jqXHR.responseJSON.error
               ? jqXHR.responseJSON.error
               : "Falha ao excluir o arquivo."
           );
         })
-        .always(function() {
+        .always(function () {
           window.finishLoading();
         });
     };
@@ -126,20 +126,45 @@ window.jQuery(document).ready(function() {
    * Configuração do show-rules
    */
   let inputsToBind = {};
+  let dependencies = {}; // mapa: campo -> [campos que dependem dele]
 
-  $("div[data-show-rules]").each(function() {
+  /**
+   * Função para esconder um campo e todos os seus dependentes
+   */
+  function hideFieldAndChildren(fieldName) {
+    // Esconde o próprio campo
+    let fieldBlockToHide = $("div[data-field-name='" + fieldName + "']");
+    fieldBlockToHide.hide();
+
+    // Esconde recursivamente os dependentes
+    let children = dependencies[fieldName] || [];
+    children.forEach(function (childField) {
+      hideFieldAndChildren(childField);
+    });
+  }
+
+  $("div[data-show-rules]").each(function () {
     let rules = $(this).data("show-rules");
     let hideField = $(this).data("field-name");
 
-    Object.keys(rules).forEach(function(ruleField) {
+    Object.keys(rules).forEach(function (ruleField) {
       inputsToBind[ruleField] = true;
       let inputToHandle = $(":input[name='" + ruleField + "']");
       if (!inputToHandle.length) {
         return;
       }
 
+      // registra dependência: hideField depende de ruleField
+      if (!dependencies[ruleField]) {
+        dependencies[ruleField] = [];
+      }
+      if (dependencies[ruleField].indexOf(hideField) === -1) {
+        dependencies[ruleField].push(hideField);
+      }
+
       let setEventChange = false;
       let fieldHideRules;
+
       if (inputToHandle.data("hide-rules")) {
         fieldHideRules = inputToHandle.data("hide-rules");
       } else {
@@ -148,17 +173,17 @@ window.jQuery(document).ready(function() {
       }
 
       fieldHideRules[hideField] = rules[ruleField];
-
       inputToHandle.data("hide-rules", fieldHideRules);
 
       if (setEventChange) {
-        inputToHandle.change(function() {
+        inputToHandle.change(function () {
           if ($(this).is(":radio:not(:checked)")) {
             return;
           }
 
           let inputValue = $(this).val();
           let hideRules = $(this).data("hide-rules");
+
           for (let field in hideRules) {
             let fieldBlockToHide = $("div[data-field-name='" + field + "']");
             let valuesToCheck = hideRules[field];
@@ -174,19 +199,32 @@ window.jQuery(document).ready(function() {
               }
             }
 
-            eventShow ? fieldBlockToHide.show() : fieldBlockToHide.hide();
+            if (eventShow) {
+              fieldBlockToHide.show();
+            } else {
+              // NOVA LÓGICA: esconder em cascata
+              hideFieldAndChildren(field);
+            }
           }
         });
       }
     });
   });
 
+  /**
+   * Forçar estado inicial correto
+   */
+  Object.keys(inputsToBind).forEach(function (fieldName) {
+    $(":input[name='" + fieldName + "']").trigger("change");
+  });
+
+
   // Aciona o evento change dos inputs que deverão ser monitorados
   for (let field in inputsToBind) {
     $(":input[name='" + field + "']").trigger("change");
   }
 
-  window.onpageshow = function(event) {
+  window.onpageshow = function (event) {
     if (event.persisted) {
       window.location.reload();
     }
