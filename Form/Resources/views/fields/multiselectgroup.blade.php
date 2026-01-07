@@ -4,21 +4,23 @@
 
     <div class="@if($col >= '10') col @else col-md-{{$col}} @endif">
         <select
+            data-role="multiselect"
+            data-select-all-just-visible="false"
             multiple
             class="form-control {{ $class }}"
             id="c-{{$id}}"
             name="{{$id}}[]"
 
-            {{-- Attributes --}}
-            @foreach ($attrs as $attr => $attrValue)
-                @if(gettype($attrValue) == 'string')
-                    {{ $attr }}="{{ $attrValue }}"
-                @endif
-            @endforeach
-
-            @if($required)
-                required
+        {{-- Attributes --}}
+        @foreach ($attrs as $attr => $attrValue)
+            @if(gettype($attrValue) == 'string')
+                {{ $attr }}="{{ $attrValue }}"
             @endif
+        @endforeach
+
+        @if($required)
+            required
+        @endif
         >
             {{-- Build group selectOptions --}}
             @foreach ($selectOptions as $groupParent => $childrens)
@@ -29,7 +31,7 @@
                             selected
                             @endif
                             value="{{$id}}"
-                        > 
+                        >
                             {{ $textValue }}
                         </option>
                     @endforeach
