@@ -80,7 +80,7 @@
     }).mask(document.querySelectorAll('[data-input="mY"]'));
 
     Inputmask({
-      mask: '99.999.999/9999-99',
+      mask: '**.***.***/****-99',
       placeholder: '__.___.___/____-__'
     }).mask(document.querySelectorAll('[data-input="cnpj"]'));
 
