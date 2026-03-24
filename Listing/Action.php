@@ -71,7 +71,7 @@ class Action {
                 break;
 
             case 'destroy':
-                $url .= '/{id}?multiple={ids}';
+                $url .= '/{id}?';
                 break;
 
             default:
