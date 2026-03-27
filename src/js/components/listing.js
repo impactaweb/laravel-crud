@@ -34,6 +34,7 @@ $(document).ready(function() {
     let id = ids[0];
     let idsFormatado = ids.join(",");
 
+    let urlDestroy = url.replace("{id}", id);
     url = url.replace("{id}", id).replace("{ids}", idsFormatado);
 
     if (method == "GET") {
@@ -43,7 +44,11 @@ $(document).ready(function() {
       };
     } else {
       $form.prop("action", url);
+      if ($(this).data("method") == "DELETE") {
+        $form.prop("action", urlDestroy);
+      }
       $form.prop("method", method);
+      $form.find('input[name="ids"]').val(idsFormatado);
       $form.find('input[name="_method"]').val(_method);
       continueFunction = function() {
         $form.submit();

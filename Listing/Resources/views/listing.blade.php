@@ -38,6 +38,7 @@
                 <form id="listingForm" action="" method="POST" style="display:none">
                     {{ csrf_field() }}
                     <input type="hidden" name="_method" value=""></button>
+                    <input type="hidden" name="ids" value="" />
                     <button type="submit"></button>
                 </form>
             @endif
