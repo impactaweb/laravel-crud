@@ -16,7 +16,7 @@
             @endforeach
         >
 
-        @if(!empty($value))
+        @if(!empty($value) && pathinfo(basename($value), PATHINFO_EXTENSION))
             <span class="link-file">
             Visualizar:
             <a href="{{ $dir }}{{ $value }}" target="_blank">

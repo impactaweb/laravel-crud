@@ -85,14 +85,19 @@
     >
         <div class="card-body">
 
-            @foreach ($panel->fields as $field)
-                <div class="fieldBlock" data-field-name="{{ $field->id }}"
-                     @if(isset($field->options['show_rules'])) data-show-rules='@json($field->options['show_rules'])' @endif
-                >
+             @foreach ($panel->fields as $field)
+                @php
+                    $fieldHtml = (string) $field->render($form->initial, $form->getRules());
+                    $ocultarLinksVazios = !(bool) preg_match('/<a[^>]*href=[\'"]\/[\'"][^>]*>\s*<\/a>/', $fieldHtml);
+                @endphp
 
-                    {!! $field->render($form->initial, $form->getRules()) !!}
-
-                </div>
+                @if ($ocultarLinksVazios)
+                    <div class="fieldBlock" data-field-name="{{ $field->id }}"
+                        @if(isset($field->options['show_rules'])) data-show-rules='@json($field->options['show_rules'])' @endif
+                    >
+                        {!! $fieldHtml !!}
+                    </div>
+                @endif
             @endforeach
 
         </div>
