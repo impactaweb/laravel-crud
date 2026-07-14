@@ -31,14 +31,22 @@
       placeholder: '_____-___',
     }).mask(document.querySelectorAll('[data-input="cep"]'));
 
-    Inputmask({
-      alias: 'numeric',
-      groupSeparator: ',',
-      digits: 2,
-      digitsOptional: false,
-      prefix: 'R$',
-      placeholder: '0'
-    }).mask(document.querySelectorAll('[data-input="money"]'));
+    const formatMoneyBR = function (value) {
+      let digits = String(value).replace(/\D/g, '').replace(/^0+/, '');
+      if (digits === '') digits = '0';
+      while (digits.length < 3) digits = '0' + digits;
+      const dec = digits.slice(-2);
+      const int = digits.slice(0, -2).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      return 'R$ ' + int + ',' + dec;
+    };
+    
+    $('[data-input="money"]').each(function () {
+      if (this.value !== '') {
+        this.value = formatMoneyBR(this.value);
+      }
+    }).on('input', function () {
+      this.value = this.value === '' ? '' : formatMoneyBR(this.value);
+    });
 
     Inputmask({
       mask: '99999-9999',
