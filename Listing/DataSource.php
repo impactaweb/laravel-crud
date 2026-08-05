@@ -20,6 +20,14 @@ class DataSource
     public $orderbyList;
 
     /**
+     * Quando true, a busca básica (parâmetro "q") não é montada aqui: o chamador
+     * já aplicou o filtro de busca no Builder recebido (útil para rotear a busca
+     * por formato do termo / usar índices, sem o OR cego sobre todas as colunas).
+     * A busca avançada por coluna continua funcionando normalmente.
+     */
+    public $disableBasicSearch = false;
+
+    /**
      * Inicia o objeto. O $dataSource deve ser obrigatoriamente
      * do tipo Model ou Builder
      */
@@ -28,6 +36,8 @@ class DataSource
         if (!$dataSource instanceof Model && !$dataSource instanceof Builder) {
             throw new Exception("Invalid source type");
         }
+
+        $this->disableBasicSearch = !empty($options['disableBasicSearch']);
 
         # Caso o datasource for model, converte ele para Builder
         if ($dataSource instanceof Model) {
@@ -211,7 +221,7 @@ class DataSource
         }
 
         // Basic search
-        if (isset($queryString['q'])) {
+        if (!$this->disableBasicSearch && isset($queryString['q'])) {
             $searchTextParts = $this->getSearchTextParts(trim($queryString['q']));
             foreach ($searchTextParts as $searchText) {
                 $whereRaw .= " AND (";
