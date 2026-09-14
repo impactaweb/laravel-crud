@@ -16,7 +16,7 @@
         }
     },
     "require": {
-        "php": "^7.2",
+        "php": "^7.2 || ^8.0",
         "laravel/framework": ">=5.7"
     },
     "extra": {
@@ -25,6 +25,5 @@
                 "Impactaweb\\Crud\\CrudServiceProvider"
             ]
         }
-    },
-    "version": "0.1.1"
+    }
 }
